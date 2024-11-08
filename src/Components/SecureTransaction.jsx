@@ -155,9 +155,6 @@ const SecureTransaction = () => {
 
 
 
-  
-
-
   return (
     <div className="w-full bg-white">
 
