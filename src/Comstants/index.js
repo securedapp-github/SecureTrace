@@ -1,1 +1,1 @@
-export const DevUrl = "https://caiman-wanted-fox.ngrok-free.app";
+export const DevUrl = "https://139-59-5-56.nip.io:3443";
