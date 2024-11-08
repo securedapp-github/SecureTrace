@@ -109,8 +109,8 @@ const AddressCard = () => {
       );
 
       SetPortfolioData(response.data.tokens);
+      console.log(response.data);
       console.log("Portfolio data:", response.data.tokens);
-
       const tokens = response.data.tokens;
       // setPortfolioData(tokens);
 

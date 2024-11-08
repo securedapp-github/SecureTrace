@@ -80,6 +80,7 @@ const SecureTransaction = () => {
 
 
         setTransactions(response.data.txs);
+        console.log(response);
         console.log('response:', response.data);
 
         setLoading(false);
