@@ -20,6 +20,7 @@ import { useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { DevUrl } from "../constants";
 
 const SecureTransaction = () => {
   const [inputValue, setInputValue] = useState("");
@@ -67,7 +68,7 @@ const SecureTransaction = () => {
 
       try {
         const response = await axios.post(
-          "https://caiman-wanted-fox.ngrok-free.app/recent-txs",
+          `${DevUrl}/recent-txs`,
           {
             headers: {
               "ngrok-skip-browser-warning": "true",
@@ -98,7 +99,7 @@ const SecureTransaction = () => {
 
       try {
         const response = await axios.post(
-          "https://caiman-wanted-fox.ngrok-free.app/top-tokens",
+          `${DevUrl}/top-tokens`,
           {
             headers: {
               "ngrok-skip-browser-warning": "true",
