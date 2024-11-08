@@ -9,7 +9,6 @@ import axios from "axios";
 import btc from '../Assests/Bitcoin.png';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { DevUrl } from '../constants';
 
 const AddressCard = () => {
 
@@ -98,7 +97,7 @@ const AddressCard = () => {
 
     try {
       const response = await axios.post(
-        `${DevUrl}/fetch-address-details/`,
+        `https://caiman-wanted-fox.ngrok-free.app/fetch-address-details/`,
         { address: inputValue }, // This is the request body
         {
           headers: {
@@ -136,8 +135,8 @@ const AddressCard = () => {
 
     try {
       const response1 = await axios.post(
-        `${DevUrl}/token-transfers/`,
-        { address: inputValue }, 
+        `https://caiman-wanted-fox.ngrok-free.app/token-transfers/`,
+        { address: inputValue }, // This is the request body
         {
           headers: {
             "ngrok-skip-browser-warning": "true",
