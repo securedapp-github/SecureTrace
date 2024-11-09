@@ -338,7 +338,7 @@ const AddressCard = () => {
                       <div className="absolute mt-12 bg-white border border-gray-300 rounded-lg shadow-lg" ref={dropdownRef}>
                         <div
                           className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
-                          onClick={() => handleChainSelect(null)}  // Null or an empty string to indicate "All"
+                          onClick={() => handleChainSelect(null)}  
                         >
                           All
                         </div>
