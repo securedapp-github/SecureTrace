@@ -9,7 +9,7 @@ import axios from "axios";
 import btc from '../Assests/Bitcoin.png';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { DevUrl } from '../Comstants';
+import { DevUrl } from '../Constants';
 
 const AddressCard = () => {
 
@@ -82,6 +82,7 @@ const AddressCard = () => {
 
   const handleScanNow = async () => {
     setLoading(true);
+    setSelectedChain(null);
 
     if (!inputValue) {
       toast.error('Please enter a contract address.');
@@ -137,7 +138,7 @@ const AddressCard = () => {
     try {
       const response1 = await axios.post(
         `${DevUrl}/token-transfers/`,
-        { address: inputValue }, 
+        { address: inputValue },
         {
           headers: {
             "ngrok-skip-browser-warning": "true",
@@ -187,19 +188,27 @@ const AddressCard = () => {
 
 
   const filteredData = selectedChain
-  ? portfolioData.filter(item => item.chain === selectedChain)
-  : portfolioData;
+    ? portfolioData.filter(item => item.chain === selectedChain)
+    : portfolioData;
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
 
   const currentRows = filteredData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
+  // const handleChainSelect = (chain) => {
+  //   setSelectedChain(chain);
+  //   setCurrentPage(1); 
+  //   setIsOpen(false);
+  //   toast.info(`Selected chain: ${chain.charAt(0).toUpperCase() + chain.slice(1)}`);
+  // };
+
   const handleChainSelect = (chain) => {
     setSelectedChain(chain);
-    setCurrentPage(1); 
+    setCurrentPage(1);
     setIsOpen(false);
-    toast.info(`Selected chain: ${chain.charAt(0).toUpperCase() + chain.slice(1)}`);
+    const chainName = chain ? chain.charAt(0).toUpperCase() + chain.slice(1) : "All";
+    toast.info(`Selected chain: ${chainName}`);
   };
 
   const handlePageChange = (pageNumber) => {
@@ -326,7 +335,13 @@ const AddressCard = () => {
                       <TiArrowSortedDown />
                     </button>
                     {isOpen && (
-                      <div className="absolute mt-12 bg-white border border-gray-300 rounded-lg shadow-lg" ref={dropdownRef} >
+                      <div className="absolute mt-12 bg-white border border-gray-300 rounded-lg shadow-lg" ref={dropdownRef}>
+                        <div
+                          className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
+                          onClick={() => handleChainSelect(null)}  // Null or an empty string to indicate "All"
+                        >
+                          All
+                        </div>
                         {[...new Set(portfolioData.map(item => item.chain))].map((chain, index) => (
                           <div
                             key={index}
@@ -368,7 +383,7 @@ const AddressCard = () => {
                     </thead>
                     <tbody>
                       {currentRows && currentRows.length > 0 ? (
-                         currentRows.map((item, index) => {
+                        currentRows.map((item, index) => {
                           const logo = item.logo;
                           const asset = item.tokenName;
                           const price = parseFloat(item.tokenPrice).toFixed(2);
@@ -383,11 +398,11 @@ const AddressCard = () => {
                             <tr key={index} className="border-t h-12 odd:bg-[#F4F4F4] even:bg-white">
                               <td className=' flex items-center justify-center'>
                                 <div className='flex items-center gap-5  w-48'>
-                                <img src={logo} alt={asset}  className='mt-2 h-7 w-7 '/>
-                                <p className='text-nowrap'> {asset}</p>
+                                  <img src={logo} alt={asset} className='mt-2 h-7 w-7 ' />
+                                  <p className='text-nowrap'> {asset}</p>
                                 </div>
-                                
-                                </td>
+
+                              </td>
                               <td className='px-4'>${price}</td>
                               <td className='px-4'>{holdings}</td>
                               <td className='px-4'>${value}</td>

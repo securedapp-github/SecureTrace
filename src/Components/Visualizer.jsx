@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import * as d3 from 'd3';
 import { isAddress } from 'ethers';
 import axios from 'axios';
-import { DevUrl } from '../Comstants';
+import { DevUrl } from '../Constants';
 
 const Visualizer = () => {
   const [inputValue, setInputValue] = useState('');
