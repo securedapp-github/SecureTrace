@@ -9,12 +9,13 @@ import axios from "axios";
 import btc from '../Assests/Bitcoin.png';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { DevUrl } from '../Comstants';
+import { DevUrl } from '../Constants';
 
 const AddressCard = () => {
 
   // const defaultCardData = {
-  //   address: "0x04b21735E93Fa3f8df70e2Da89e6922616891a88",
+  //   address: "0x04b21735E93Fa3f8df70e2Da89e6922616891a88
+  // 0xa2311e75bebdCa24A3dFAb4c50aAe4988De1aCE8",
   //   amount: "$10,491.48",
   //   greenAmount: "$10,491.48",
   // };
@@ -82,6 +83,7 @@ const AddressCard = () => {
 
   const handleScanNow = async () => {
     setLoading(true);
+    setSelectedChain(null);
 
     if (!inputValue) {
       toast.error('Please enter a contract address.');
@@ -98,6 +100,7 @@ const AddressCard = () => {
 
     try {
       const response = await axios.post(
+        // `https://caiman-wanted-fox.ngrok-free.app/fetch-address-details/`,
         `${DevUrl}/fetch-address-details/`,
         { address: inputValue }, // This is the request body
         {
@@ -136,7 +139,9 @@ const AddressCard = () => {
 
     try {
       const response1 = await axios.post(
+        // `https://caiman-wanted-fox.ngrok-free.app/token-transfers/`,
         `${DevUrl}/token-transfers/`,
+
         { address: inputValue }, // This is the request body
         {
           headers: {
@@ -187,19 +192,27 @@ const AddressCard = () => {
 
 
   const filteredData = selectedChain
-  ? portfolioData.filter(item => item.chain === selectedChain)
-  : portfolioData;
+    ? portfolioData.filter(item => item.chain === selectedChain)
+    : portfolioData;
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
 
   const currentRows = filteredData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
+  // const handleChainSelect = (chain) => {
+  //   setSelectedChain(chain);
+  //   setCurrentPage(1); 
+  //   setIsOpen(false);
+  //   toast.info(`Selected chain: ${chain.charAt(0).toUpperCase() + chain.slice(1)}`);
+  // };
+
   const handleChainSelect = (chain) => {
     setSelectedChain(chain);
-    setCurrentPage(1); 
+    setCurrentPage(1);
     setIsOpen(false);
-    toast.info(`Selected chain: ${chain.charAt(0).toUpperCase() + chain.slice(1)}`);
+    const chainName = chain ? chain.charAt(0).toUpperCase() + chain.slice(1) : "All";
+    toast.info(`Selected chain: ${chainName}`);
   };
 
   const handlePageChange = (pageNumber) => {
@@ -325,8 +338,27 @@ const AddressCard = () => {
                       <span className="font-semibold">Filter by Chain</span>
                       <TiArrowSortedDown />
                     </button>
-                    {isOpen && (
+                    {/* {isOpen && (
                       <div className="absolute mt-12 bg-white border border-gray-300 rounded-lg shadow-lg" ref={dropdownRef} >
+                        {[...new Set(portfolioData.map(item => item.chain))].map((chain, index) => (
+                          <div
+                            key={index}
+                            className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
+                            onClick={() => handleChainSelect(chain)}
+                          >
+                            {chain.charAt(0).toUpperCase() + chain.slice(1)}
+                          </div>
+                        ))}
+                      </div>
+                    )} */}
+                    {isOpen && (
+                      <div className="absolute mt-12 bg-white border border-gray-300 rounded-lg shadow-lg" ref={dropdownRef}>
+                        <div
+                          className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
+                          onClick={() => handleChainSelect(null)}  // Null or an empty string to indicate "All"
+                        >
+                          All
+                        </div>
                         {[...new Set(portfolioData.map(item => item.chain))].map((chain, index) => (
                           <div
                             key={index}
@@ -368,7 +400,7 @@ const AddressCard = () => {
                     </thead>
                     <tbody>
                       {currentRows && currentRows.length > 0 ? (
-                         currentRows.map((item, index) => {
+                        currentRows.map((item, index) => {
                           const logo = item.logo;
                           const asset = item.tokenName;
                           const price = parseFloat(item.tokenPrice).toFixed(2);
@@ -383,11 +415,11 @@ const AddressCard = () => {
                             <tr key={index} className="border-t h-12 odd:bg-[#F4F4F4] even:bg-white">
                               <td className=' flex items-center justify-center'>
                                 <div className='flex items-center gap-5  w-48'>
-                                <img src={logo} alt={asset}  className='mt-2 h-7 w-7 '/>
-                                <p className='text-nowrap'> {asset}</p>
+                                  <img src={logo} alt={asset} className='mt-2 h-7 w-7 ' />
+                                  <p className='text-nowrap'> {asset}</p>
                                 </div>
-                                
-                                </td>
+
+                              </td>
                               <td className='px-4'>${price}</td>
                               <td className='px-4'>{holdings}</td>
                               <td className='px-4'>${value}</td>
