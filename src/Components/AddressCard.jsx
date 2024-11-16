@@ -14,8 +14,8 @@ import { DevUrl } from '../Constants';
 const AddressCard = () => {
 
   // const defaultCardData = {
-  //   address: "0x04b21735E93Fa3f8df70e2Da89e6922616891a88
-  // 0xa2311e75bebdCa24A3dFAb4c50aAe4988De1aCE8",
+  //   address: "0x04b21735E93Fa3f8df70e2Da89e6922616891a88",
+  //             0xa2311e75bebdCa24A3dFAb4c50aAe4988De1aCE8
   //   amount: "$10,491.48",
   //   greenAmount: "$10,491.48",
   // };
@@ -28,7 +28,6 @@ const AddressCard = () => {
   // const chains = ['Ethereum', 'Binance Smart Chain', 'Polygon', 'Avalanche'];
   const [loading, setLoading] = useState(false);
   const [portfolioData, SetPortfolioData] = useState([]);
-  const rowsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
   const [totalValue, setTotalValue] = useState(0);
   const [selectedChain, setSelectedChain] = useState(null);
@@ -189,16 +188,30 @@ const AddressCard = () => {
     { asset: 'Btc', price: '$00.00K', change: '+0.00', holdings: '00.000 Btc', value: '$00.00K' },
   ];
 
-
+  const rowsPerPage = 10;
 
   const filteredData = selectedChain
-    ? portfolioData.filter(item => item.chain === selectedChain)
-    : portfolioData;
+  ? portfolioData.filter(item => item.chain === selectedChain)
+  : portfolioData;
 
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+  const validData = filteredData.filter(item => {
+    const price = parseFloat(item.tokenPrice);
+    const holdings = parseFloat(item.tokenBalance);
+    const value = price * holdings;
+    return value >= 0.01;
+  });
+  const totalPages = Math.ceil(validData.length / rowsPerPage);
 
+// Slice data for the current page
+const currentRows = validData.slice(
+  (currentPage - 1) * rowsPerPage,
+  currentPage * rowsPerPage
+);
 
-  const currentRows = filteredData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+  console.log("Filtered Data:", filteredData);
+  console.log("Current Rows:", currentRows);
+  console.log("validdata", validData);
+
 
   // const handleChainSelect = (chain) => {
   //   setSelectedChain(chain);
@@ -407,9 +420,6 @@ const AddressCard = () => {
                           const holdings = parseFloat(item.tokenBalance).toFixed(2);
                           const value = (price * holdings).toFixed(2);
 
-                          if (parseFloat(value) < 0.01) {
-                            return null;
-                          }
 
                           return (
                             <tr key={index} className="border-t h-12 odd:bg-[#F4F4F4] even:bg-white">
