@@ -15,6 +15,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Home/>} />
       <Route path="/portfoliotracker" element={<PortfolioTracker/>} />
+      <Route path="/visualizer/:txHash" component={<Visualizer/>} />
       <Route path="/visualizer" element={<Visualizer/>} />
       <Route path="/loginpage" element={<LoginPage/>} />
     </Routes>

@@ -5,6 +5,7 @@ import axios from 'axios';
 import { DevUrl } from '../Constants';
 import btc from '../Assests/Bitcoin.png';
 import { useParams } from 'react-router-dom';
+import Footer from './Footer';
 
 const Visualizer = () => {
   const [inputValue, setInputValue] = useState('');
@@ -671,9 +672,12 @@ const Visualizer = () => {
           </div>
         )}
       </div>
-      <div className='text-black'>
+      {/* <div className='text-black'>
         <h1 className='text-center'>support@securetrace.io - securedapp.io - 2024 </h1>
         <h1 className='text-center'>Terms od service and privacy</h1>
+      </div> */}
+      <div className='mt-10'>
+        <Footer/>
       </div>
     </div>
   );

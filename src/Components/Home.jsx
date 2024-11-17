@@ -1,6 +1,7 @@
 import React from 'react'
 // import Navbar from './Navbar'
 import SecureTransaction from './SecureTransaction';
+import Footer from './Footer';
 // import Dashboard from './Dashboard';
 
 const Home = () => {
@@ -9,9 +10,12 @@ const Home = () => {
             <div>
                 <SecureTransaction/>
             </div>
-            <div className='text-black mt-10 mb-4'>
+            {/* <div className='text-black mt-10 mb-4'>
                 <h1 className='text-center'>support@securetrace.io - securedapp.io - 2024 </h1>
                 <h1 className='text-center'>Terms od service and privacy</h1>
+            </div> */}
+            <div className='mt-10'>
+            <Footer/>
             </div>
         </div>
     )

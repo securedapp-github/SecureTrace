@@ -3,6 +3,7 @@ import Navbar from './Navbar';
 import Transfer from './Transfer';
 import Portfolio from './Portfolio';
 import AddressCard from './AddressCard';
+import Footer from './Footer';
 
 const PortfolioTracker = () => {
     return (
@@ -18,9 +19,12 @@ const PortfolioTracker = () => {
                     <Transfer />
                 </div>
             </div> */}
-            <div className='text-black my-10'>
+            {/* <div className='text-black my-10'>
                 <h1 className='text-center'>support@securetrace.io - securedapp.io - 2024 </h1>
                 <h1 className='text-center'>Terms od service and privacy</h1>
+            </div> */}
+            <div className='mt-10'>
+                <Footer/>
             </div>
         </div>
     )
