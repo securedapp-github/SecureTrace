@@ -22,68 +22,68 @@ const Footer = () => {
             <div>
               <h3 className="font-bold text-black text-lg">Product</h3>
               <ul className="mt-4 space-y-2 text-black text-md">
-                <li><a href="#" className="">Solidity Shield Scan</a></li>
-                <li><a href="#" className="">Secure Watch</a></li>
-                <li><a href="#" className="">Audit Express</a></li>
-                <li><a href="#" className="">Secure Trace</a></li>
-                <li><a href="#" className="">Secure Pad</a></li>
+                <li><a href="https://securedapp.io/solidity-shield" target="/blank" className="">Solidity Shield Scan</a></li>
+                <li><a href="https://securedapp.io/secure-watch" target="/blank" className="">Secure Watch</a></li>
+                <li><a href="https://securedapp.io/auditexpress/home" target="/blank" className="">Audit Express</a></li>
+                <li><a href="https://securedapp.io/secure-trace" target="/blank" className="">Secure Trace</a></li>
+                <li><a href="https://securedapp.io/secure-pad" target="/blank" className="">Secure Pad</a></li>
               </ul>
             </div>
             <div>
               <h3 className="font-bold text-black text-lg">Services</h3>
               <ul className="mt-4 space-y-2 text-black text-md">
-                <li><a href="#" className="">Audit</a></li>
-                <li><a href="#" className="">Security</a></li>
-                <li><a href="#" className="">Regulatory Solutions</a></li>
-                <li><a href="#" className="">Training & Education</a></li>
+                <li><a href="https://securedapp.io/smart-contract-audit" target="/blank" className="">Audit</a></li>
+                <li><a href="https://securedapp.io/web3-security" target="/blank" className="">Security</a></li>
+                <li><a href="https://securedapp.io/crypto-compliance-aml" target="/blank" className="">Regulatory Solutions</a></li>
+                <li><a href="https://securedapp.io/levelup-academy" target="/blank" className="">Training & Education</a></li>
               </ul>
             </div>
             <div>
               <h3 className="font-bold text-black text-lg">Company</h3>
               <ul className="mt-4 space-y-2 text-black text-md">
-                <li><a href="#" className="">About Us</a></li>
-                <li><a href="#" className="">Authors</a></li>
-                <li><a href="#" className="">Media</a></li>
-                <li><a href="#" className="">Career</a></li>
-                <li><a href="#" className="">Contact Us</a></li>
+                <li><a href="https://securedapp.io/about" target="/blank" className="">About Us</a></li>
+                <li><a href="https://securedapp.io/authors" target="/blank" className="">Authors</a></li>
+                <li><a href="https://securedapp.io/media" target="/blank" className="">Media</a></li>
+                <li><a href="https://securedapp.gitbook.io/securedapp-launchpad/careers" target="/blank" className="">Career</a></li>
+                <li><a href="https://securedapp.gitbook.io/securedapp-launchpad/contact-us" target="/blank" className="">Contact Us</a></li>
               </ul>
             </div>
             <div>
               <h3 className="font-bold text-black text-lg">Resources</h3>
               <ul className="mt-4 space-y-2 text-black text-md">
-                <li><a href="#" className="">Blogs</a></li>
-                <li><a href="#" className="">Audits</a></li>
-                <li><a href="#" className="">Vulnerabilities</a></li>
-                <li><a href="#" className="">Github</a></li>
-                <li><a href="#" className="">Workplace Policy</a></li>
-                <li><a href="#" className="">Shipping & Delivery Policy</a></li>
-                <li><a href="#" className="">Pricing Policy</a></li>
-                <li><a href="#" className="">Cancellation & Refunds</a></li>
-                <li><a href="#" className="">Whitepaper</a></li>
+                <li><a href="https://securedapp.io/blog" target="/blank" className="">Blogs</a></li>
+                <li><a href="https://securedapp.io/audits" target="/blank" className="">Audits</a></li>
+                <li><a href="https://securedapp.io/solidity-shield-vulnerabilities" target="/blank" className="">Vulnerabilities</a></li>
+                <li><a href="https://github.com/securedapp-github" target="/blank" className="">Github</a></li>
+                <li><a href="https://securedapp.gitbook.io/securedapp-launchpad/workplace-policy" target="/blank" className="">Workplace Policy</a></li>
+                <li><a href="https://securedapp.gitbook.io/securedapp-launchpad/shipping-and-delivery-policy" target="/blank" className="">Shipping & Delivery Policy</a></li>
+                <li><a href="https://securedapp.gitbook.io/securedapp-launchpad/pricing-policy" target="/blank" className="">Pricing Policy</a></li>
+                <li><a href="https://securedapp.gitbook.io/securedapp-launchpad/cancellation-and-refund-policy" target="/blank" className="">Cancellation & Refunds</a></li>
+                <li><a href="https://securedapp.gitbook.io/securedapp-launchpad" target="/blank" className="">Whitepaper</a></li>
               </ul>
             </div>
           </div>
         </div>
         <div className="mt-8 flex justify-center sm:justify-start space-x-6">
-          <a href="#" className="text-black text-3xl hover:text-green-500">
+          <a href="https://discord.com/invite/pqDC8ddnYQ" target="/blank" className="text-black text-3xl hover:text-green-500">
             <FaDiscord/>
           </a>
-          <a href="#" className="text-black text-2xl mt-1 hover:text-green-500 ">
+          <a href="https://x.com/secure_dapp" target="/blank" className="text-black text-2xl mt-1 hover:text-green-500 ">
             <FaTwitter/>
           </a>
-          <a href="#" className="text-black text-2xl mt-1 hover:text-green-500">
+          <a href="https://www.linkedin.com/company/securedapp/" target="/blank" className="text-black text-2xl mt-1 hover:text-green-500">
             <FaLinkedin/>
           </a>
-          <a href="#" className="text-black text-2xl mt-1 hover:text-green-500">
+          <a href="https://telegram.me/securedappcommunity" target="/blank" className="text-black text-2xl mt-1 hover:text-green-500">
             <FaTelegram/>
           </a>
         </div>
 
         <div className="mt-8 border-t border-gray-200 pt-8 flex flex-col sm:flex-row justify-between items-center text-sm">
           <div className="flex items-center space-x-4">
-            <a href="#" className=" mt-1 text-lg text-gray-500">Privacy Policy</a>
+            <a href="https://securedapp.gitbook.io/securedapp-launchpad/privacy-policy-securedapp" target="/blank"className=" mt-1 text-lg text-gray-500">Privacy Policy</a>
             <span className="text-4xl">•</span>
-            <a href="#" className=" mt-1 text-lg text-gray-500">Terms & Conditions</a>
+            <a href="https://securedapp.gitbook.io/securedapp-launchpad/disclaimer-and-risk-securedapp" target="/blank" className=" mt-1 text-lg text-gray-500">Terms & Conditions</a>
           </div>
           <p className="mt-5 sm:mt-0 text-gray-500 text-lg text-center">
             © 2024, Vettedcode Technologies India Pvt. Ltd. All rights reserved.
