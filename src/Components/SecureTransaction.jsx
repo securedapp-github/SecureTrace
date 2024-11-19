@@ -21,6 +21,7 @@ import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { DevUrl } from "../Constants";
+import { useTheme } from "./ThemeContext";
 
 const SecureTransaction = () => {
   const [inputValue, setInputValue] = useState("");
@@ -30,6 +31,8 @@ const SecureTransaction = () => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
+  const { darkMode } = useTheme();
+
 
   const isValidEthereumAddressOrTxHash = (value) => {
     const ethAddressRegex = /^0x[a-fA-F0-9]{40}$/; // For Ethereum address (42 characters, starts with 0x)
@@ -48,7 +51,7 @@ const SecureTransaction = () => {
       setLoading(false);
       return;
     }
-    
+
 
     if (!isValidEthereumAddressOrTxHash(inputValue)) {
       toast.error('Invalid Ethereum address. Please enter a valid input.');
@@ -68,6 +71,7 @@ const SecureTransaction = () => {
 
       try {
         const response = await axios.post(
+          // "https://caiman-wanted-fox.ngrok-free.app/recent-txs",
           `${DevUrl}/recent-txs`,
           {
             headers: {
@@ -99,6 +103,7 @@ const SecureTransaction = () => {
 
       try {
         const response = await axios.post(
+          // "https://caiman-wanted-fox.ngrok-free.app/top-tokens",
           `${DevUrl}/top-tokens`,
           {
             headers: {
@@ -155,20 +160,20 @@ const SecureTransaction = () => {
 
 
 
-  
+
 
 
   return (
-    <div className="w-full bg-white">
+    <div className="w-full bg-white dark:bg-[#001938]">
 
 
       <div className="">
-        <div className="flex flex-col items-center justify-center py-10 px-4 bg-white">
-          <h1 className="text-3xl font-bold text-center mb-4">
+        <div className="flex flex-col items-center justify-center py-10 px-4">
+          <h1 className="text-3xl font-bold text-center mb-4 text-black dark:text-white">
             SecureTrace Transactions
           </h1>
 
-          <p className="text-center text-gray-600 mb-6 max-w-2xl font-semibold">
+          <p className="text-center text-gray-600 dark:text-gray-300 mb-6 max-w-2xl font-semibold">
             SecureTrace analyzes transaction data using specialized blockchain
             forensic techniques, enhancing the detection of intricate patterns
             and potential vulnerabilities.
@@ -229,7 +234,7 @@ const SecureTransaction = () => {
                                 />
 
                                 <div>
-                                  <h4 className="text-xl font-bold">
+                                  <h4 className="text-xl font-bold text-black dark:text-white">
                                     {name}
                                   </h4>
                                 </div>
@@ -240,13 +245,13 @@ const SecureTransaction = () => {
                                   ${current_price}
                                 </h4>
                                 <p className={`text-lg font-semibold ${price_change_24h < 0 ? 'text-red-500' : 'text-[#3C704F]'}`}>
-  {price_change_24h.toFixed(2)}
-</p>
+                                  {price_change_24h.toFixed(2)}
+                                </p>
                               </div>
                             </div>
 
                             <div className="flex justify-between md:w-[70%]">
-                              <ul className="mt-4 text-sm md:text-lg font-semibold text-[#717175]">
+                              <ul className="mt-4 text-sm md:text-lg font-semibold text-[#717175] dark:text-gray-400">
                                 <li className="text-nowrap">24H Volume</li>
                                 <li className="text-nowrap">Market Cap</li>
                                 <li className="text-nowrap">All Time High</li>
@@ -286,7 +291,7 @@ const SecureTransaction = () => {
                             />
 
                             <div>
-                              <h4 className="text-2xl font-bold">
+                              <h4 className="text-2xl font-bold text-black dark:text-white">
                                 LayerZero
                               </h4>
                             </div>
@@ -303,7 +308,7 @@ const SecureTransaction = () => {
                         </div>
 
                         <div className="flex justify-between gap-10 md:gap-24">
-                          <ul className="mt-4 text-sm md:text-lg font-semibold text-[#717175]">
+                          <ul className="mt-4 text-sm md:text-lg font-semibold text-[#717175] dark:text-gray-400">
                             <li>24H Volume</li>
                             <li>Market Cap</li>
                             <li>All Time High</li>
@@ -352,9 +357,9 @@ const SecureTransaction = () => {
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 1024 1024"><path fill="black" d="M685.248 104.704a64 64 0 0 1 0 90.496L368.448 512l316.8 316.8a64 64 0 0 1-90.496 90.496L232.704 557.248a64 64 0 0 1 0-90.496l362.048-362.048a64 64 0 0 1 90.496 0" /></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 1024 1024"><path fill={darkMode ? "white" : "black"} d="M685.248 104.704a64 64 0 0 1 0 90.496L368.448 512l316.8 316.8a64 64 0 0 1-90.496 90.496L232.704 557.248a64 64 0 0 1 0-90.496l362.048-362.048a64 64 0 0 1 90.496 0" /></svg>
               </button>
-              <span className='font-bold text-xl'>
+              <span className='font-bold text-xl text-black dark:text-white'>
                 {currentPage} / {totalPages}
               </span>
               <button
@@ -362,7 +367,7 @@ const SecureTransaction = () => {
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 12 24"><path fill="black" fill-rule="evenodd" d="M10.157 12.711L4.5 18.368l-1.414-1.414l4.95-4.95l-4.95-4.95L4.5 5.64l5.657 5.657a1 1 0 0 1 0 1.414" /></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 12 24"><path fill={darkMode ? "white" : "black"} fill-rule="evenodd" d="M10.157 12.711L4.5 18.368l-1.414-1.414l4.95-4.95l-4.95-4.95L4.5 5.64l5.657 5.657a1 1 0 0 1 0 1.414" /></svg>
               </button>
             </div>
           </div>
@@ -507,10 +512,10 @@ const SecureTransaction = () => {
                         return (
                           <tr key={index} className='h-12 text-center'>
                             <td className='flex justify-center items-center mt-2 '><img className='h-6 w-6' src={logo} alt='asset' /></td>
-                            <td className=' text-center'>{from.slice(0, 5) + "..." + from.slice(-4)}</td>
-                            <td className=' text-center'>{to.slice(0, 5) + "..." + to.slice(-4)}</td>
-                            <td className=' flex gap-2 justify-center items-center'><img className='h-5 w-5' src={logo} alt='asset' /> {asset}</td>
-                            <td className='text-[#808183] font-semibold text-lg text-center'>${parseFloat(tokenPrice).toFixed(2)}</td>
+                            <td className=' text-center text-black dark:text-white'>{from.slice(0, 5) + "..." + from.slice(-4)}</td>
+                            <td className=' text-center text-black dark:text-white'>{to.slice(0, 5) + "..." + to.slice(-4)}</td>
+                            <td className=' flex gap-2 justify-center items-center text-black dark:text-white'><img className='h-5 w-5' src={logo} alt='asset' /> {asset}</td>
+                            <td className='text-[#808183] dark:text-white font-semibold text-lg text-center'>${parseFloat(tokenPrice).toFixed(2)}</td>
                           </tr>
                         );
                       })

@@ -2,11 +2,12 @@ import React from 'react'
 // import Navbar from './Navbar'
 import SecureTransaction from './SecureTransaction';
 import Footer from './Footer';
+import Navbar from './Navbar';
 // import Dashboard from './Dashboard';
 
 const Home = () => {
     return (
-        <div>
+        <div className='bg-white dark:bg-[#001938]'>
             <div>
                 <SecureTransaction/>
             </div>
@@ -14,8 +15,9 @@ const Home = () => {
                 <h1 className='text-center'>support@securetrace.io - securedapp.io - 2024 </h1>
                 <h1 className='text-center'>Terms od service and privacy</h1>
             </div> */}
-            <div className='mt-10'>
-            <Footer/>
+            <div className='pt-10'>
+                {/* <Footer/> */}
+                <Footer/>
             </div>
         </div>
     )

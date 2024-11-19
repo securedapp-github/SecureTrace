@@ -1,15 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { IoSunnyOutline } from "react-icons/io5";
+// import { IoSunnyOutline } from "react-icons/io5";
 import { IoMoonOutline } from "react-icons/io5";
+import { TbBrightnessUp } from "react-icons/tb";
+import { useTheme } from './ThemeContext';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [userEmail, setUserEmail] = useState('');
     const [showLogout, setShowLogout] = useState(false);
     const dropdownRef = useRef(null);
-    const [isDarkMode, setIsDarkMode] = useState(false);
+    // const [isDarkMode, setIsDarkMode] = useState(false);
+    const { darkMode, setModeDark, setModeLight } = useTheme();
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
@@ -23,14 +26,13 @@ const Navbar = () => {
     //   };
 
     const toggleTheme = () => {
-        setIsDarkMode(!isDarkMode);
-        if (isDarkMode) {
-          document.documentElement.classList.add("dark"); 
+        if (darkMode) {
+            setModeLight();
         } else {
-          document.documentElement.classList.remove("dark"); 
+            setModeDark();
         }
-      };
-      
+    };
+
 
     const handleLogout = () => {
         localStorage.removeItem('userEmail');
@@ -59,16 +61,16 @@ const Navbar = () => {
         }
     }, []);
 
-    useEffect(() => {
-        if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-          document.documentElement.classList.add("dark");
-          setIsDarkMode(true);
-        }
-      }, []);
+    // useEffect(() => {
+    //     if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    //         document.documentElement.classList.remove("dark");
+    //         setIsDarkMode(true);
+    //     }
+    // }, []);
 
 
     return (
-        <nav className="bg-[#303030] p-4 rounded-full flex justify-between items-center mx-4 lg:mx-32 my-4">
+        <nav className="bg-[#303030] p-4 rounded-full flex justify-between items-center mx-4 lg:mx-32">
             <div className="text-white font-bold text-2xl ml-4 ">
                 SecureTrace
             </div>
@@ -102,7 +104,8 @@ const Navbar = () => {
                     <div className='text-white text-2xl mt-2 cursor-pointer' onClick={toggleTheme}>
                         {/* <IoSunnyOutline /> */}
                         {/* <IoMoonOutline /> */}
-                        {isDarkMode ? <IoMoonOutline /> : <IoSunnyOutline />}
+                        {darkMode ? <TbBrightnessUp /> : <IoMoonOutline />}
+
                     </div>
                     <Link to='/loginpage'>
                         <button className="hidden md:flex bg-white text-black rounded-full px-4 py-2">
@@ -116,7 +119,7 @@ const Navbar = () => {
                 <div className='text-white text-2xl cursor-pointer' onClick={toggleTheme}>
                     {/* <IoSunnyOutline /> */}
                     {/* <IoMoonOutline /> */}
-                    {isDarkMode ? <IoMoonOutline /> : <IoSunnyOutline />}
+                    {darkMode ? <TbBrightnessUp /> : <IoMoonOutline />}
 
                 </div>
                 <div onClick={toggleMenu}>
@@ -152,6 +155,7 @@ const Navbar = () => {
                     )}
                 </div>
             )}
+
         </nav>
     );
 };

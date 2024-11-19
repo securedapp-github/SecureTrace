@@ -1,5 +1,4 @@
 import React from 'react';
-import Navbar from './Navbar';
 import Transfer from './Transfer';
 import Portfolio from './Portfolio';
 import AddressCard from './AddressCard';
@@ -23,9 +22,7 @@ const PortfolioTracker = () => {
                 <h1 className='text-center'>support@securetrace.io - securedapp.io - 2024 </h1>
                 <h1 className='text-center'>Terms od service and privacy</h1>
             </div> */}
-            <div className='mt-10'>
-                <Footer/>
-            </div>
+            
         </div>
     )
 }

@@ -6,6 +6,7 @@ import { DevUrl } from '../Constants';
 import btc from '../Assests/Bitcoin.png';
 import { useParams } from 'react-router-dom';
 import Footer from './Footer';
+import Navbar from './Navbar';
 
 const Visualizer = () => {
   const [inputValue, setInputValue] = useState('');
@@ -104,7 +105,8 @@ const Visualizer = () => {
 
 
   const totalPages1 = Math.ceil(transfers.length / rowsPerPage1);
-  const currentRows1 = transfers.slice((currentPage1 - 1) * rowsPerPage1, currentPage1 * rowsPerPage1);
+  const sortedTransfers = transfers.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  const currentRows1 = sortedTransfers.slice((currentPage1 - 1) * rowsPerPage1, currentPage1 * rowsPerPage1);
   const handlePageChange1 = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages1) {
       setCurrentPage1(pageNumber);
@@ -112,14 +114,14 @@ const Visualizer = () => {
   };
 
 
-  const handleLinkClick = async (address, blockNum, isOutgoing) => {
+  const handleLinkClick = async (address, blockNum, isOutgoing, chain) => {
     if (validateWalletAddress(address)) {
       setLoading(true);
 
       try {
         const response = await axios.post(
           `${DevUrl}/token-transfers/`,
-          { address: address, blockNum: blockNum, bool: isOutgoing },
+          { address: address, blockNum: blockNum, isOutgoing: isOutgoing, chain: chain },
           {
             headers: {
               'ngrok-skip-browser-warning': 'true',
@@ -130,6 +132,7 @@ const Visualizer = () => {
         console.log(response.data);
 
         const combinedTransfers = response.data.from.concat(response.data.to);
+        setTransfers(combinedTransfers);
         renderGraph(address, combinedTransfers);
         setValidationMessage('Valid wallet address found!');
       } catch (error) {
@@ -162,6 +165,7 @@ const Visualizer = () => {
         source: centerAddress,
         target,
         hash: tx.txHash,
+        chain: tx.chain,
         blockNum: tx.blockNum,
         type: isIncoming ? 'incoming' : 'outgoing',
       });
@@ -222,8 +226,11 @@ const Visualizer = () => {
         tooltip.style('opacity', 0);
       })
       .on('click', function (event, d) {
+        const chain = d.chain === "ethereum" ? "eth" :
+          d.chain === "polygon" ? "pol" :
+            d.chain === "arbitrum" ? "arb" : "opt";
         console.log(d);
-        handleLinkClick(d.target.id, d.blockNum, d.type === 'incoming' ? false : true);
+        handleLinkClick(d.target.id, d.blockNum, d.type === 'incoming' ? false : true, chain);
       });
 
     // Nodes
@@ -513,25 +520,16 @@ const Visualizer = () => {
   // }
 
 
-
-
   return (
-    <div>
-      <div className="flex flex-col items-center justify-center py-10 px-4 bg-white">
+    <div className='overflow-hidden'>
+      <div className="flex flex-col items-center justify-center py-10 px-4 bg-white dark:bg-[#001938]">
         {!isInputEntered && (
-            <div className='flex items-center justify-center'>
-              <div className=' mt-10 md:mt-20'>
-                <h1 className="text-3xl font-bold text-center mb-4">
-                  SecureTrace Visualizer
-                </h1>
-
-                <p className="text-center text-gray-600 mb-6 max-w-2xl font-semibold">
-                  SecureTrace analyzes transaction data using specialized blockchain
-                  forensic techniques, enhancing the detection of intricate patterns
-                  and potential vulnerabilities.
-                </p>
-              </div>
-            </div>
+          <>
+            <h1 className="text-3xl font-bold text-center text-black dark:text-white mb-4">SecureTrace Visualizer</h1>
+            <p className="text-center text-gray-600 dark:text-gray-300 mb-6 max-w-2xl font-semibold">
+              SecureTrace analyzes transaction data using blockchain forensic techniques, enhancing the detection of intricate patterns and potential vulnerabilities.
+            </p>
+          </>
         )}
         <div className="flex flex-col sm:flex-row items-center w-full md:max-w-3xl ">
           <input
@@ -554,10 +552,10 @@ const Visualizer = () => {
           <svg ref={svgRef}></svg>
         </div>
       </div>
-      <div>
+      <div className='bg-white dark:bg-[#001938]'>
         {isInputEntered && (
           // <div className="mt-10 mx-20">
-          <div className='mx-4 md:mx-32 my-10'>
+          <div className='mx-4 md:mx-32 py-10'>
             <div className="overflow-x-hidden bg-white p-6 rounded-xl border border-black shadow-md shadow-gray-500" id="hide-scrollbar">
               <div className="">
                 <div className='flex'>
@@ -626,18 +624,28 @@ const Visualizer = () => {
                     </thead>
                     <tbody className=" text-center">
                       {currentRows1 && currentRows1.length > 0 ?
-                        (currentRows1.map((transfer, index) => {
-                          const { logo, timestamp, from, to, value, tokenName, tokenPrice } = transfer;
+                        currentRows1.map((transfer, index) => {
+                          const { logo, timestamp, from, to, value, tokenName, tokenPrice, blockNum, chain } = transfer;
                           return (
-                            <tr key={index} className="border-t  h-12  text-center bg-red-600 odd:bg-[#F4F4F4] even:bg-white px-2 py-2">
+                            <tr key={index} className="border-t h-12 text-center bg-red-600 odd:bg-[#F4F4F4] even:bg-white px-2 py-2">
                               <td className='flex justify-center items-center mt-2 px-4'><img src={logo} alt={tokenName} /></td>
-                              {/* <td className="text-green-500 me-3 px-4">{timestamp}</td> */}
                               <td className="text-green-500 me-3 px-4">{new Date(timestamp).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}</td>
-                              {/* <td className="me-3 px-4">{from}</td>
-                                            <td className="me-3 px-4">{to}</td> */}
-                              <td className="me-3 px-4">{from.slice(0, 5) + "..." + from.slice(-4)}</td>
-                              <td className="me-3 px-4">{to.slice(0, 5) + "..." + to.slice(-4)}</td>
-                              {/* <td className='text-green-500'>{transfer.value}</td> */}
+                              <td className="me-3 px-4">
+                                <button
+                                  className="text-center"
+                                  onClick={() => handleLinkClick(from, blockNum, false, chain)}
+                                >
+                                  {from.slice(0, 5) + "..." + from.slice(-4)}
+                                </button>
+                              </td>
+                              <td className="me-3 px-4">
+                                <button
+                                  className="text-center"
+                                  onClick={() => handleLinkClick(to, blockNum, true, chain)}
+                                >
+                                  {to.slice(0, 5) + "..." + to.slice(-4)}
+                                </button>
+                              </td>
                               <td className="text-green-500 px-4">
                                 {parseFloat(tokenPrice).toFixed(2)}
                               </td>
@@ -645,7 +653,7 @@ const Visualizer = () => {
                               <td className="px-4">{parseFloat(value).toFixed(2)}</td>
                             </tr>
                           );
-                        }))
+                        })
                         :
                         (
                           <tr className="border-t h-12 odd:bg-[#F4F4F4] even:bg-white ">
@@ -672,11 +680,7 @@ const Visualizer = () => {
           </div>
         )}
       </div>
-      {/* <div className='text-black'>
-        <h1 className='text-center'>support@securetrace.io - securedapp.io - 2024 </h1>
-        <h1 className='text-center'>Terms od service and privacy</h1>
-      </div> */}
-      <div className='mt-10'>
+      <div className=''>
         <Footer/>
       </div>
     </div>

@@ -10,6 +10,7 @@ import btc from '../Assests/Bitcoin.png';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { DevUrl } from '../Constants';
+import Footer from './Footer';
 
 const AddressCard = () => {
 
@@ -251,14 +252,14 @@ const currentRows = validData.slice(
   }, []);
 
   return (
-    <div>
-      <div className='flex items-center justify-center'>
+    <div className='bg-white dark:bg-[#001938]'>
+      <div className='flex items-center justify-center overflow-x-hidden '>
         <div className=' mt-10 md:mt-20'>
-          <h1 className="text-3xl font-bold text-center mb-4">
+          <h1 className="text-3xl font-bold text-black dark:text-white text-center mb-4">
             SecureTrace PortfolioTracker
           </h1>
 
-          <p className="text-center text-gray-600 mb-6 max-w-2xl font-semibold">
+          <p className="text-center text-gray-600 dark:text-gray-300 mb-6 max-w-2xl font-semibold">
             SecureTrace analyzes transaction data using specialized blockchain
             forensic techniques, enhancing the detection of intricate patterns
             and potential vulnerabilities.
@@ -281,8 +282,10 @@ const currentRows = validData.slice(
         </div>
       </div>
       {loading && (
-        <div className="flex items-center justify-center mt-6">
+        <div className='bg-white dark:bg-[#001938]'>
+        <div className="flex items-center justify-center mt-6 ">
           <div className="animate-spin rounded-full h-14 w-14 border-t-2 border-b-2 border-green-700"></div>
+        </div>
         </div>
       )}
 
@@ -579,6 +582,9 @@ const currentRows = validData.slice(
         pauseOnFocusLoss
         theme="colored"
       />
+      <div className='pt-10'>
+                <Footer/>
+            </div>
     </div >
   );
 };
