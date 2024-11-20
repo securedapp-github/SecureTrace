@@ -204,6 +204,12 @@ const SecureTransaction = () => {
 
       <div className="flex justify-center items-center xl:items-start flex-wrap">
 
+        {loading && (
+          <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+            <div className="animate-spin rounded-full h-14 w-14 border-t-2 border-b-2 border-green-700"></div>
+          </div>
+        )}
+
         <div className=" w-full xl:w-[48%] flex justify-center items-center">
           <div
             className=" w-full"
@@ -387,7 +393,7 @@ const SecureTransaction = () => {
                           >
                             <path
                               fill="none"
-                              stroke="white"
+                              stroke={darkMode ? "black" : "white"}
                               stroke-linecap="round"
                               stroke-linejoin="round"
                               stroke-width="32"
@@ -401,11 +407,11 @@ const SecureTransaction = () => {
                             viewBox="0 0 24 24"
                           >
                             <path
-                              fill="white"
+                              fill={darkMode ? "black" : "white"}
                               d="M14.78 3.653a3.936 3.936 0 1 1 5.567 5.567l-3.627 3.627a3.936 3.936 0 0 1-5.88-.353a.75.75 0 0 0-1.18.928a5.436 5.436 0 0 0 8.12.486l3.628-3.628a5.436 5.436 0 1 0-7.688-7.688l-3 3a.75.75 0 0 0 1.06 1.061z"
                             />
                             <path
-                              fill="white"
+                              fill={darkMode ? "black" : "white"}
                               d="M7.28 11.153a3.936 3.936 0 0 1 5.88.353a.75.75 0 0 0 1.18-.928a5.436 5.436 0 0 0-8.12-.486L2.592 13.72a5.436 5.436 0 1 0 7.688 7.688l3-3a.75.75 0 1 0-1.06-1.06l-3 3a3.936 3.936 0 0 1-5.567-5.568z"
                             />
                           </svg>
@@ -422,7 +428,7 @@ const SecureTransaction = () => {
                           >
                             <path
                               fill="none"
-                              stroke="white"
+                              stroke={darkMode ? "black" : "white"}
                               stroke-linecap="round"
                               stroke-linejoin="round"
                               stroke-width="32"
@@ -444,7 +450,7 @@ const SecureTransaction = () => {
                           >
                             <path
                               fill="none"
-                              stroke="white"
+                              stroke={darkMode ? "black" : "white"}
                               stroke-linecap="round"
                               stroke-linejoin="round"
                               stroke-width="32"
@@ -466,7 +472,7 @@ const SecureTransaction = () => {
                           >
                             <path
                               fill="none"
-                              stroke="white"
+                              stroke={darkMode ? "black" : "white"}
                               stroke-linecap="round"
                               stroke-linejoin="round"
                               stroke-width="32"
@@ -488,7 +494,7 @@ const SecureTransaction = () => {
                           >
                             <path
                               fill="none"
-                              stroke="white"
+                              stroke={darkMode ? "black" : "white"}
                               stroke-linecap="round"
                               stroke-linejoin="round"
                               stroke-width="32"
@@ -520,7 +526,7 @@ const SecureTransaction = () => {
                         );
                       })
                     ) : (
-                      <tr><td colSpan="5" className="text-center py-4">No transactions available</td></tr>
+                      <tr><td colSpan="5" className="text-center text-black dark:text-white py-4">No transactions available</td></tr>
                     )}
                   </tbody>
                 </table>
