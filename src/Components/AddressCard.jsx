@@ -323,11 +323,13 @@ const currentRows = validData.slice(
             <Portfolio />
           </div> */}
             <div>
-              <div className="bg-white p-6  w-full xl:w-[100%] rounded-xl border border-black shadow-md shadow-gray-500">
-                <div className='md:flex gap-1 lg:flex-row justify-between items-start lg:items-center'>
+              <div className="bg-white p-6 w-full xl:w-[100%] rounded-xl border border-black shadow-md shadow-gray-500">
+                <div className='lg:flex gap-1 lg:flex-row justify-between items-start lg:items-center'>
                   <div className='flex gap-2 items-center mb-4 lg:mb-0'>
+                    <div className='flex gap-2'>
                     <img className='h-8 w-8' src={Port} alt='portfolio' />
                     <h3 className="text-xl lg:text-2xl font-semibold">Portfolio</h3>
+                    </div>
                     <div className="flex items-center">
                       <button
                         className={`px-4 py-2 font-bold ${currentPage === 1 ? 'cursor-not-allowed opacity-50 ' : 'cursor-pointer'}`}
@@ -350,10 +352,15 @@ const currentRows = validData.slice(
                   </div>
 
                   <div className='flex justify-end'>
+                    <div className='flex gap-4'>
+                  <button className="px-3 py-2 bg-gradient-to-t from-[#d3d3d3] to-white text-black rounded-lg border border-black shadow-md hover:bg-gray-300 transition">
+                      <span className="font-semibold">View In Visualizer</span>
+                    </button>
                     <button onClick={() => setIsOpen(!isOpen)} className="flex gap-2 md:gap-6 items-center px-3 py-2 bg-gradient-to-t from-[#d3d3d3] to-white text-black rounded-lg border border-black shadow-md hover:bg-gray-300 transition">
                       <span className="font-semibold">Filter by Chain</span>
                       <TiArrowSortedDown />
                     </button>
+                    </div>
                     {/* {isOpen && (
                       <div className="absolute mt-12 bg-white border border-gray-300 rounded-lg shadow-lg" ref={dropdownRef} >
                         {[...new Set(portfolioData.map(item => item.chain))].map((chain, index) => (
@@ -582,7 +589,7 @@ const currentRows = validData.slice(
         pauseOnFocusLoss
         theme="colored"
       />
-      <div className='pt-10'>
+      <div className='pt-20'>
                 <Footer/>
             </div>
     </div >

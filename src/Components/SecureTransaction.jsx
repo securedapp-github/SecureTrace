@@ -67,7 +67,10 @@ const SecureTransaction = () => {
 
   useEffect(() => {
     const fetchTransactions = async () => {
+      const startTime = Date.now();
       setLoading(true);
+    
+      
 
       try {
         const response = await axios.post(
@@ -92,6 +95,11 @@ const SecureTransaction = () => {
 
         setLoading(false);
       }
+      finally {
+        const elapsedTime = Date.now() - startTime; // Calculate the elapsed time
+        const remainingTime = Math.max(5000 - elapsedTime, 0); 
+        setTimeout(() => setLoading(false), remainingTime);
+      }
     };
 
     fetchTransactions();
@@ -99,6 +107,7 @@ const SecureTransaction = () => {
 
   useEffect(() => {
     const fetchTokens = async () => {
+      const startTime = Date.now();
       setLoading(true);
 
       try {
@@ -118,6 +127,11 @@ const SecureTransaction = () => {
       } catch (error) {
         console.log("error", error);
         setLoading(false);
+      }
+      finally {
+        const elapsedTime = Date.now() - startTime; // Calculate the elapsed time
+        const remainingTime = Math.max(5000 - elapsedTime, 0);
+        setTimeout(() => setLoading(false), remainingTime);
       }
     };
 
@@ -165,7 +179,6 @@ const SecureTransaction = () => {
 
   return (
     <div className="w-full bg-white dark:bg-[#001938]">
-
 
       <div className="">
         <div className="flex flex-col items-center justify-center py-10 px-4">
