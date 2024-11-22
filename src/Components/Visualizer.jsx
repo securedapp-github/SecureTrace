@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import * as d3 from 'd3';
+// import * as d3 from 'd3';
 import { isAddress } from 'ethers';
 import axios from 'axios';
 import { DevUrl } from '../Constants';
 import btc from '../Assests/Bitcoin.png';
 import { useParams } from 'react-router-dom';
 import Footer from './Footer';
-import Navbar from './Navbar';
+// import Navbar from './Navbar';
+import cytoscape from 'cytoscape';
 
 const Visualizer = () => {
   const [inputValue, setInputValue] = useState('');
@@ -18,6 +19,21 @@ const Visualizer = () => {
   const rowsPerPage1 = 10;
   const [transfers, setTransfers] = useState([]);
   const { txHash } = useParams();
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [option, setOption] = useState(""); // Track selected option
+  const [formData, setFormData] = useState({
+    txhash: "",
+    address: "",
+    fromDate: "",
+    toDate: "",
+    tokens: "",
+  });
+  const [error, setError] = useState("");
+  const [tokensList, setTokensList] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+
+
+
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value.trim());
@@ -36,15 +52,17 @@ const Visualizer = () => {
   }, [txHash]);
 
   const handleScanClick = async () => {
-    const value = inputValue;
 
-    if (validateWalletAddress(value)) {
+    const value = !formData ? inputValue : formData.txhash ? formData.txhash : formData.address;
+
+    if (validateWalletAddress(value || inputValue)) {
       setLoading(true);
 
       try {
+        console.log('address:', value, "fromDate:", formData.fromDate, "toDate:", formData.toDate, "tokens:", formData.tokens);
         const response = await axios.post(
           `${DevUrl}/token-transfers/`,
-          { address: value },
+          { address: value || inputValue, startDate: formData.fromDate ? formData.fromDate : null, endDate: formData.toDate ? formData.toDate : null, tokenList: formData.tokens ? formData.tokens : null },
           {
             headers: {
               'ngrok-skip-browser-warning': 'true',
@@ -56,7 +74,7 @@ const Visualizer = () => {
 
         const combinedTransfers = response.data.from.concat(response.data.to);
         setTransfers(combinedTransfers);
-        renderGraph(value, combinedTransfers);
+        renderGraph(value || inputValue, combinedTransfers);
         setValidationMessage('Valid wallet address found!');
         if (inputValue.length > 0) {
           setIsInputEntered(true);
@@ -68,13 +86,13 @@ const Visualizer = () => {
         setValidationMessage('Error retrieving data.');
       }
       setLoading(false);
-    } else if (validateTransactionHash(value)) {
+    } else if (validateTransactionHash(value || inputValue)) {
       setLoading(true);
 
       try {
         const response = await axios.post(
           `${DevUrl}/fetch-transaction-details/`,
-          { txhash: value },
+          { txhash: inputValue || value },
           {
             headers: {
               'ngrok-skip-browser-warning': 'true',
@@ -121,7 +139,7 @@ const Visualizer = () => {
       try {
         const response = await axios.post(
           `${DevUrl}/token-transfers/`,
-          { address: address, blockNum: blockNum, isOutgoing: isOutgoing, chain: chain },
+          { address: address, blockNum: blockNum, isOutgoing: isOutgoing, chain: chain, tokenList: formData.tokens ? formData.tokens : null },
           {
             headers: {
               'ngrok-skip-browser-warning': 'true',
@@ -146,195 +164,305 @@ const Visualizer = () => {
   };
 
 
+  const togglePopup = () => {
+    setIsPopupOpen(!isPopupOpen);
+  };
+
+  // const tokensList = ["ETH", "BTC", "USDT", "DAI", "MATIC"];
+
+  const handleOptionChange = (e) => {
+    setOption(e.target.value);
+    setFormData({
+      txhash: "",
+      address: "",
+      fromDate: "",
+      toDate: "",
+      tokens: "",
+    });
+    setError("");
+  };
+
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const validateTxHash = (txhash) => {
+    // Example validation: Tx Hash should be 64 characters long and hexadecimal
+    const hexRegex = /^[0-9a-fA-F]{64}$/;
+    if (!hexRegex.test(txhash)) {
+      alert("Invalid Tx Hash. Ensure it is a 64-character hexadecimal string");
+      return "Invalid Tx Hash. Ensure it is a 64-character hexadecimal string.";
+    }
+    return "";
+  };
+
+  const validateAddress = (address) => {
+    // Example validation: Ethereum addresses start with '0x' and are 42 characters long
+    const addressRegex = /^0x[a-fA-F0-9]{40}$/;
+    if (!addressRegex.test(address)) {
+      return "Invalid Address. Ensure it starts with '0x' and is a valid Ethereum address.";
+    }
+    return "";
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Validation for Tx Hash
+    if (option === "txhash") {
+      const txhashError = validateTxHash(formData.txhash);
+      if (txhashError) {
+        setError(txhashError);
+        return; // Stop submission if invalid
+      } else {
+        handleScanClick();
+      }
+    }
+
+    if (option === "address") {
+      const addressError = validateAddress(formData.address);
+      if (addressError) {
+        setError(addressError);
+        return; // Stop submission if invalid
+      }
+
+      setFormData((prevState) => ({
+        ...prevState,
+        fromDate: formData.fromDate ? null : formData.fromDate,
+        toDate: formData.toDate === "" ? null : formData.toDate,
+        tokens: formData.tokens === "" ? null : formData.tokens,
+      }));
+    }
+
+    console.log("Form Submitted:", formData);
+    handleScanClick();
+    setError(""); 
+    setIsPopupOpen(false); 
+  };
+
+
+  useEffect(() => {
+    const fetchTokens = async () => {
+      // setLoading(true);
+      try {
+        const response5 = await axios.post(
+          `${DevUrl}/fetch-tokens`,
+          {
+            headers: {
+              "ngrok-skip-browser-warning": "true",
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        console.log(response5)
+
+        const fetchedTokens = response5.data.tokens.map(
+          (token) => `${token.name}-${token.chain}`
+        );
+
+        setTokensList(fetchedTokens);
+      } catch (error) {
+        console.error("Error fetching tokens:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTokens();
+  }, []);
+
+
+  const filteredTokens = tokensList.filter((token) =>
+    token.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+
 
 
   const renderGraph = (centerAddress, transactions) => {
-    const nodes = [{ id: centerAddress, center: true }];
-    const links = [];
+    const elements = [];
 
+    const shortenAddress = (address) => `${address.slice(0, 6)}...`;
+    const shortenTxHash = (address) => `${address.slice(0, 6)}...${address.slice(-4)}`;
+
+    // Add the center node
+    elements.push({
+      data: { id: centerAddress, label: shortenAddress(centerAddress) },
+      classes: 'center-node',
+    });
+
+    // Add edges and other nodes
     transactions.forEach((tx) => {
       const isIncoming = tx.to.toLowerCase() === centerAddress.toLowerCase();
       const target = isIncoming ? tx.from : tx.to;
 
-      // Ensure the node for each transaction party exists
-      if (!nodes.some(node => node.id === target)) {
-        nodes.push({ id: target, type: isIncoming ? 'incoming' : 'outgoing' });
+      // Add the target node if not already added
+      if (!elements.some((el) => el.data.id === target)) {
+        elements.push({
+          data: {
+            id: target,
+            label: shortenAddress(target),
+            txHash: tx.txHash,
+            type: isIncoming ? 'incoming' : 'outgoing',
+            chain: tx.chain,
+            blockNum: tx.blockNum,
+            value: tx.value * tx.tokenPrice,
+          },
+          classes: isIncoming ? 'incoming-node' : 'outgoing-node',
+        });
       }
-
-      links.push({
-        source: centerAddress,
-        target,
-        hash: tx.txHash,
-        chain: tx.chain,
-        blockNum: tx.blockNum,
-        type: isIncoming ? 'incoming' : 'outgoing',
+      // Add the edge
+      elements.push({
+        data: {
+          source: centerAddress,
+          target: target,
+          label: shortenTxHash(tx.txHash),
+          hoverLabel: tx.txHash,
+          type: isIncoming ? 'incoming' : 'outgoing',
+          chain: tx.chain,
+          blockNum: tx.blockNum,
+          value: tx.value * tx.tokenPrice,
+        },
+        classes: isIncoming ? 'incoming-edge' : 'outgoing-edge',
       });
     });
 
-    d3.select(svgRef.current).selectAll('*').remove();
+    const cy = cytoscape({
+      container: document.getElementById('cy'), // HTML element to attach the graph
 
-    const width = 2000;
-    const height = 1000;
+      elements: elements,
 
-    const simulation = d3
-      .forceSimulation(nodes)
-      .force('link', d3.forceLink(links).id((d) => d.id).distance(300))
-      .force('charge', d3.forceManyBody().strength(-600))
-      .force('center', d3.forceCenter(width / 2, height / 2))
-      .force('x', d3.forceX((d) => d.center ? width / 2 : d.type === 'incoming' ? width / 3 : 2 * width / 3))
-      .force('y', d3.forceY(height / 2).strength(0.05));
+      style: [
+        {
+          selector: 'node',
+          style: {
+            'background-color': '#40a9f3',
+            'label': 'data(label)',
+            'width': 50,
+            'height': 50,
+            'text-valign': 'center',
+            'color': '#fff',
+            'font-size': '10px',
+          },
+        },
+        {
+          selector: '.center-node',
+          style: {
+            'background-color': '#d6b4fc',
+            'width': 70,
+            'height': 70,
+          },
+        },
+        {
+          selector: 'edge',
+          style: {
+            'width': 1,
+            'line-color': '#ddd',
+            'curve-style': 'bezier',
+            'label': 'data(label)',
+            'font-size': '8px',
+            'text-outline-width': 1,
+            'text-outline-color': '#fff',
+          },
+        },
+        {
+          selector: '.incoming-edge',
+          style: {
+            'line-color': 'green',
+            'source-arrow-color': 'green',
+            'source-arrow-shape': 'triangle',
+          },
+        },
+        {
+          selector: '.outgoing-edge',
+          style: {
+            'line-color': 'red',
+            'target-arrow-color': 'red',
+            'target-arrow-shape': 'triangle',
+          },
+        },
+      ],
 
-    const svg = d3
-      .select(svgRef.current)
-      .attr('width', width)
-      .attr('height', height);
+      layout: {
+        name: 'cose',
+        padding: 10,
+        nodeRepulsion: 5000,
+        idealEdgeLength: 50,
+        edgeElasticity: 100,
 
-    const linkGroups = d3.group(links, d => `${d.source}-${d.target}`);
+      },
+      wheelSensitivity: 0.2,
+    });
 
-    const generatePathData = (d, i, total) => {
-      const dx = d.target.x - d.source.x;
-      const dy = d.target.y - d.source.y;
-      const dr = Math.sqrt(dx * dx + dy * dy);
-      const curveOffset = (i - (total - 1) / 2) * 20; // Adjust the curve offset
-      return `M${d.source.x},${d.source.y}A${dr},${dr} 0 0,${i % 2 === 0 ? 1 : 0} ${d.target.x},${d.target.y}`;
-    };
-    // Links
-    const link = svg
-      .append('g')
-      .attr('class', 'links')
-      .selectAll('path')
-      .data(links)
-      .enter()
-      .append('path')
-      .attr('stroke', (d) => (d.type === 'incoming' ? 'green' : 'red'))
-      .attr('stroke-width', 1)
-      .attr('fill', 'none')
-      .attr('d', (d, i) => {
-        const group = linkGroups.get(`${d.source}-${d.target}`);
-        return group.length > 1 ? generatePathData(d, i, group.length) : `M${d.source.x},${d.source.y}L${d.target.x},${d.target.y}`;
-      })
-      .on('mouseover', function (event, d) {
-        d3.select(this).attr('stroke', '#555');
-        tooltip
-          .style('opacity', 1)
-          .html(`Hash: ${d.hash}`)
-          .style('left', `${event.pageX + 10}px`)
-          .style('top', `${event.pageY + 10}px`);
-      })
-      .on('mouseout', function () {
-        d3.select(this).attr('stroke', (d) => (d.type === 'incoming' ? 'green' : 'red'));
-        tooltip.style('opacity', 0);
-      })
-      .on('click', function (event, d) {
-        const chain = d.chain === "ethereum" ? "eth" :
-          d.chain === "polygon" ? "pol" :
-            d.chain === "arbitrum" ? "arb" : "opt";
-        console.log(d);
-        handleLinkClick(d.target.id, d.blockNum, d.type === 'incoming' ? false : true, chain);
-      });
+    const tooltip = document.createElement('div');
+    tooltip.style.position = 'absolute';
+    tooltip.style.padding = '8px';
+    tooltip.style.background = 'lightsteelblue';
+    tooltip.style.border = '1px solid #fff';
+    tooltip.style.borderRadius = '8px';
+    tooltip.style.pointerEvents = 'none';
+    tooltip.style.opacity = 0;
+    document.body.appendChild(tooltip);
 
-    // Nodes
-    const node = svg
-      .append('g')
-      .attr('class', 'nodes')
-      .selectAll('circle')
-      .data(nodes)
-      .enter()
-      .append('circle')
-      .attr('r', (d) => (d.center ? 35 : 30))
-      .attr('fill', (d) => (d.center ? '#d6b4fc' : '#40a9f3'))  // Blue nodes for all transactions
-      .call(drag(simulation))
-      .on('mouseover', function (event, d) {
-        d3.select(this).attr('fill', (d) => (d.center ? '#d6b4fc' : '#40a9f3'));
-        tooltip
-          .style('opacity', 1)
-          .html(`Address: ${d.id}`)
-          .style('left', `${event.pageX + 10}px`)
-          .style('top', `${event.pageY + 10}px`);
-      })
-      .on('mouseout', function () {
-        d3.select(this).attr('fill', (d) => (d.center ? '#d6b4fc' : '#40a9f3'));
-        tooltip.style('opacity', 0);
-      });
-
-    const text = svg
-      .append('g')
-      .attr('class', 'labels')
-      .selectAll('text')
-      .data(nodes)
-      .enter()
-      .append('text')
-      .attr('dy', 5)
-      .attr('dx', -25)
-      .style('font-size', '12px')
-      .text((d) => d.id.substring(0, 6) + '...');
-
-    const tooltip = d3
-      .select('body')
-      .append('div')
-      .attr('class', 'tooltip')
-      .style('position', 'absolute')
-      .style('text-align', 'left')
-      .style('width', '500px')
-      .style('padding', '8px')
-      .style('font', '12px sans-serif')
-      .style('background', 'lightsteelblue')
-      .style('border', '1px solid #fff')
-      .style('border-radius', '8px')
-      .style('pointer-events', 'none')
-      .style('opacity', 0);
-
+    // Function to show the tooltip
     const showTooltip = (content, x, y) => {
-      tooltip
-        .html(content)
-        .style('left', `${x}px`)
-        .style('top', `${y}px`)
-        .style('opacity', 1);
+      tooltip.innerHTML = content;
+      tooltip.style.left = `${x}px`;
+      tooltip.style.top = `${y}px`;
+      tooltip.style.opacity = 0.7;
     };
 
+    // Function to hide the tooltip
     const hideTooltip = () => {
-      tooltip.style('opacity', 0);
+      tooltip.style.opacity = 0;
     };
 
-    node.on('mouseover', function (event, d) {
-      showTooltip(`Address: ${d.id}`, event.pageX + 10, event.pageY + 10);
+    // Attach event listeners for tooltip-like behavior
+    cy.on('mouseover', 'node', (event) => {
+      const nodeData = event.target.data();
+      const { x, y } = event.renderedPosition;
+      showTooltip(`Address: ${nodeData.id}`, x + 1, y + 1);
     });
 
-    document.addEventListener('click', (event) => {
-      const isTooltipClick = tooltip.node().contains(event.target);
-      if (!isTooltipClick) hideTooltip();
+    cy.on('mouseout', 'node', () => {
+      hideTooltip();
     });
 
-    simulation.on('tick', () => {
-      link.attr('d', (d, i) => {
-        const group = linkGroups.get(`${d.source}-${d.target}`);
-        return group.length > 1 ? generatePathData(d, i, group.length) : `M${d.source.x},${d.source.y}L${d.target.x},${d.target.y}`;
-      });
-      node.attr('cx', (d) => d.x).attr('cy', (d) => d.y);
-      text.attr('x', (d) => d.x).attr('y', (d) => d.y);
+    cy.on('mouseover', 'edge', (event) => {
+      const edgeData = event.target.data();
+      const { x, y } = event.renderedPosition;
+      showTooltip(`Transaction Hash: ${edgeData.hoverLabel}<br>Value: $${parseFloat(edgeData.value).toFixed(2)}`, x + 10, y + 10);
     });
 
-    function drag(simulation) {
-      function dragstarted(event, d) {
-        if (!event.active) simulation.alphaTarget(0.3).restart();
-        d.fx = d.x;
-        d.fy = d.y;
-      }
+    cy.on('mouseout', 'edge', () => {
+      hideTooltip();
+    });
 
-      function dragged(event, d) {
-        d.fx = event.x;
-        d.fy = event.y;
-      }
-
-      function dragended(event, d) {
-        if (!event.active) simulation.alphaTarget(0);
-        d.fx = null;
-        d.fy = null;
-      }
-
-      return d3.drag().on('start', dragstarted).on('drag', dragged).on('end', dragended);
-    }
+    cy.on('click', 'edge', (event) => {
+      const edgeData = event.target.data();
+      handleLinkClick(edgeData.target, edgeData.blockNum, edgeData.type === 'outgoing', edgeData.chain);
+    });
   };
+
+
+
+  function dragged(event, d) {
+    d.fx = event.x;
+    d.fy = event.y;
+  }
+
+  function dragged(event, d) {
+    d.fx = event.x;
+    d.fy = event.y;
+  }
+
+
 
   // const renderGraphTxHash = () => {
   //   const nodes = [{ id: centerAddress, center: true }];
@@ -521,7 +649,7 @@ const Visualizer = () => {
 
 
   return (
-    <div className='overflow-hidden'>
+    <div className=''>
       <div className="flex flex-col items-center justify-center py-10 px-4 bg-white dark:bg-[#001938]">
         {!isInputEntered && (
           <>
@@ -531,7 +659,7 @@ const Visualizer = () => {
             </p>
           </>
         )}
-        <div className="flex flex-col sm:flex-row items-center w-full md:max-w-3xl ">
+        <div className="flex flex-col sm:flex-row items-center w-full md:max-w-4xl ">
           <input
             type="text"
             value={inputValue}
@@ -539,23 +667,181 @@ const Visualizer = () => {
             placeholder="Enter transaction hash or address value"
             className="py-3 px-4 rounded-xl border border-gray-300 shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent mb-4 sm:mb-0 sm:mr-4 w-full"
           />
-          <button onClick={handleScanClick} className="bg-green-500 w-40 text-black font-semibold py-3 px-8 rounded-xl shadow-md hover:bg-green-600 transition-all duration-300">
-            {loading ? 'Loading...' : 'Scan Now'}
-          </button>
+          <div className='flex gap-4'>
+            <button onClick={handleScanClick} disabled={loading} className="bg-green-500 w-40 text-black font-semibold py-3 px-8 rounded-xl shadow-md hover:bg-green-600 transition-all duration-300">
+              {/* {loading ? 'Scanning...' : 'Scan Now'} */}
+              Scan Now
+            </button>
+            {loading && (
+              <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+                <div className="animate-spin rounded-full h-14 w-14 border-t-2 border-b-2 border-green-700"></div>
+              </div>
+            )}
+            <button onClick={togglePopup} className="bg-green-500 w-44 text-black font-semibold py-3 px-8 rounded-xl shadow-md hover:bg-green-600 transition-all duration-300">
+              Advanced Scan
+            </button>
+
+
+            {isPopupOpen && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                <div className="bg-white w-[90%] md:w-[40%] rounded-lg shadow-lg p-8 relative overflow-y-scroll" style={{maxHeight: "90vh",}} id='hide-scrollbar'>
+                  <button
+                    className="absolute top-4 right-4 text-gray-600 hover:text-gray-800"
+                    onClick={togglePopup}
+                  >
+                    ✖
+                  </button>
+                  <h2 className="text-xl font-semibold mb-4">Advanced Scan Option</h2>
+
+                  <form onSubmit={handleSubmit}>
+                    <div className="mb-4">
+                      <label className="font-medium text-gray-700">
+                        Choose Option:
+                      </label>
+                      <div className="flex gap-4 mt-2">
+                        <label className="flex items-center">
+                          <input
+                            type="radio"
+                            name="filterOption"
+                            value="txhash"
+                            checked={option === "txhash"}
+                            onChange={handleOptionChange}
+                            className="mr-2"
+                          />
+                          Tx Hash
+                        </label>
+                        <label className="flex items-center">
+                          <input
+                            type="radio"
+                            name="filterOption"
+                            value="address"
+                            checked={option === "address"}
+                            onChange={handleOptionChange}
+                            className="mr-2"
+                          />
+                          Address
+                        </label>
+                      </div>
+                    </div>
+
+                    {option === "txhash" && (
+                      <div className="mb-4">
+                        <label className="font-medium text-gray-700">
+                          Tx Hash:
+                        </label>
+                        <input
+                          type="text"
+                          name="txhash"
+                          value={formData.txhash}
+                          onChange={handleChange}
+                          placeholder="Enter Tx Hash"
+                          className="w-full p-3 border rounded-lg mt-2"
+                        />
+                      </div>
+                    )}
+
+                    {option === "address" && (
+                      <>
+                        <div className="mb-4">
+                          <label className="font-medium text-gray-700">
+                            Address:
+                          </label>
+                          <input
+                            type="text"
+                            name="address"
+                            value={formData.address}
+                            onChange={handleChange}
+                            placeholder="Enter Address"
+                            className="w-full p-3 border rounded-lg mt-2"
+                          />
+                        </div>
+                        <div className="mb-4">
+                          <label className="font-medium text-gray-700">
+                            From Date:
+                          </label>
+                          <input
+                            type="date"
+                            name="fromDate"
+                            value={formData.fromDate}
+                            onChange={handleChange}
+                            className="w-full p-3 border rounded-lg mt-2"
+                          />
+                        </div>
+                        <div className="mb-4">
+                          <label className="font-medium text-gray-700">
+                            To Date:
+                          </label>
+                          <input
+                            type="date"
+                            name="toDate"
+                            value={formData.toDate}
+                            onChange={handleChange}
+                            className="w-full p-3 border rounded-lg mt-2"
+                          />
+                        </div>
+                        <div className="mb-4 relative">
+                          <label className="font-medium text-gray-700">Tokens:</label>
+                          <div className="mt-2">
+                            {/* Search Bar */}
+                            <input
+                              type="text"
+                              placeholder="Search tokens..."
+                              value={searchTerm}
+                              onChange={(e) => setSearchTerm(e.target.value)}
+                              className="w-full p-3 border rounded-lg mb-2 bg-white"
+                            />
+
+                            {/* Dropdown */}
+                            <div className="border rounded-lg bg-white shadow-lg max-h-48 overflow-y-auto">
+                              {filteredTokens.length > 0 ? (
+                                filteredTokens.map((token, index) => (
+                                  <div
+                                    key={index}
+                                    onClick={() =>
+                                      handleChange({ target: { name: "tokens", value: token } })
+                                    }
+                                    className={`p-3 cursor-pointer hover:bg-gray-100 ${formData.tokens === token ? "bg-gray-200 font-bold" : ""
+                                      }`}
+                                  >
+                                    {token}
+                                  </div>
+                                ))
+                              ) : (
+                                <div className="p-3 text-gray-500">No tokens found</div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    <div className="flex justify-end">
+                      <button
+                        type="submit"
+                        className="bg-green-500 text-white font-semibold py-2 px-6 rounded-lg hover:bg-green-600 transition-all duration-300"
+                      >
+                        {option === "txHash" ? "Scan Now" : "Submit"}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+
+
+          </div>
         </div>
         {validationMessage && (
           <p className={`ml-10 mt-2 ${validationMessage.includes('Invalid') ? 'text-red-500' : 'text-green-500'}`}>
             {validationMessage}
           </p>
         )}
-        <div>
-          <svg ref={svgRef}></svg>
-        </div>
+        <div id="cy" className="w-full h-[800px]"></div>
       </div>
       <div className='bg-white dark:bg-[#001938]'>
         {isInputEntered && (
           // <div className="mt-10 mx-20">
-          <div className='mx-4 md:mx-32 py-10'>
+          <div className='mx-4 md:mx-32 pt-10 pb-20'>
             <div className="overflow-x-hidden bg-white p-6 rounded-xl border border-black shadow-md shadow-gray-500" id="hide-scrollbar">
               <div className="">
                 <div className='flex'>
@@ -681,7 +967,7 @@ const Visualizer = () => {
         )}
       </div>
       <div className=''>
-        <Footer/>
+        <Footer />
       </div>
     </div>
   );

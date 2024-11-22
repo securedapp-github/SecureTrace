@@ -8,6 +8,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.7",
+    "cytoscape": "^3.30.3",
     "d3": "^7.9.0",
     "ethers": "^6.13.3",
     "https": "^1.0.0",

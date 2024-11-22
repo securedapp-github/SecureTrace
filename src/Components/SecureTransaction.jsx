@@ -69,8 +69,6 @@ const SecureTransaction = () => {
     const fetchTransactions = async () => {
       const startTime = Date.now();
       setLoading(true);
-    
-      
 
       try {
         const response = await axios.post(
@@ -84,18 +82,13 @@ const SecureTransaction = () => {
             },
           }
         );
-
-
         setTransactions(response.data.txs);
         console.log('response:', response.data);
-
         setLoading(false);
       } catch (error) {
         console.log("error", error);
-
         setLoading(false);
-      }
-      finally {
+      } finally {
         const elapsedTime = Date.now() - startTime; // Calculate the elapsed time
         const remainingTime = Math.max(5000 - elapsedTime, 0); 
         setTimeout(() => setLoading(false), remainingTime);
@@ -127,8 +120,7 @@ const SecureTransaction = () => {
       } catch (error) {
         console.log("error", error);
         setLoading(false);
-      }
-      finally {
+      } finally {
         const elapsedTime = Date.now() - startTime; // Calculate the elapsed time
         const remainingTime = Math.max(5000 - elapsedTime, 0);
         setTimeout(() => setLoading(false), remainingTime);
