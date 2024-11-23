@@ -20,13 +20,13 @@ const Visualizer = () => {
   const [transfers, setTransfers] = useState([]);
   const { txHash } = useParams();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [option, setOption] = useState(""); // Track selected option
+  const [option, setOption] = useState("");
   const [formData, setFormData] = useState({
     txhash: "",
     address: "",
     fromDate: "",
     toDate: "",
-    tokens: "",
+    tokens: [],
   });
   const [error, setError] = useState("");
   const [tokensList, setTokensList] = useState([]);
@@ -57,6 +57,8 @@ const Visualizer = () => {
 
     if (validateWalletAddress(value || inputValue)) {
       setLoading(true);
+
+      setCurrentPage1(1);
 
       try {
         console.log('address:', value, "fromDate:", formData.fromDate, "toDate:", formData.toDate, "tokens:", formData.tokens);
@@ -103,7 +105,7 @@ const Visualizer = () => {
         console.log(response.data);
 
         setTransfers(response.data.transfers);
-        renderGraphTxHash(inputValue||value, response.data.transfers);
+        renderGraphTxHash(inputValue || value, response.data.transfers);
         setValidationMessage('Valid tx found!');
         if (inputValue.length > 0) {
           setIsInputEntered(true);
@@ -177,7 +179,7 @@ const Visualizer = () => {
       address: "",
       fromDate: "",
       toDate: "",
-      tokens: "",
+      tokens: [],
     });
     setError("");
   };
@@ -241,8 +243,8 @@ const Visualizer = () => {
 
     console.log("Form Submitted:", formData);
     handleScanClick();
-    setError(""); 
-    setIsPopupOpen(false); 
+    setError("");
+    setIsPopupOpen(false);
   };
 
 
@@ -262,9 +264,15 @@ const Visualizer = () => {
 
         console.log(response5)
 
-        const fetchedTokens = response5.data.tokens.map(
-          (token) => `${token.name}-${token.chain}`
-        );
+        // const fetchedTokens = response5.data.tokens.map(
+        //   (token) => `${token.name}-${token.chain}`
+        // );
+
+        const fetchedTokens = response5.data.tokens.map((token) => ({
+          name: token.name,
+          address: token.address,
+          chain: token.chain,
+        }));
 
         setTokensList(fetchedTokens);
       } catch (error) {
@@ -279,8 +287,39 @@ const Visualizer = () => {
 
 
   const filteredTokens = tokensList.filter((token) =>
-    token.toLowerCase().includes(searchTerm.toLowerCase())
+    token.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+
+
+  // const handleTokenSelection = (token) => {
+  //   setFormData((prevFormData) => {
+  //     const isSelected = prevFormData.tokens.includes(token);
+  //     return {
+  //       ...prevFormData,
+  //       tokens: isSelected
+  //         ? prevFormData.tokens.filter((t) => t !== token) // Remove if already selected
+  //         : [...prevFormData.tokens, token], // Add if not selected
+  //     };
+  //   });
+  // };
+
+  const handleTokenSelection = (token) => {
+    setFormData((prevFormData) => {
+      const isSelected = prevFormData.tokens.includes(token.address);
+      if (isSelected) {
+        console.log(`Deselected token address: ${token.address}`);
+      } else {
+        console.log(`Selected token address: ${token.address}`);
+      }
+      return {
+        ...prevFormData,
+        tokens: isSelected
+          ? prevFormData.tokens.filter((t) => t !== token.address) // Remove if already selected
+          : [...prevFormData.tokens, token.address], // Add if not selected
+      };
+    });
+  };
 
 
 
@@ -466,16 +505,16 @@ const Visualizer = () => {
 
   const renderGraphTxHash = (inputTxHash, transactions) => {
     const elements = [];
-    
+
     const shortenAddress = (address) => `${address.slice(0, 5)}...${address.slice(-4)}`;
-  
+
     transactions.forEach((tx) => {
       const source = tx.from;
       const target = tx.to;
-  
+
       if (!elements.some((el) => el.data.id === source)) {
         elements.push({
-          data: { 
+          data: {
             id: source,
             label: shortenAddress(source),
             chain: tx.chain,
@@ -485,10 +524,10 @@ const Visualizer = () => {
           classes: 'node',
         });
       }
-  
+
       if (!elements.some((el) => el.data.id === target)) {
         elements.push({
-          data: { 
+          data: {
             id: target,
             label: shortenAddress(target),
             chain: tx.chain,
@@ -498,7 +537,7 @@ const Visualizer = () => {
           classes: 'node',
         });
       }
-  
+
       elements.push({
         data: {
           source: source,
@@ -512,12 +551,12 @@ const Visualizer = () => {
         classes: tx.type === 'incoming' ? 'incoming-edge' : 'outgoing-edge',
       });
     });
-  
+
     const cy = cytoscape({
       container: document.getElementById('cy'), // HTML element to attach the graph
-  
+
       elements: elements,
-  
+
       style: [
         {
           selector: 'node',
@@ -568,7 +607,7 @@ const Visualizer = () => {
           },
         },
       ],
-  
+
       layout: {
         name: 'cose',
         padding: 10,
@@ -578,7 +617,7 @@ const Visualizer = () => {
       },
       wheelSensitivity: 0.2,
     });
-  
+
     const tooltip = document.createElement('div');
     tooltip.style.position = 'absolute';
     tooltip.style.padding = '8px';
@@ -588,7 +627,7 @@ const Visualizer = () => {
     tooltip.style.pointerEvents = 'none';
     tooltip.style.opacity = 0;
     document.body.appendChild(tooltip);
-  
+
     // Function to show the tooltip
     const showTooltip = (content, x, y) => {
       tooltip.innerHTML = content.replace(/\n/g, '<br>'); // Replace \n with <br>
@@ -596,38 +635,38 @@ const Visualizer = () => {
       tooltip.style.top = `${y + 10}px`; // Adjust the y position
       tooltip.style.opacity = 1;
     };
-  
+
     // Function to hide the tooltip
     const hideTooltip = () => {
       tooltip.style.opacity = 0;
     };
-  
+
     // Attach event listeners for tooltip-like behavior
     cy.on('mouseover', 'node', (event) => {
       const nodeData = event.target.data();
       const { x, y } = event.renderedPosition;
       showTooltip(`Address: ${nodeData.id}`, x, y);
     });
-  
+
     cy.on('mouseout', 'node', () => {
       hideTooltip();
     });
-  
+
     cy.on('mouseover', 'edge', (event) => {
       const edgeData = event.target.data();
       const { x, y } = event.renderedPosition;
       showTooltip(`Transaction Hash: ${edgeData.hoverLabel}<br>Value: $${parseFloat(edgeData.value).toFixed(2)}`, x, y);
     });
-  
+
     cy.on('mouseout', 'edge', () => {
       hideTooltip();
     });
-  
+
     cy.on('tap', 'node', (event) => {
       const nodeData = event.target.data();
       handleLinkClick(nodeData.id, nodeData.blockNum, nodeData.type, nodeData.chain);
     });
-  
+
     cy.layout({
       name: 'cose',
       padding: 10,
@@ -674,7 +713,7 @@ const Visualizer = () => {
 
             {isPopupOpen && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                <div className="bg-white w-[90%] md:w-[40%] rounded-lg shadow-lg p-8 relative overflow-y-scroll" style={{maxHeight: "90vh",}} id='hide-scrollbar'>
+                <div className="bg-white w-[90%] md:w-[40%] rounded-lg shadow-lg p-8 relative overflow-y-scroll" style={{ maxHeight: "90vh", }} id='hide-scrollbar'>
                   <button
                     className="absolute top-4 right-4 text-gray-600 hover:text-gray-800"
                     onClick={togglePopup}
@@ -772,6 +811,32 @@ const Visualizer = () => {
                         <div className="mb-4 relative">
                           <label className="font-medium text-gray-700">Tokens:</label>
                           <div className="mt-2">
+                            {/* Display Selected Tokens */}
+                            {formData.tokens.length > 0 && (
+                              <div className="mb-2 flex flex-wrap gap-2">
+                                {formData.tokens.map((tokenAddress, index) => {
+                                  // Find the corresponding token object using the address
+                                  const token = tokensList.find((t) => t.address === tokenAddress);
+                                  
+                                  return token ? (
+                                    <span
+                                      key={index}
+                                      className="bg-blue-100 text-blue-800 px-2 py-1 rounded-lg flex items-center gap-2"
+                                    >
+                                      {token.name} - {token.chain}
+                                      <button
+                                        onClick={() => handleTokenSelection(token)}
+                                        className="text-red-500 hover:text-red-700"
+                                      >
+                                        ✖
+                                      </button>
+                                    </span>
+                                  ) : null; // Skip if the token is not found
+                                })}
+                              </div>
+                            )}
+
+
                             {/* Search Bar */}
                             <input
                               type="text"
@@ -787,21 +852,21 @@ const Visualizer = () => {
                                 filteredTokens.map((token, index) => (
                                   <div
                                     key={index}
-                                    onClick={() =>
-                                      handleChange({ target: { name: "tokens", value: token } })
-                                    }
-                                    className={`p-3 cursor-pointer hover:bg-gray-100 ${formData.tokens === token ? "bg-gray-200 font-bold" : ""
+                                    onClick={() => handleTokenSelection(token)}
+                                    className={`p-3 cursor-pointer hover:bg-gray-100 ${formData.tokens.includes(token.address) ? "bg-gray-200 font-bold" : ""
                                       }`}
                                   >
-                                    {token}
+                                    {token.name} - {token.chain} {/* Display token name and chain */}
                                   </div>
                                 ))
                               ) : (
                                 <div className="p-3 text-gray-500">No tokens found</div>
                               )}
                             </div>
+
                           </div>
                         </div>
+
                       </>
                     )}
 

@@ -84,10 +84,13 @@ const AddressCard = () => {
   const handleScanNow = async () => {
     setLoading(true);
     setSelectedChain(null);
-
+    setCurrentPage1(1);
+    setCurrentPage(1);
+    
     if (!inputValue) {
       toast.error('Please enter a contract address.');
       setLoading(false);
+      // setCurrentPage1(1);
       return;
     }
 
