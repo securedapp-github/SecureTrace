@@ -486,6 +486,7 @@ const Visualizer = () => {
     cy.on('click', 'edge', (event) => {
       const edgeData = event.target.data();
       handleLinkClick(edgeData.target, edgeData.blockNum, edgeData.type === 'outgoing', edgeData.chain);
+      hideTooltip();
     });
   };
 
