@@ -51,6 +51,17 @@ const Visualizer = () => {
     }
   }, [txHash]);
 
+  useEffect(() => {
+    setFormData({
+      address: "",
+      fromDate: "",
+      toDate: "",
+      tokens: "",
+      txhash: "",
+    });
+    setSearchTerm('');
+  }, [inputValue]);
+
   const handleScanClick = async () => {
 
     const value = !formData ? inputValue : formData.txhash ? formData.txhash : formData.address;
@@ -214,7 +225,7 @@ const Visualizer = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+  
     // Validation for Tx Hash
     if (option === "txhash") {
       const txhashError = validateTxHash(formData.txhash);
@@ -225,27 +236,37 @@ const Visualizer = () => {
         handleScanClick();
       }
     }
-
+  
+    // Validation for Address
     if (option === "address") {
-      const addressError = validateAddress(formData.address);
+      if (!inputValue.trim() && !formData.address.trim()) {
+        alert("Please enter an address.");
+        return;
+      }
+  
+      const addressToUse = inputValue.trim() || formData.address.trim(); 
+  
+      const addressError = validateAddress(addressToUse);
       if (addressError) {
         setError(addressError);
-        return; // Stop submission if invalid
+        return; 
       }
-
+  
       setFormData((prevState) => ({
         ...prevState,
-        fromDate: formData.fromDate ? null : formData.fromDate,
+        address: addressToUse,
+        fromDate: formData.fromDate ? formData.fromDate : null,
         toDate: formData.toDate === "" ? null : formData.toDate,
         tokens: formData.tokens === "" ? null : formData.tokens,
       }));
     }
-
+  
     console.log("Form Submitted:", formData);
     handleScanClick();
     setError("");
     setIsPopupOpen(false);
   };
+  
 
 
   useEffect(() => {
