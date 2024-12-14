@@ -80,6 +80,7 @@ const Navbar = () => {
                 <Link to="/" className="hover:text-gray-400">Dashboard</Link>
                 <Link to="/visualizer" className="hover:text-gray-400">Visualizer</Link>
                 <Link to="/portfoliotracker" className="hover:text-gray-400">Portfolio Tracker</Link>
+                <Link to="/creditscore" className="hover:text-gray-400">Credit Score</Link>
             </div>
             {/* <div className='text-white flex justify-end'>
             <IoSunnyOutline />

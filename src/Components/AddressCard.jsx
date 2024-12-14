@@ -71,8 +71,16 @@ const AddressCard = () => {
   const isValidEthereumAddressOrTxHash = (value) => {
     const ethAddressRegex = /^0x[a-fA-F0-9]{40}$/; // For Ethereum address (42 characters, starts with 0x)
     const txHashRegex = /^0x([A-Fa-f0-9]{64})$/;  // For Transaction hash (66 characters, starts with 0x)
+    const algoAddressRegex = /^[A-Z2-7]{58}$/;
+    const algoTxHashRegex = /^[A-Za-z0-9+/]{44}$/;
 
-    return ethAddressRegex.test(value) || txHashRegex.test(value);
+    // return ethAddressRegex.test(value) || txHashRegex.test(value);
+    return (
+      ethAddressRegex.test(value) ||
+      txHashRegex.test(value) ||
+      algoAddressRegex.test(value) ||
+      algoTxHashRegex.test(value)
+    );
   };
 
 
@@ -96,15 +104,24 @@ const AddressCard = () => {
 
 
     if (!isValidEthereumAddressOrTxHash(inputValue)) {
-      toast.error('Invalid Ethereum address. Please enter a valid input.');
+      toast.error('Invalid Ethereum address or Algorand address. Please enter a valid input.');
       setLoading(false);
       return;
     }
 
+
+
+    const isAlgorandAddress = /^[A-Z2-7]{58}$/.test(inputValue);
+    const apiEndpoint = isAlgorandAddress
+      ? `${DevUrl}/fetch-algorand-details/`
+      : `${DevUrl}/fetch-address-details/`;
+
+
     try {
       const response = await axios.post(
         // `https://caiman-wanted-fox.ngrok-free.app/fetch-address-details/`,
-        `${DevUrl}/fetch-address-details/`,
+        // `${DevUrl}/fetch-address-details/`,
+        apiEndpoint,
         { address: inputValue }, // This is the request body
         {
           headers: {
