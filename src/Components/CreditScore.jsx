@@ -1,12 +1,11 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import Footer from './Footer';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { DevUrl } from '../Constants'; 
+import { DevUrl } from '../Constants';
 
-
+// Create axios instance with default config
 const apiClient = axios.create({
   baseURL: DevUrl,
   headers: {
@@ -26,21 +25,27 @@ const CreditScore = () => {
     setIsLoading(true);
     try {
       const endpoint = activeTab === "wallet" ? '/wallet-credit-score' : '/sc-credit-score';
-      const { data } = await apiClient.post(endpoint, {
-        address
-      });
+      const { data } = await apiClient.post(endpoint, { address });
+
       console.log("score:", data);
-      
-      
-      const rawScore = activeTab === "wallet" ? data : data.creditScore;
-      const score = activeTab === "smartContract" ? Math.round(rawScore) : rawScore;
-      setCreditScore(score);
+
+      if (activeTab === "wallet") {
+        setCreditScore(data);
+      } else {
+        setCreditScore({
+          creditScore: Math.round(data.creditScore),
+          successPc: Math.round(data.successPc),
+          verificationStatus: data.verificationStatus,
+          diversityScore: parseFloat(data.diversityScore.toFixed(2)), // Keeps diversity score to 2 decimal places
+        });
+      }
+
       return true;
     } catch (error) {
       console.error('Error fetching credit score:', error);
-      
+
       let errorMessage = "Failed to fetch credit score. Please try again.";
-      
+
       if (error.response) {
         switch (error.response.status) {
           case 404:
@@ -58,7 +63,7 @@ const CreditScore = () => {
       } else if (error.request) {
         errorMessage = "Could not connect to the server. Please check your connection.";
       }
-      
+
       toast.error(errorMessage);
       return false;
     } finally {
@@ -77,7 +82,7 @@ const CreditScore = () => {
     }
 
     const scoresFetched = await fetchCreditScore(inputValue);
-    
+
     if (scoresFetched) {
       toast.success(
         `${activeTab === "wallet" ? "Wallet address" : "Smart Contract"} is valid!`
@@ -132,20 +137,38 @@ const CreditScore = () => {
               {validatedData.type === "wallet" ? "Wallet Address" : "Smart Contract Address"}
               : <span className="text-green-500">
                 {`${validatedData.value.slice(0, 5)}...${validatedData.value.slice(-4)}`}
-                </span>
+              </span>
             </p>
-            <div className='text-center'>
-              <h1 className='text-black dark:text-white text-2xl'>
-                Credit Score
-              </h1>
+            <div className="text-center">
               {isLoading ? (
                 <div className="animate-pulse text-green-500 text-3xl font-bold">
                   Loading...
                 </div>
+              ) : activeTab === "wallet" ? (
+                <div>
+                <h1 className="text-black dark:text-white text-2xl">Credit Score</h1>
+                <h1 className="text-green-500 text-3xl font-bold">{creditScore}</h1>
+                </div>
               ) : (
-                <h1 className='text-green-500 text-3xl font-bold'>
-                  {creditScore}
-                </h1>
+                creditScore && (
+                  <div className="mt-10 text-center">
+                    <h1 className="text-lg font-bold text-gray-700 dark:text-white">
+                      Smart Contract Analysis
+                    </h1>
+                    <p className="text-green-500 text-3xl font-bold mt-4">
+                      Credit Score: {creditScore.creditScore}
+                    </p>
+                    <p className="text-gray-700 dark:text-gray-300 mt-2">
+                      Transaction Success Percentage: {creditScore.successPc} %
+                    </p>
+                    <p className="text-gray-700 dark:text-gray-300 mt-2">
+                      Verification Status: {creditScore.verificationStatus}
+                    </p>
+                    <p className="text-gray-700 dark:text-gray-300 mt-2">
+                      Diversity Score: {creditScore.diversityScore}
+                    </p>
+                  </div>
+                )
               )}
             </div>
             <p className="text-gray-500 mt-4 text-center">
@@ -170,10 +193,10 @@ const CreditScore = () => {
                   onClick={validateInput}
                   disabled={isLoading}
                   className={`bg-green-500 w-56 lg:w-40 text-center text-black font-semibold py-3 px-8 rounded-xl shadow-md transition-all duration-300 ${
-                    isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-600'
+                    isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-600"
                   }`}
                 >
-                  {isLoading ? 'Loading...' : 'Scan Now'}
+                  {isLoading ? "Loading..." : "Scan Now"}
                 </button>
               </div>
             </div>
@@ -191,9 +214,7 @@ const CreditScore = () => {
         pauseOnFocusLoss
         theme="colored"
       />
-      <div>
-        <Footer/>
-      </div>
+      <Footer />
     </div>
   );
 };
