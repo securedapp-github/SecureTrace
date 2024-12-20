@@ -32,9 +32,10 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50">
+    <div className='bg-white dark:bg-[#001938]'>
+    <div className="min-h-screen flex flex-col justify-center items-center ">
       <div className="text-center mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900">Sign in to your account</h1>
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">Sign in to your account</h1>
         <p className="text-gray-500 mt-2">
           Clarity gives you the blocks and components you need to create a truly professional website.
         </p>
@@ -89,6 +90,7 @@ const LoginPage = () => {
         pauseOnFocusLoss
         theme="colored"
       />
+    </div>
     </div>
   );
 };
