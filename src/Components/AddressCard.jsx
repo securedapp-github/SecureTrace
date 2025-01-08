@@ -51,7 +51,10 @@ const AddressCard = () => {
   const [transfers, setTransfers] = useState([]);
 
   const totalPages1 = Math.ceil(transfers.length / rowsPerPage1);
-  const currentRows1 = transfers.slice(
+  const sortedTransfers = transfers.sort(
+    (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+  );
+  const currentRows1 = sortedTransfers.slice(
     (currentPage1 - 1) * rowsPerPage1,
     currentPage1 * rowsPerPage1
   );
@@ -279,7 +282,7 @@ const AddressCard = () => {
   return (
     <div className="bg-white dark:bg-[#001938]">
       <div className="flex items-center justify-center overflow-x-hidden ">
-        <div className="mt-10 md:mt-20">
+        <div className="lg:mt-10 md:mt-20">
           <h1 className="mb-4 text-3xl font-bold text-center text-black dark:text-white">
             SecureTrace PortfolioTracker
           </h1>
@@ -613,7 +616,7 @@ const AddressCard = () => {
                       </svg>
                     </button>
                     <span className="text-xl font-bold">
-                      {currentPage1} / {totalPages1}
+                      {currentPage1} / {totalPages1 === 0 ? 1 : totalPages1}
                     </span>
                     <button
                       className={`px-4 py-2 font-bold ${
@@ -643,7 +646,7 @@ const AddressCard = () => {
                   <table className="w-full text-center">
                     <thead className="">
                       <tr className="h-10 text-gray-500">
-                        <th className="flex items-center justify-center px-4 space-x-2">
+                        <th className="flex items-center justify-center px-4 space-x-2 lg:mt-2 sm:mt-0">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="1em"
@@ -813,7 +816,11 @@ const AddressCard = () => {
                               className="border-t  h-12  text-center bg-red-600 odd:bg-[#F4F4F4] even:bg-white px-2 py-2"
                             >
                               <td className="flex items-center justify-center px-4 mt-2">
-                                <img src={logo} alt={tokenName} />
+                                <img
+                                  src={logo}
+                                  alt={tokenName}
+                                  className="h-9"
+                                />
                               </td>
                               {/* <td className="px-4 text-green-500 me-3">{timestamp}</td> */}
                               <td className="px-4 text-green-500 me-3">

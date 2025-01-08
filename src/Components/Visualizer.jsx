@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 // import * as d3 from 'd3';
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 import { isAddress } from "ethers";
 import axios from "axios";
 import { DevUrl } from "../Constants";
@@ -268,6 +270,58 @@ const Visualizer = () => {
         "Invalid input. Please enter a valid wallet address."
       );
     }
+  };
+
+  const generatePDF = async () => {
+    const doc = new jsPDF();
+
+    // Capture the graph
+    const graphElement = document.getElementById("cy");
+    if (graphElement) {
+      console.log("Graph element found");
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Wait for the graph to render
+      const graphCanvas = await html2canvas(graphElement, { scale: 2 });
+      const graphImage = graphCanvas.toDataURL("image/png");
+
+      // Add the graph image to the PDF
+      doc.addImage(graphImage, "PNG", 10, 10, 190, 100);
+      doc.addPage();
+    } else {
+      console.error("Graph element not found");
+      return;
+    }
+
+    // Capture each page of the table
+    const totalPages = Math.ceil(transfers.length / rowsPerPage1);
+    for (let page = 1; page <= totalPages; page++) {
+      await new Promise((resolve) => {
+        setCurrentPage1(page);
+        setTimeout(resolve, 500); // Wait for the table to render
+      });
+
+      const tableElement = document.getElementById("table-container");
+      if (tableElement) {
+        console.log(`Table element found for page ${page}`);
+        const tableCanvas = await html2canvas(tableElement, { scale: 2 });
+        const tableImage = tableCanvas.toDataURL("image/png");
+
+        if (page > 1) {
+          doc.addPage();
+        }
+        doc.addImage(tableImage, "PNG", 10, 10, 190, 100);
+      } else {
+        console.error("Table element not found");
+        return;
+      }
+    }
+
+    // Save the PDF
+    doc.save("graph_and_table.pdf");
+  };
+
+  const handleGeneratePDFClick = () => {
+    generatePDF();
+    setLoading(true);
   };
 
   const togglePopup = () => {
@@ -665,8 +719,14 @@ const Visualizer = () => {
       });
     });
 
+    const cyContainer = document.getElementById("cy");
+
+    // Set the dimensions of the Cytoscape container
+    cyContainer.style.height = "600px";
+    cyContainer.style.width = "1200px";
+
     const cy = cytoscape({
-      container: document.getElementById("cy"), // HTML element to attach the graph
+      container: cyContainer,
 
       elements: elements,
 
@@ -811,17 +871,17 @@ const Visualizer = () => {
       <div className="flex flex-col items-center justify-center py-10 px-4 bg-white dark:bg-[#001938]">
         {!isInputEntered && (
           <>
-            <h1 className="mb-4 text-3xl font-bold text-center text-black dark:text-white">
+            <h1 className="mb-6 text-3xl font-bold text-center text-black dark:text-white">
               SecureTrace Visualizer
             </h1>
-            <p className="max-w-2xl mb-6 font-semibold text-center text-gray-600 dark:text-gray-300">
+            <p className="max-w-2xl mb-10 font-semibold text-center text-gray-600 dark:text-gray-300">
               SecureTrace analyzes transaction data using blockchain forensic
               techniques, enhancing the detection of intricate patterns and
               potential vulnerabilities.
             </p>
           </>
         )}
-        <div className="flex flex-col items-center w-full sm:flex-row md:max-w-4xl ">
+        <div className="flex flex-col items-center w-full sm:flex-row md:max-w-4xl">
           <input
             type="text"
             value={inputValue}
@@ -1048,14 +1108,26 @@ const Visualizer = () => {
             {validationMessage}
           </p>
         )}
-        <div className="mt-10 overflow-x-hidden transition-all ease-in-out rounded-md shadow-xl dark:border-gray-700 dark:border dark:shadow-xl">
-          <div id="cy" className="h-[600px] w-[1200px]"></div>
+        {isInputEntered &&(
+          <button
+            onClick={handleGeneratePDFClick}
+            className="px-8 py-3 mt-2 font-semibold text-black transition-all duration-300 bg-green-500 shadow-md text w-50 rounded-xl hover:bg-green-600"
+            
+          >
+            Generate PDF
+          </button>
+        )}
+        <div className="mt-10">
+          <div
+            id="cy"
+            className="border-gray-800 rounded-md shadow-2xl dark:border-gray-300 dark:shadow-2xl dark:border"
+          ></div>
         </div>
       </div>
       <div className="bg-white dark:bg-[#001938]">
         {isInputEntered && (
           // <div className="mx-20 mt-10">
-          <div className="pt-10 pb-20 mx-4 md:mx-32">
+          <div id="table-container" className="pt-10 pb-20 mx-4 md:mx-32">
             <div
               className="p-6 overflow-x-hidden bg-white border border-black shadow-md rounded-xl shadow-gray-500"
               id="hide-scrollbar"

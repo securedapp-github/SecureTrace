@@ -183,7 +183,7 @@ const CreditScore = () => {
       <div className="flex justify-center gap-5 py-10">
         <div>
           <button
-            className={`relative py-6 px-10 shadow-xl text-2xl md:px-24  ${
+            className={`relative py-6 px-10 shadow-xl text-2xl md:px-24 ${
               activeTab === "wallet"
                 ? "bg-green-500 after:content-[''] after:absolute after:bottom-[-18px] after:left-1/2 after:-translate-x-1/2 after:border-l-[26px] after:border-l-transparent after:border-r-[26px] after:border-r-transparent after:border-t-[26px] after:border-t-green-500"
                 : "bg-gray-300"
@@ -212,7 +212,7 @@ const CreditScore = () => {
 
       <div>
         {validatedData ? (
-          <div className="my-20">
+          <div className="my-10">
             <div
               className={`flex justify-center mb-4 text-4xl ${
                 validatedData.type === "wallet" ? "lg:mr-20" : "lg:mr-0"
@@ -293,38 +293,54 @@ const CreditScore = () => {
               ) : (
                 creditScore && (
                   <div className="">
-                    <div className="flex items-center justify-center gap-5 p-4 text-5xl lg:mr-60 sm:mr-0 md:mr-0">
-                      <h1 className="text-black dark:text-white">
+                    <div className="flex items-center justify-center gap-5 lg:mr-60 sm:mr-0 md:mr-0">
+                      <h1 className="text-5xl text-black dark:text-white">
                         Credit Score
                       </h1>
-                      <p className="mt-2 text-green-500 text-green dark:text-gray-300">
+                      <p className="text-6xl font-bold text-green-500">
                         {creditScore.creditScore}
                       </p>
                     </div>
-                    <div className="flex flex-wrap justify-center gap-4 px-10 mt-4">
-                      <div className="bg-gray-100 dark:bg-[#001938] rounded-md shadow-md p-4 w-full sm:w-48 border border-gray-100">
-                        <p className="text-xl font-bold text-green-500">
-                          Tx Success %
-                        </p>
-                        <p className="mt-2 text-gray-700 dark:text-gray-300 pt-7">
-                          {creditScore.successPc} %
-                        </p>
+                    <div className="flex flex-col items-center px-10 mt-10 mb-10 text-left">
+                      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <div className=" bg-gray-100 dark:bg-[#001938] rounded-md shadow-md p-4 border border-gray-300 dark:border-gray-700 w-full max-w-[300px]">
+                          <h2 className="text-xl font-semibold text-black dark:text-white">
+                            Tx Success %
+                          </h2>
+                          <p className="mt-2 text-gray-700 dark:text-gray-300">
+                            Measures the ratio of successful transactions to
+                            total transactions executed by the smart contract.
+                          </p>
+                        </div>
+                        <div className="bg-gray-100 dark:bg-[#001938] rounded-md shadow-md p-4 border border-gray-300 dark:border-gray-700 w-full max-w-[300px]">
+                          <h2 className="text-xl font-semibold text-black dark:text-white">
+                            Verification Status
+                          </h2>
+                          <p className="mt-2 text-gray-700 dark:text-gray-300">
+                            Indicates whether the smart contract's source code
+                            is publicly verified and accessible.
+                          </p>
+                        </div>
                       </div>
-                      <div className="bg-gray-100 dark:bg-[#001938] rounded-md shadow-md p-4 w-full sm:w-48 border border-gray-100">
-                        <p className="text-xl font-bold text-green-500">
-                          Verification Status
-                        </p>
-                        <p className="mt-2 text-gray-700 dark:text-gray-300">
-                          {creditScore.verificationStatus}
-                        </p>
-                      </div>
-                      <div className="bg-gray-100 dark:bg-[#001938] rounded-md shadow-md p-4 w-full sm:w-48 border border-gray-100">
-                        <p className="text-xl font-bold text-green-500">
-                          Diversity Score
-                        </p>
-                        <p className="mt-2 text-gray-700 dark:text-gray-300 pt-7">
-                          {creditScore.diversityScore}
-                        </p>
+                      <div className="grid grid-cols-1 gap-4 mt-4 md:grid-cols-2">
+                        <div className="bg-gray-100 dark:bg-[#001938] rounded-md shadow-md p-4 border border-gray-300 dark:border-gray-700 w-full max-w-[300px]">
+                          <h2 className="text-xl font-semibold text-black dark:text-white">
+                            Diversity Score
+                          </h2>
+                          <p className="mt-2 text-gray-700 dark:text-gray-300">
+                            Evaluates the variety of unique interactions and
+                            addresses engaging with the smart contract.
+                          </p>
+                        </div>
+                        <div className="bg-gray-100 dark:bg-[#001938] rounded-md shadow-md p-4 border border-gray-300 dark:border-gray-700 w-full max-w-[300px] ">
+                          <h2 className="text-xl font-semibold text-black dark:text-white">
+                            Security Score
+                          </h2>
+                          <p className="mt-2 text-gray-700 dark:text-gray-300">
+                            Determining how secure the smart contract is by
+                            evaluating possible vulnerabilities.
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -336,7 +352,7 @@ const CreditScore = () => {
             </p>
           </div>
         ) : (
-          <div className="flex justify-center my-20">
+          <div className="flex justify-center my-10">
             <div className="items-center w-80 md:w-full md:max-w-3xl">
               <input
                 type="text"
