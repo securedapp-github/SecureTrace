@@ -719,14 +719,8 @@ const Visualizer = () => {
       });
     });
 
-    const cyContainer = document.getElementById("cy");
-
-    // Set the dimensions of the Cytoscape container
-    cyContainer.style.height = "600px";
-    cyContainer.style.width = "1200px";
-
     const cy = cytoscape({
-      container: cyContainer,
+      container: document.getElementById("cy"),
 
       elements: elements,
 
@@ -1120,7 +1114,7 @@ const Visualizer = () => {
         <div className="mt-10">
           <div
             id="cy"
-            className="border-gray-800 rounded-md shadow-2xl dark:border-gray-300 dark:shadow-2xl dark:border"
+            className="border-gray-800 rounded-md shadow-2xl dark:border-gray-300 dark:shadow-2xl dark:border h-[600px] w-[1200px]"
           ></div>
         </div>
       </div>

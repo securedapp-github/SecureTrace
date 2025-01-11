@@ -383,7 +383,7 @@ const AddressCard = () => {
                       </svg>
                     </button>
                     <span className="text-xl font-bold">
-                      {currentPage} / {totalPages}
+                      {currentPage1} / {totalPages1 === 0 ? 1 : totalPages1 + 1}
                     </span>
                     <button
                       className={`px-4 py-2 font-bold ${
@@ -616,7 +616,7 @@ const AddressCard = () => {
                       </svg>
                     </button>
                     <span className="text-xl font-bold">
-                      {currentPage1} / {totalPages1 === 0 ? 1 : totalPages1}
+                      {currentPage1} / {totalPages1 === 0 ? 1 : totalPages1 + 1}
                     </span>
                     <button
                       className={`px-4 py-2 font-bold ${
