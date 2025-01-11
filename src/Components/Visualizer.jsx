@@ -1102,11 +1102,10 @@ const Visualizer = () => {
             {validationMessage}
           </p>
         )}
-        {isInputEntered &&(
+        {isInputEntered && (
           <button
             onClick={handleGeneratePDFClick}
             className="px-8 py-3 mt-2 font-semibold text-black transition-all duration-300 bg-green-500 shadow-md text w-50 rounded-xl hover:bg-green-600"
-            
           >
             Generate PDF
           </button>
@@ -1114,7 +1113,7 @@ const Visualizer = () => {
         <div className="mt-10">
           <div
             id="cy"
-            className="border-gray-800 rounded-md shadow-2xl dark:border-gray-300 dark:shadow-2xl dark:border h-[600px] w-[1200px]"
+            className="border-gray-800 rounded-md shadow-2xl h-[600px] w-[1200px]"
           ></div>
         </div>
       </div>
@@ -1154,7 +1153,7 @@ const Visualizer = () => {
                       </svg>
                     </button>
                     <span className="text-xl font-bold">
-                      {currentPage1} / {totalPages1 === 0 ? 1 : totalPages1}
+                      {Math.max(1, currentPage1)} / {Math.max(1, totalPages1)}
                     </span>
                     <button
                       className={`px-4 py-2 font-bold ${
