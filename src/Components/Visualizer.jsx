@@ -531,8 +531,14 @@ const Visualizer = () => {
       });
     });
 
+    const cyContainer = document.getElementById("cy");
+
+    // Set the dimensions of the Cytoscape container
+    cyContainer.style.height = "600px";
+    cyContainer.style.width = "1200px";
+
     const cy = cytoscape({
-      container: document.getElementById("cy"), // HTML element to attach the graph
+      container: cyContainer, // HTML element to attach the graph
 
       elements: elements,
 
@@ -719,8 +725,14 @@ const Visualizer = () => {
       });
     });
 
+    const cyContainer = document.getElementById("cy");
+
+    // Set the dimensions of the Cytoscape container
+    cyContainer.style.height = "600px";
+    cyContainer.style.width = "1200px";
+
     const cy = cytoscape({
-      container: document.getElementById("cy"),
+      container: cyContainer,
 
       elements: elements,
 
@@ -1113,7 +1125,7 @@ const Visualizer = () => {
         <div className="mt-10">
           <div
             id="cy"
-            className="border-gray-800 rounded-md shadow-2xl h-[600px] w-[1200px]"
+            className="border-gray-800 rounded-md shadow-2xl"
           ></div>
         </div>
       </div>
