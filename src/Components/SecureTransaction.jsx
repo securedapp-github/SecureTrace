@@ -48,12 +48,26 @@ const SecureTransaction = () => {
     // Check if the input is a valid Ethereum address or transaction hash
     const isAddress = /^0x[a-fA-F0-9]{40}$/.test(inputValue); // Ethereum address
     const isTxHash = /^0x([A-Fa-f0-9]{64})$/.test(inputValue); // Transaction hash
+    const isAlgoAddress = /^[A-Z2-7]{58}$/.test(inputValue); // Algorand address
+    const isAlgoTxId = /^[A-Z2-7]{52}$/.test(inputValue); // Algorand transaction ID
 
-    if (isAddress) {
+    // if (isAddress) {
+    //   // Navigate to the portfolio-tracker page with the input value
+    //   navigate("/portfoliotracker", { state: { inputValue } });
+    // } else if (isTxHash) {
+    //   // Navigate to the visualizer page with the input value
+    //   navigate("/visualizer", { state: { inputValue } });
+    // } else {
+    //   // Show an error message for invalid input
+    //   toast.error(
+    //     "Invalid input. Please enter a valid Ethereum address or transaction hash."
+    //   );
+    // }
+
+    if (isAddress || isAlgoAddress) {
       // Navigate to the portfolio-tracker page with the input value
       navigate("/portfoliotracker", { state: { inputValue } });
-    } else if (isTxHash) {
-      // Navigate to the visualizer page with the input value
+    } else if (isTxHash || isAlgoTxId) {
       navigate("/visualizer", { state: { inputValue } });
     } else {
       // Show an error message for invalid input
@@ -61,6 +75,7 @@ const SecureTransaction = () => {
         "Invalid input. Please enter a valid Ethereum address or transaction hash."
       );
     }
+    
   };
 
   useEffect(() => {
