@@ -1,7 +1,6 @@
 import React from "react";
 import { FaRegCopy } from "react-icons/fa";
 import img from "../Assests/person.png";
-import { FaShareNodes } from "react-icons/fa6";
 import { useState, useEffect, useRef } from "react";
 import Port from "../Assests/Portfolio.png";
 import { TiArrowSortedDown } from "react-icons/ti";
@@ -10,7 +9,7 @@ import btc from "../Assests/Bitcoin.png";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { DevUrl } from "../Constants";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Footer from "./Footer";
 
 const AddressCard = () => {
@@ -21,6 +20,7 @@ const AddressCard = () => {
   //   greenAmount: "$10,491.48",
   // };
   const location = useLocation();
+  const navigate = useNavigate();
   const [cardData, setCardData] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [isPortfolioVisible, setIsPortfolioVisible] = useState(false);
@@ -279,6 +279,10 @@ const AddressCard = () => {
     };
   }, []);
 
+   const handleNavigateToVisualizer = () => {
+     navigate("/visualizer", { state: { inputValue } }); // Pass inputValue to the Visualizer page
+   };
+
   return (
     <div className="bg-white dark:bg-[#001938]">
       <div className="flex items-center justify-center overflow-x-hidden ">
@@ -337,9 +341,6 @@ const AddressCard = () => {
             <div className="flex items-center justify-center p-4 mt-2 md:flex">
               <h1 className="ml-2 text-4xl lg:ml-0">{`$${totalValue}`}</h1>
               <span className="mt-2 ml-2 text-2xl text-green-500">{`$${totalValue}`}</span>
-              <button className="mt-2 ml-2 text-black text-md md:text-xl hover:text-gray-600">
-                <FaShareNodes />
-              </button>
             </div>
           </div>
         </div>
@@ -414,7 +415,10 @@ const AddressCard = () => {
 
                 <div className="flex justify-end">
                   <div className="flex gap-4">
-                    <button className="px-3 py-2 bg-gradient-to-t from-[#d3d3d3] to-white text-black rounded-lg border border-black shadow-md hover:bg-gray-300 transition">
+                    <button
+                      className="px-3 py-2 bg-gradient-to-t from-[#d3d3d3] to-white text-black rounded-lg border border-black shadow-md hover:bg-gray-300 transition"
+                      onClick={handleNavigateToVisualizer}
+                    >
                       <span className="font-semibold">View In Visualizer</span>
                     </button>
                     <button
