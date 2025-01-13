@@ -19,9 +19,9 @@ export default function NewNavbar({ email }) {
   const [expandRealtimeSecurity, setExpandRealtimeSecurity] = useState(false);
   
   return (
-    <div className="fixed z-50 flex items-center justify-between w-full px-4 py-5 bg-white ">
+    <div className="z-50 flex items-center justify-between w-full px-4 py-5 bg-white ">
       
-      <h1 className="text-xl text-black logo sm:text-3xl">Securewatch</h1>
+      <h1 className="text-xl text-black logo sm:text-3xl">SecureTrace</h1>
      
       <div className="flex items-center gap-7 ">
         <button className="p-0">

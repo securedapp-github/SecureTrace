@@ -171,8 +171,8 @@ function Login() {
           </div>
         </div>
         <div className="flex items-center justify-center gap-1 mx-auto mt-5 ">
-          <img src={SecureDapp} alt="SecureDapp logo" className="w-14" />
-          <span className="text-lg text-black logo">SecureDapp</span>
+          <img src={SecureDapp} alt="SecureTrace logo" className="w-14" />
+          <span className="text-lg text-black logo">SecureTrace</span>
         </div>
       </div>
     </div>
