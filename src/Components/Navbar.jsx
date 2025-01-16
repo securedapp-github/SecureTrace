@@ -130,7 +130,7 @@ const Navbar = () => {
               {/* <IoMoonOutline /> */}
               {darkMode ? <TbBrightnessUp /> : <IoMoonOutline />}
             </div>
-            <Link to="/loginpage">
+            <Link to="/login">
               <button className="hidden px-4 py-2 text-black bg-white rounded-full lg:flex">
                 Login
               </button>
@@ -198,7 +198,7 @@ const Navbar = () => {
                 )}
               </div>
             ) : (
-              <Link to="/loginpage">
+              <Link to="/login">
                 <button className="flex px-4 py-2 text-black bg-white rounded-full">
                   Login
                 </button>

@@ -273,18 +273,94 @@ const Visualizer = () => {
   };
 
   const generatePDF = async () => {
-    const doc = new jsPDF();
+    const doc = new jsPDF("p", "mm", "a4");
 
-    // Capture the graph
+    const logo = "../Assests/securedapp-logo-light.svg";
+    const date = new Date().toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    doc.setFillColor(4, 170, 109);
+    doc.rect(0, 0, 50, doc.internal.pageSize.getHeight(), "F");
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const rightRectWidth = pageWidth - 50; // Width of the right section
+
+    doc.setFillColor(255, 255, 255);
+    doc.rect(50, 0, rightRectWidth, doc.internal.pageSize.getHeight(), "F");
+    doc.setFontSize(10);
+    doc.setFont("times", "bold");
+    doc.setTextColor(100, 100, 100);
+
+    doc.text("SecureDapp", 185, 275);
+    doc.setFont("times", "normal");
+    doc.text(
+      "235, 2nd & 3rd Floor, 13th Cross Rd, Indira Nagar II Stage,",
+      120,
+      280,
+      null,
+      null,
+      "left"
+    );
+    doc.text(
+      "Hoysala Nagar, Indiranagar, Bengaluru, Karnataka 560038",
+      120,
+      285,
+      null,
+      null,
+      "left"
+    );
+    doc.text("hello@securedapp.in", 120, 290, null, null, "left");
+
+    doc.setFontSize(12);
+    doc.text(date, 170, 140);
+    doc.setFontSize(50);
+    doc.addImage(logo, "JPEG", 89, 108, 15, 15);
+    doc.text("SecureDApp", 105, 120);
+    doc.line(50, 0, 50, 300);
+
+    // Second page onwards
+    doc.addPage();
+    doc.setFontSize(10);
+    doc.setFont("times", "bold");
+    doc.setTextColor(100, 100, 100);
+    doc.text(date, 175, 275);
+    doc.text("SecureDapp", 10, 275);
+    doc.setFont("times", "normal");
+    doc.text(
+      "235, 2nd & 3rd Floor, 13th Cross Rd, Indira Nagar II Stage,",
+      10,
+      280,
+      null,
+      null,
+      "left"
+    );
+    doc.text(
+      "Hoysala Nagar, Indiranagar, Bengaluru, Karnataka 560038",
+      10,
+      285,
+      null,
+      null,
+      "left"
+    );
+    doc.text("hello@securedapp.in", 10, 290, null, null, "left");
+
+    doc.setFontSize(18); // Change font size to 18
+    doc.setFont("times", "bold"); // Set font to bold
+    doc.text("SecureTrace Visualizer", 75, 20); // Adjust the coordinates
+    doc.setDrawColor(4, 170, 109); // RGB values for green
+    doc.line(10, 25, 200, 25);
+    doc.line(10, 270, 200, 270);
+
     const graphElement = document.getElementById("cy");
     if (graphElement) {
       console.log("Graph element found");
       await new Promise((resolve) => setTimeout(resolve, 500)); // Wait for the graph to render
-      const graphCanvas = await html2canvas(graphElement, { scale: 2 });
+      const graphCanvas = await html2canvas(graphElement, { scale: 8 });
       const graphImage = graphCanvas.toDataURL("image/png");
 
-      // Add the graph image to the PDF
-      doc.addImage(graphImage, "PNG", 10, 10, 190, 100);
+      doc.addImage(graphImage, "PNG", 0, 100, 210, 100);
       doc.addPage();
     } else {
       console.error("Graph element not found");
@@ -302,21 +378,153 @@ const Visualizer = () => {
       const tableElement = document.getElementById("table-container");
       if (tableElement) {
         console.log(`Table element found for page ${page}`);
-        const tableCanvas = await html2canvas(tableElement, { scale: 2 });
+        const tableCanvas = await html2canvas(tableElement, {
+          scale: 2,
+          useCORS: true,
+        });
         const tableImage = tableCanvas.toDataURL("image/png");
 
-        if (page > 1) {
-          doc.addPage();
+        if (page % 2 === 1) {
+          if (page > 1) {
+            doc.addPage();
+          }
+          doc.setFontSize(10);
+          doc.setFont("times", "bold");
+          doc.setTextColor(100, 100, 100);
+          doc.text(date, 175, 275);
+          doc.text("SecureDapp", 10, 275);
+          doc.setFont("times", "normal");
+          doc.text(
+            "235, 2nd & 3rd Floor, 13th Cross Rd, Indira Nagar II Stage,",
+            10,
+            280,
+            null,
+            null,
+            "left"
+          );
+          doc.text(
+            "Hoysala Nagar, Indiranagar, Bengaluru, Karnataka 560038",
+            10,
+            285,
+            null,
+            null,
+            "left"
+          );
+          doc.text("hello@securedapp.in", 10, 290, null, null, "left");
+
+          doc.setFontSize(18); // Change font size to 18
+          doc.setFont("times", "bold"); // Set font to bold
+          doc.text("SecureTrace Transaction History", 65, 20); // Adjust the coordinates
+          doc.setDrawColor(4, 170, 109); // RGB values for green
+          doc.line(10, 25, 200, 25);
+          doc.line(10, 270, 200, 270);
+
+          doc.addImage(tableImage, "PNG", 10, 30, 190, 115);
+        } else {
+          doc.addImage(tableImage, "PNG", 10, 150, 190, 115);
         }
-        doc.addImage(tableImage, "PNG", 10, 10, 190, 100);
       } else {
         console.error("Table element not found");
         return;
       }
     }
 
+    doc.addPage();
+    doc.setFontSize(18);
+    doc.setFont("times", "bold"); // Set font to bold
+    doc.text("Disclaimer", 82, 35);
+
+    const disclaimerData = [
+      [
+        "Purpose",
+        "This audit report is provided for informational purposes only",
+      ],
+      [
+        "Scope",
+        "The audit was performed based on the state of the software at the time of the audit and may not reflect its current state or any subsequent changes.",
+      ],
+      [
+        "Limitations",
+        "While every effort has been made to ensure the accuracy and completeness of this report, no guarantee is made that all vulnerabilities or issues have been identified. Security audits do not guarantee complete system security.",
+      ],
+      [
+        "Recommendations",
+        "The recommendations provided in this report are based on the best judgment of SecureDApp's security professionals. Implementation of these recommendations is at the discretion of the software's maintainers.",
+      ],
+      [
+        "Responsibility",
+        "It remains the responsibility of the software's maintainers and users to ensure its security and proper functionality. SecureDApp does not accept any liability for any damage or loss caused due to overlooked vulnerabilities or misinterpretations in this report.",
+      ],
+    ];
+
+    doc.autoTable({
+      head: [["Topic", "Description"]],
+      body: disclaimerData,
+      startY: 40,
+      styles: { fillColor: [211, 211, 211] },
+      headStyles: { fillColor: [4, 170, 109] },
+    });
+
+    doc.setFontSize(18);
+    doc.setFont("times", "bold"); // Set font to bold
+    doc.text("Contact Us", 82, doc.previousAutoTable.finalY + 20);
+
+    const contactData = [
+      ["Email", "hello@securedapp.in"],
+      ["Phone", "9606015868"],
+      [
+        "Address",
+        "SecureDApp Solutions Pvt. Ltd. 235, 2nd & 3rd Floor,13th Cross Rd, Indira Nagar II Stage,Hoysala Nagar, Indiranagar, Bengaluru, Karnataka 560038",
+      ],
+      ["Website", "securedapp.io"],
+      ["Business Hours", "Monday to Friday, 9 AM - 6 PM IST"],
+    ];
+
+    doc.autoTable({
+      head: [["", ""]],
+      body: contactData,
+      startY: doc.previousAutoTable.finalY + 25,
+      styles: { fillColor: [211, 211, 211] },
+      headStyles: { fillColor: [4, 170, 109] },
+    });
+
+    doc.addImage(logo, "JPEG", 10, 11, 10, 10);
+    doc.setFontSize(13);
+    doc.setFont("times", "bold");
+    doc.text("SecureDApp", 21, 19);
+    doc.text(date, 170, 20);
+    doc.setDrawColor(0, 128, 0);
+    doc.line(10, 25, 200, 25);
+    doc.setFontSize(10);
+    doc.line(10, 270, 200, 270);
+    doc.setFontSize(10);
+    doc.setFont("times", "bold");
+    doc.setTextColor(100, 100, 100);
+    doc.text(date, 175, 275);
+    doc.text("SecureDapp", 10, 275);
+    doc.setFont("times", "normal");
+    doc.text(
+      "235, 2nd & 3rd Floor, 13th Cross Rd, Indira Nagar II Stage,",
+      10,
+      280,
+      null,
+      null,
+      "left"
+    );
+    doc.text(
+      "Hoysala Nagar, Indiranagar, Bengaluru, Karnataka 560038",
+      10,
+      285,
+      null,
+      null,
+      "left"
+    );
+    doc.text("hello@securedapp.in", 10, 290, null, null, "left");
+
     // Save the PDF
-    doc.save("graph_and_table.pdf");
+    doc.save(
+      "SecureTrace: Advanced AI for Blockchain Investigation & Forensic Analysis.pdf"
+    );
   };
 
   const handleGeneratePDFClick = () => {
