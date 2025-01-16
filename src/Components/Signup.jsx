@@ -33,7 +33,7 @@ function Signup() {
       toast.error("Please enter a valid email address.");
       setLoading(false);
     } else {
-      navigate("/login1", { state: { email } });
+      navigate("/signup1", { state: { email } });
     }
   }
 
@@ -99,6 +99,16 @@ function Signup() {
           <span className="text-lg text-black logo">SecureTrace</span>
         </div>
       </div>
+      <ToastContainer
+                    position="top-center"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    theme="colored"
+                  />
     </div>
   );
 }

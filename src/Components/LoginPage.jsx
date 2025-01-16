@@ -26,7 +26,7 @@ function Login() {
       const u_password = event.target.password.value;
       if (u_name === "" || u_password === "") {
         //setErrorMessage("Enter the userame and password");
-        showErrorAlert("Invalid email or password.");
+        toast.error("Invalid email or password.");
       } else {
         const response = await axios.post(`/login_securewatch`, {
           email,
@@ -175,6 +175,16 @@ function Login() {
           <span className="text-lg text-black logo">SecureTrace</span>
         </div>
       </div>
+      <ToastContainer
+              position="top-center"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              theme="colored"
+            />
     </div>
   );
 }

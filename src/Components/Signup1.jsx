@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import { showErrorAlert, showSuccessAlert } from "./toastifyalert";
-import { baseUrl } from "../Constants/data";
-import NewNavbar2 from "./NewNavabr2";
+// import { showErrorAlert, showSuccessAlert } from "./toastifyalert";
+import { toast, ToastContainer } from "react-toastify";
+// import { baseUrl } from "../Constants/data";
+import NewNavbar2 from "./NewNavbar2";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { FaGithub } from "react-icons/fa";
-import { IoIosArrowForward } from "react-icons/io";
-import Google from "../images/google.png";
-import Metamask from "../images/metamask-icon.png";
-import SecureDapp from "../images/SecureDapp.png";
+// import { FaGithub } from "react-icons/fa";
+// import { IoIosArrowForward } from "react-icons/io";
+// import Google from "../images/google.png";
+// import Metamask from "../images/metamask-icon.png";
+import SecureDapp from "../Assests/SecureDapp.jpeg";
 
 function Signup1() {
   const [loading, setLoading] = useState(false);
@@ -42,9 +43,14 @@ function Signup1() {
         !u_password
       ) {
         // setErrorMessage("Enter the Email, userame and password");
-        showErrorAlert("Enter the Email, userame and password");
-      } else {
-        const response = await axios.post(`${baseUrl}/signup_securewatch`, {
+        toast.error("Enter the Email, userame and password");
+      // } else {
+      //   const response = await axios.post(`${baseUrl}/signup_securewatch`, {
+      //     name: u_name,
+      //     email,
+      //     password: u_password,
+        //   });
+        const response = await axios.post(`/signup_securewatch`, {
           name: u_name,
           email,
           password: u_password,
@@ -168,9 +174,19 @@ function Signup1() {
         </div>
         <div className="flex items-center justify-center gap-1 mx-auto mt-5 ">
           <img src={SecureDapp} alt="SecureDapp logo" className="w-14" />
-          <span className="text-lg text-black logo">SecureDapp</span>
+          <span className="text-lg text-black logo">SecureTrace</span>
         </div>
       </div>
+      <ToastContainer
+                    position="top-center"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    theme="colored"
+                  />
     </div>
   );
 }
