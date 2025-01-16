@@ -529,8 +529,11 @@ const Visualizer = () => {
   };
 
   const handleGeneratePDFClick = () => {
-    generatePDF();
     setLoading(true);
+    setTimeout(() => {
+      generatePDF();
+      setLoading(false);
+    }, 10000);
   };
 
   const togglePopup = () => {
