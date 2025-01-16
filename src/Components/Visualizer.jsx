@@ -11,6 +11,7 @@ import { useParams } from "react-router-dom";
 import Footer from "./Footer";
 // import Navbar from './Navbar';
 import cytoscape from "cytoscape";
+import "jspdf-autotable";
 
 const Visualizer = () => {
   const location = useLocation();
@@ -528,8 +529,11 @@ const Visualizer = () => {
   };
 
   const handleGeneratePDFClick = () => {
-    generatePDF();
     setLoading(true);
+    setTimeout(() => {
+      generatePDF();
+      setLoading(false);
+    }, 10000);
   };
 
   const togglePopup = () => {
