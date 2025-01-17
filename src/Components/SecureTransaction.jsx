@@ -40,6 +40,17 @@ const SecureTransaction = () => {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
 
+    const jwtToken = localStorage.getItem("jwt_token");
+    
+        if (!jwtToken) {
+          toast.error("You need to log in to access this feature.");
+          setTimeout(() => {
+            navigate("/"); 
+          }, 4000);
+          return;
+        }
+        console.log("Search submitted!");
+
     if (!inputValue) {
       toast.error("Please enter a valid input.");
       return;

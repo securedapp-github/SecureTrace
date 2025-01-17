@@ -9,7 +9,7 @@ export default function NewNavbar({ email }) {
   };
 
   return (
-    <div className="z-50 flex items-center justify-between w-full px-4 py-5 bg-white dark:bg-[#001938] relative">
+    <div className=" z-50 flex items-center justify-between w-full px-4 py-5 bg-white dark:bg-[#001938] relative">
       <h1 className="text-xl text-black dark:text-white sm:text-3xl">
         SecureTrace
       </h1>
