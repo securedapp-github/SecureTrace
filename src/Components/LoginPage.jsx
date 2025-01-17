@@ -3,6 +3,8 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
+import NewNavbar from "./NewNavbar2";
+import Footer from "./Footer";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -60,7 +62,14 @@ function Login() {
         console.log("JWT Token:", response.data.token);
         localStorage.setItem("jwt_token", response.data.token);
 
+        // Store email in localStorage
+        localStorage.setItem("userEmail", email);
+
+        // Dispatch a custom event to notify the Navbar
+        window.dispatchEvent(new Event("userLogin"));
+
         toast.success("OTP verified successfully!");
+
         setTimeout(() => {
           navigate("/");
         }, 1000);
@@ -84,76 +93,80 @@ function Login() {
   };
 
   return (
-    <div className="font-poppin bg-[#FAFAFA] min-h-screen pb-10">
-      <div className="w-full h-full px-2 pt-20 sm:px-5 md:px-10 lg:px-20 sm:pt-32 md:pt-40">
-        <div className="flex flex-wrap justify-center w-full p-4 py-10 bg-white shadow rounded-2xl">
-          <div className="flex flex-col items-start justify-start w-full h-full gap-4 md:w-1/2 md:px-16">
-            <p className="text-black">Realtime Security</p>
-            <p className="text-2xl text-blue-700">Sign in</p>
-          </div>
-          <div className="flex items-center justify-center w-full py-4 md:w-1/2">
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="flex flex-col gap-6 w-full md:w-[80%] "
-            >
-              <div>
-                <input
-                  id="email"
-                  name="email"
-                  value={email}
-                  type="email"
-                  placeholder="Email"
-                  required
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 md:px-4 py-2.5 md:py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 outline-none transition bg-white"
-                />
-              </div>
-              {!otpSent && (
-                <button
-                  type="button"
-                  onClick={handleSendOtp}
-                  className="px-6 py-2 ml-auto text-sm text-white transition duration-200 bg-blue-600 rounded-lg ms-auto hover:bg-blue-700 md:text-base"
-                >
-                  {loading ? "Sending..." : "Send OTP"}
-                </button>
-              )}
-              {otpSent && (
-                <>
-                  <div>
-                    <input
-                      id="otp"
-                      name="otp"
-                      value={otp}
-                      type="text"
-                      placeholder="Enter OTP"
-                      required
-                      onChange={(e) => setOtp(e.target.value)}
-                      className="w-full px-3 md:px-4 py-2.5 md:py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 outline-none transition bg-white"
-                    />
-                  </div>
+    <div className="bg-white dark:bg-[#001938]">
+      <NewNavbar />
+      <div className="pb-10 shadow-lg min-h-scree font-poppin">
+        <div className="w-full h-full px-2 pt-20 sm:px-5 md:px-10 lg:px-20 sm:pt-32 md:pt-40">
+          <div className="flex flex-wrap justify-center w-full p-4 py-10 bg-white dark:bg-[#001938] shadow-lg rounded-2xl border">
+            <div className="flex flex-col items-start justify-start w-full h-full gap-4 md:w-1/2 md:px-16">
+              <p className="text-2xl text-black dark:text-white">Realtime Security</p>
+              <p className="text-3xl text-green-500">Sign in</p>
+            </div>
+            <div className="flex items-center justify-center w-full py-4 md:w-1/2">
+              <form
+                onSubmit={(e) => e.preventDefault()}
+                className="flex flex-col gap-6 w-full md:w-[80%] "
+              >
+                <div>
+                  <input
+                    id="email"
+                    name="email"
+                    value={email}
+                    type="email"
+                    placeholder="Email"
+                    required
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-3 md:px-4 py-2.5 md:py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 outline-none transition bg-white"
+                  />
+                </div>
+                {!otpSent && (
                   <button
                     type="button"
-                    onClick={handleVerifyOtp}
+                    onClick={handleSendOtp}
                     className="px-6 py-2 ml-auto text-sm text-white transition duration-200 bg-green-600 rounded-lg ms-auto hover:bg-green-700 md:text-base"
                   >
-                    {loading ? "Verifying..." : "Verify OTP"}
+                    {loading ? "Sending..." : "Send OTP"}
                   </button>
-                </>
-              )}
-            </form>
+                )}
+                {otpSent && (
+                  <>
+                    <div>
+                      <input
+                        id="otp"
+                        name="otp"
+                        value={otp}
+                        type="text"
+                        placeholder="Enter OTP"
+                        required
+                        onChange={(e) => setOtp(e.target.value)}
+                        className="w-full px-3 md:px-4 py-2.5 md:py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 outline-none transition bg-white"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleVerifyOtp}
+                      className="px-6 py-2 ml-auto text-sm text-white transition duration-200 bg-green-600 rounded-lg ms-auto hover:bg-green-700 md:text-base"
+                    >
+                      {loading ? "Verifying..." : "Verify OTP"}
+                    </button>
+                  </>
+                )}
+              </form>
+            </div>
           </div>
         </div>
+        <ToastContainer
+          position="top-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          theme="colored"
+        />
       </div>
-      <ToastContainer
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        theme="colored"
-      />
+      <Footer />
     </div>
   );
 }
