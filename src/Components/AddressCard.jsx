@@ -90,9 +90,22 @@ const AddressCard = () => {
     navigator.clipboard.writeText(localStorage.getItem("inputValue"));
     toast.success("You Have Copied the Address");
   };
+  
 
   const handleScanNow = async () => {
     setLoading(true);
+
+    const jwtToken = localStorage.getItem("jwt_token");
+
+    if (!jwtToken) {
+              toast.error("You need to log in to access this feature.");
+              setTimeout(() => {
+                navigate("/"); 
+              }, 4000);
+      return;
+    }
+    console.log("Search submitted!");
+
     setSelectedChain(null);
 
     if (!inputValue) {
@@ -171,6 +184,7 @@ const AddressCard = () => {
     } catch (error) {
       console.error("Error fetching transfers:", error);
     }
+    
   };
 
   useEffect(() => {

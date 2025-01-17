@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Footer from "./Footer";
 import { ToastContainer, toast } from "react-toastify";
@@ -16,6 +17,7 @@ const apiClient = axios.create({
 
 const CreditScore = () => {
   const [activeTab, setActiveTab] = useState("wallet");
+  const navigate = useNavigate();
   const [inputValue, setInputValue] = useState("");
   const [inputChain, setInputChain] = useState("ethereum");
   const [validatedData, setValidatedData] = useState(null);
@@ -24,6 +26,21 @@ const CreditScore = () => {
 
   const fetchWalletCreditScore = async (address, chain) => {
     setIsLoading(true);
+
+    const jwtToken = localStorage.getItem("jwt_token");
+    
+        if (!jwtToken) {
+                  // Display the toast
+                  toast.error("You need to log in to access this feature.");
+        
+                  // Navigate after a short delay
+                  setTimeout(() => {
+                    navigate("/"); // Redirect to the home page if the token is missing
+                  }, 4000);
+          return;
+        }
+        console.log("Search submitted!");
+    
     try {
       const endpoint =
         chain === "algorand"
@@ -72,6 +89,18 @@ const CreditScore = () => {
 
   const fetchSCCreditScore = async (address, chain) => {
     setIsLoading(true);
+
+    const jwtToken = localStorage.getItem("jwt_token");
+    
+        if (!jwtToken) {
+                  toast.error("You need to log in to access this feature.");
+                  setTimeout(() => {
+                    navigate("/");
+                  }, 4000);
+          return;
+        }
+        console.log("Search submitted!");
+
     try {
       const endpoint =
         chain === "algorand" ? "/algo-sc-credit-score" : "/sc-credit-score";

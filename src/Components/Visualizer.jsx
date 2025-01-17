@@ -88,6 +88,18 @@ const Visualizer = () => {
   }, [inputValue, isFromSecureTransaction]);
 
   const handleScanClick = async () => {
+
+    const jwtToken = localStorage.getItem("jwt_token");
+    
+        if (!jwtToken) {
+                  toast.error("You need to log in to access this feature.");
+                  setTimeout(() => {
+                    navigate("/"); 
+                  }, 4000);
+          return;
+        }
+        console.log("Search submitted!");
+    
     const value = formData?.txhash || formData?.address || inputValue;
 
     if (!value) {
