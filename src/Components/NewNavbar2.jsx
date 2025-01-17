@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BsHeadset } from "react-icons/bs";
+import { BsHeadset, BsTelephone, BsEnvelope } from "react-icons/bs";
 
 export default function NewNavbar({ email }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -30,7 +30,9 @@ export default function NewNavbar({ email }) {
           {isDropdownOpen && (
             <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#001938] shadow-lg rounded-lg text-sm">
               <ul className="p-2">
-                <li className="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
+                {/* Phone Number */}
+                <li className="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <BsTelephone className="text-gray-500" />
                   <a
                     href="tel:9606015868"
                     className="block text-black dark:text-white"
@@ -38,7 +40,9 @@ export default function NewNavbar({ email }) {
                     9606015868
                   </a>
                 </li>
-                <li className="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
+                {/* Email */}
+                <li className="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <BsEnvelope className="text-gray-500" />
                   <a
                     href="mailto:hello@securedapp.in"
                     className="block text-black dark:text-white"
