@@ -7,8 +7,6 @@ import LoginPage from "./Components/LoginPage";
 import Navbar from "./Components/Navbar";
 import Footer from "./Components/Footer";
 import CreditScore from "./Components/CreditScore";
-import Signup from "./Components/Signup";
-import Signup1 from "./Components/Signup1";
 // import SecureTransaction from "./Components/SecureTransaction";
 
 
@@ -25,8 +23,6 @@ function App() {
         <Route path="/visualizer/:txHash" component={<Visualizer />} />
         <Route path="/visualizer" element={<Visualizer />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/signup1" element={<Signup1 />} />
         <Route path="/creditscore" element={<CreditScore />} />
       </Routes>
     </Router>
