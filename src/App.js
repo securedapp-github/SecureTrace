@@ -26,7 +26,7 @@ function App() {
 
 function MainLayout() {
   const location = useLocation();
-  const hideNavbar = location.pathname === "/"; // Check if the current path is "/"
+  const hideNavbar = location.pathname === "/";
 
   return (
     <>
