@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import NewNavbar2 from "./NewNavbar2";
-import SecureDapp from "../Assests/SecureDapp.jpeg";
+import SecureDapp from "../Assests/SecureTracelogo.png";
 import { toast, ToastContainer } from "react-toastify";
 
 
@@ -95,8 +95,8 @@ function Login() {
   return (
     <div className="font-poppin bg-[#FAFAFA] dark:bg-[#001938] min-h-screen pb-10 dark:shadow-lg">
       <NewNavbar2 />
-      <div className="w-full h-full px-2 pt-14 sm:px-5 md:px-10 lg:px-20 sm:pt-32 md:pt-28 ">
-        <div className="flex flex-wrap justify-center w-full p-4 py-10 bg-white shadow rounded-2xl dark:border dark:bg-[#001938]">
+      <div className="w-full h-full px-2 pt-20 sm:px-5 md:px-10 lg:px-20 sm:pt-32 md:pt-40">
+        <div className="flex flex-wrap justify-center w-full p-4 py-20 bg-white shadow rounded-2xl dark:border dark:bg-[#001938]">
           <div className="flex flex-col items-start justify-start w-full h-full gap-4 md:w-1/2 md:px-16">
             <p className="font-semibold text-black dark:text-white">
               Blockchain Forensic
@@ -155,7 +155,7 @@ function Login() {
             </form>
           </div>
         </div>
-        <div className="flex items-center justify-center gap-1 mx-auto mt-16 ">
+        <div className="flex items-center justify-center gap-1 mx-auto mt-5">
           <img src={SecureDapp} alt="SecureTrace logo" className="w-14" />
           <span className="text-lg text-black dark:text-white logo">
             SecureTrace

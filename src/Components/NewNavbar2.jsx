@@ -1,24 +1,45 @@
 import React, { useState } from "react";
 import { BsHeadset, BsTelephone, BsEnvelope } from "react-icons/bs";
+import { TbBrightnessUp } from "react-icons/tb";
+import { IoMoonOutline } from "react-icons/io5";
 
 export default function NewNavbar({ email }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
 
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
   };
 
+  const handleDarkModeToggle = () => {
+    setDarkMode((prev) => !prev);
+    document.documentElement.classList.toggle("dark", !darkMode);
+  };
+
   return (
-    <div className=" z-50 flex items-center justify-between w-full px-4 py-5 bg-white dark:bg-[#001938] relative">
-      <h1 className="text-xl text-black dark:text-white sm:text-3xl">
+    <div className="z-50 flex items-center justify-between w-full px-4 py-5 bg-white dark:bg-[#001938] fixed">
+      <h1 className="font-bold text-black lg:text-4xl dark:text-white sm:text-3xl md:text-xl">
         SecureTrace
       </h1>
 
       <div className="flex items-center gap-7">
+        {/* Dark Mode Toggle */}
+        <button
+          className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+          onClick={handleDarkModeToggle}
+          aria-label="Toggle Dark Mode"
+        >
+          {darkMode ? (
+            <TbBrightnessUp className="text-2xl text-black dark:text-white" />
+          ) : (
+            <IoMoonOutline className="text-2xl text-black dark:text-white" />
+          )}
+        </button>
+
         {/* Headset Button */}
         <div className="relative">
           <button
-            className="p-0"
+            className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
             onClick={toggleDropdown}
             aria-expanded={isDropdownOpen}
             aria-label="Toggle Support Dropdown"
