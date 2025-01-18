@@ -2,38 +2,38 @@ import React, { useState } from "react";
 import { BsHeadset, BsTelephone, BsEnvelope } from "react-icons/bs";
 import { TbBrightnessUp } from "react-icons/tb";
 import { IoMoonOutline } from "react-icons/io5";
+import { useTheme } from "./ThemeContext";
 
 export default function NewNavbar({ email }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const { darkMode, setModeDark, setModeLight } = useTheme();
 
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
   };
 
-  const handleDarkModeToggle = () => {
-    setDarkMode((prev) => !prev);
-    document.documentElement.classList.toggle("dark", !darkMode);
+  const toggleTheme = () => {
+    if (darkMode) {
+      setModeLight();
+    } else {
+      setModeDark();
+    }
   };
 
   return (
     <div className="z-50 flex items-center justify-between w-full px-4 py-5 bg-white dark:bg-[#001938] fixed">
-      <h1 className="font-bold text-black lg:text-4xl dark:text-white sm:text-3xl md:text-xl">
+      <h1 className="font-bold text-black lg:text-4xl dark:text-white sm:text-4xl md:text-4xl">
         SecureTrace
       </h1>
 
       <div className="flex items-center gap-7">
         {/* Dark Mode Toggle */}
         <button
-          className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
-          onClick={handleDarkModeToggle}
+          className="p-2 text-2xl rounded-full dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
+          onClick={toggleTheme}
           aria-label="Toggle Dark Mode"
         >
-          {darkMode ? (
-            <TbBrightnessUp className="text-2xl text-black dark:text-white" />
-          ) : (
-            <IoMoonOutline className="text-2xl text-black dark:text-white" />
-          )}
+          {darkMode ? <TbBrightnessUp /> : <IoMoonOutline />}
         </button>
 
         {/* Headset Button */}

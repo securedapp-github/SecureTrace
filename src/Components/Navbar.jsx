@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { IoMoonOutline } from "react-icons/io5";
 import { TbBrightnessUp } from "react-icons/tb";
 import { useTheme } from './ThemeContext';
+import { IoChevronDown } from "react-icons/io5";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -109,14 +110,16 @@ const Navbar = () => {
             <>
               <button
                 onClick={toggleLogout}
-                className="px-4 py-2 text-black bg-white rounded-full"
+                className="flex items-center px-4 py-2 text-black bg-white rounded-full"
               >
                 {userEmail}
+                <IoChevronDown className="ml-2 text-lg" />
               </button>
+
               {showLogout && (
-                <div className="absolute right-0 py-2 mt-5 text-black bg-white rounded-md shadow-lg top-full">
+                <div className="absolute right-0 py-2 mt-24 text-black bg-white rounded-md shadow-lg hover:bg-gray-200">
                   <button
-                    className="block w-full px-3 py-1 text-left hover:bg-gray-200"
+                    className="block w-full px-3 py-1 text-left"
                     onClick={handleLogout}
                   >
                     Logout
@@ -150,7 +153,11 @@ const Navbar = () => {
       {/* Mobile Menu */}
       {isOpen && (
         <div className="absolute top-16 left-0 right-0 bg-[#303030] mt-6 mx-4 text-white flex flex-col items-center space-y-4 py-4 rounded-lg lg:hidden">
-          <Link to="/dashboard" className="hover:text-gray-400" onClick={toggleMenu}>
+          <Link
+            to="/dashboard"
+            className="hover:text-gray-400"
+            onClick={toggleMenu}
+          >
             Dashboard
           </Link>
           <Link
