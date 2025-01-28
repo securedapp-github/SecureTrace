@@ -449,24 +449,24 @@ const Visualizer = () => {
 
     const disclaimerData = [
       [
-        "Purpose",
-        "This audit report is provided for informational purposes only",
+        "Intellectual Property",
+        "SecureTrace is the exclusive intellectual property of SecureDapp. Unauthorized use, reproduction, or distribution is strictly prohibited.",
       ],
       [
-        "Scope",
-        "The audit was performed based on the state of the software at the time of the audit and may not reflect its current state or any subsequent changes.",
+        "Intended Use",
+        "SecureTrace is designed for fraud detection and security analysis. Any other use is not authorized and may result in legal action.",
       ],
       [
-        "Limitations",
-        "While every effort has been made to ensure the accuracy and completeness of this report, no guarantee is made that all vulnerabilities or issues have been identified. Security audits do not guarantee complete system security.",
+        "Accuracy and Liability",
+        "Information provided by SecureTrace is for reference only. SecureDapp does not guarantee accuracy and is not liable for any decisions made based on this information.",
       ],
       [
-        "Recommendations",
-        "The recommendations provided in this report are based on the best judgment of SecureDApp's security professionals. Implementation of these recommendations is at the discretion of the software's maintainers.",
+        "Ethical and Legal Compliance",
+        "Users must ensure their use of SecureTrace complies with all applicable laws and ethical standards. SecureDapp is not responsible for misuse.",
       ],
       [
-        "Responsibility",
-        "It remains the responsibility of the software's maintainers and users to ensure its security and proper functionality. SecureDApp does not accept any liability for any damage or loss caused due to overlooked vulnerabilities or misinterpretations in this report.",
+        "No Guaranteed Outcomes",
+        "SecureTrace aids in security efforts but does not guarantee specific results. Users are responsible for applying findings appropriately.",
       ],
     ];
 
