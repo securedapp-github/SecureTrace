@@ -392,10 +392,12 @@ const Visualizer = () => {
       if (tableElement) {
         console.log(`Table element found for page ${page}`);
         const tableCanvas = await html2canvas(tableElement, {
-          scale: 2,
+          scale: 3,
           useCORS: true,
+          allowTaint: true,
         });
         const tableImage = tableCanvas.toDataURL("image/png");
+        // const tableImage = await domtoimage.toPng(tableElement);
 
         if (page % 2 === 1) {
           if (page > 1) {
@@ -536,7 +538,7 @@ const Visualizer = () => {
 
     // Save the PDF
     doc.save(
-      "SecureTrace: Advanced AI for Blockchain Investigation & Forensic Analysis.pdf"
+      "SecureTrace: Advanced AI for Blockchain Investigation & Forensic Analysis.pdf"
     );
   };
 
