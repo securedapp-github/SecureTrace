@@ -1595,7 +1595,7 @@ const Visualizer = () => {
                               className="border-t h-12 text-center bg-red-600 odd:bg-[#F4F4F4] even:bg-white px-2 py-2"
                             >
                               <td className="flex items-center justify-center px-4 mt-2">
-                                <img src={logo} alt={tokenName} />
+                                <img src={logo} alt={tokenName} className="h-9"/>
                               </td>
                               <td className="px-4 text-green-500 me-3">
                                 {!isAlgorand
