@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 // import * as d3 from 'd3';
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import { isAddress } from "ethers";
 import axios from "axios";
 import { DevUrl } from "../Constants";
@@ -12,6 +11,7 @@ import Footer from "./Footer";
 // import Navbar from './Navbar';
 import cytoscape from "cytoscape";
 import "jspdf-autotable";
+import domtoimage from "dom-to-image";
 
 const Visualizer = () => {
   const location = useLocation();
@@ -298,7 +298,7 @@ const Visualizer = () => {
     doc.setFillColor(4, 170, 109);
     doc.rect(0, 0, 50, doc.internal.pageSize.getHeight(), "F");
     const pageWidth = doc.internal.pageSize.getWidth();
-    const rightRectWidth = pageWidth - 50; // Width of the right section
+    const rightRectWidth = pageWidth - 50;
 
     doc.setFillColor(255, 255, 255);
     doc.rect(50, 0, rightRectWidth, doc.internal.pageSize.getHeight(), "F");
@@ -306,6 +306,7 @@ const Visualizer = () => {
     doc.setFont("times", "bold");
     doc.setTextColor(100, 100, 100);
 
+    // First page header and footer setup
     doc.text("SecureDapp", 185, 275);
     doc.setFont("times", "normal");
     doc.text(
@@ -333,7 +334,7 @@ const Visualizer = () => {
     doc.text("SecureDApp", 105, 120);
     doc.line(50, 0, 50, 300);
 
-    // Second page onwards
+    // Second page setup
     doc.addPage();
     doc.setFontSize(10);
     doc.setFont("times", "bold");
@@ -359,84 +360,102 @@ const Visualizer = () => {
     );
     doc.text("hello@securedapp.in", 10, 290, null, null, "left");
 
-    doc.setFontSize(18); // Change font size to 18
-    doc.setFont("times", "bold"); // Set font to bold
-    doc.text("SecureTrace Visualizer", 75, 20); // Adjust the coordinates
-    doc.setDrawColor(4, 170, 109); // RGB values for green
+    doc.setFontSize(18);
+    doc.setFont("times", "bold");
+    doc.text("SecureTrace Visualizer", 75, 20);
+    doc.setDrawColor(4, 170, 109);
     doc.line(10, 25, 200, 25);
     doc.line(10, 270, 200, 270);
 
+    // Graph capture using dom2image
     const graphElement = document.getElementById("cy");
     if (graphElement) {
       console.log("Graph element found");
-      await new Promise((resolve) => setTimeout(resolve, 500)); // Wait for the graph to render
-      const graphCanvas = await html2canvas(graphElement, { scale: 8 });
-      const graphImage = graphCanvas.toDataURL("image/png");
-
-      doc.addImage(graphImage, "PNG", 0, 100, 210, 100);
-      doc.addPage();
+      try {
+        const graphImage = await domtoimage.toPng(graphElement, {
+          quality: 1,
+          scale: 2,
+          bgcolor: "#ffffff",
+        });
+        doc.addImage(graphImage, "PNG", 0, 100, 210, 100);
+        doc.addPage();
+      } catch (error) {
+        console.error("Error capturing graph:", error);
+        return;
+      }
     } else {
       console.error("Graph element not found");
       return;
     }
 
-    // Capture each page of the table
     const totalPages = Math.ceil(transfers.length / rowsPerPage1);
     for (let page = 1; page <= totalPages; page++) {
       await new Promise((resolve) => {
         setCurrentPage1(page);
-        setTimeout(resolve, 500); // Wait for the table to render
+        setTimeout(resolve, 1000); // Wait for table render
       });
 
       const tableElement = document.getElementById("table-container");
       if (tableElement) {
+        // Ensure full table width and no overflow issues
+        tableElement.style.width = "auto";
+        tableElement.style.maxWidth = "none";
+
         console.log(`Table element found for page ${page}`);
-        const tableCanvas = await html2canvas(tableElement, {
-          scale: 3,
-          useCORS: true,
-          allowTaint: true,
-        });
-        const tableImage = tableCanvas.toDataURL("image/png");
-        // const tableImage = await domtoimage.toPng(tableElement);
+        try {
+          // Capture the table with a higher resolution for better visibility
+          const tableImage = await domtoimage.toPng(tableElement, {
+            quality: 1,
+            scale: 6, // Increased scale for better resolution (adjust as needed)
+            bgcolor: "#ffffff",
+            width: tableElement.scrollWidth + 140, // Increased width to accommodate full table width
+            height: tableElement.scrollHeight + 100, // Increased height to ensure full table height is captured
+          });
 
-        if (page % 2 === 1) {
-          if (page > 1) {
-            doc.addPage();
+          if (page % 2 === 1) {
+            if (page > 1) {
+              doc.addPage();
+            }
+            // Add header for odd pages
+            doc.setFontSize(10);
+            doc.setFont("times", "bold");
+            doc.setTextColor(100, 100, 100);
+            doc.text(date, 175, 275);
+            doc.text("SecureDapp", 10, 275);
+            doc.setFont("times", "normal");
+            doc.text(
+              "235, 2nd & 3rd Floor, 13th Cross Rd, Indira Nagar II Stage,",
+              10,
+              280,
+              null,
+              null,
+              "left"
+            );
+            doc.text(
+              "Hoysala Nagar, Indiranagar, Bengaluru, Karnataka 560038",
+              10,
+              285,
+              null,
+              null,
+              "left"
+            );
+            doc.text("hello@securedapp.in", 10, 290, null, null, "left");
+
+            doc.setFontSize(18);
+            doc.setFont("times", "bold");
+            doc.text("SecureTrace Transaction History", 65, 20);
+            doc.setDrawColor(4, 170, 109);
+            doc.line(10, 25, 200, 25);
+            doc.line(10, 270, 200, 270);
+
+            // Adjust table positioning and image size for full capture
+            doc.addImage(tableImage, "PNG", -5, 30, 200, 120); // Adjusted size to fit the full width and height
+          } else {
+            doc.addImage(tableImage, "PNG", -5, 150, 200, 120); // Same adjustment for even pages
           }
-          doc.setFontSize(10);
-          doc.setFont("times", "bold");
-          doc.setTextColor(100, 100, 100);
-          doc.text(date, 175, 275);
-          doc.text("SecureDapp", 10, 275);
-          doc.setFont("times", "normal");
-          doc.text(
-            "235, 2nd & 3rd Floor, 13th Cross Rd, Indira Nagar II Stage,",
-            10,
-            280,
-            null,
-            null,
-            "left"
-          );
-          doc.text(
-            "Hoysala Nagar, Indiranagar, Bengaluru, Karnataka 560038",
-            10,
-            285,
-            null,
-            null,
-            "left"
-          );
-          doc.text("hello@securedapp.in", 10, 290, null, null, "left");
-
-          doc.setFontSize(18); // Change font size to 18
-          doc.setFont("times", "bold"); // Set font to bold
-          doc.text("SecureTrace Transaction History", 65, 20); // Adjust the coordinates
-          doc.setDrawColor(4, 170, 109); // RGB values for green
-          doc.line(10, 25, 200, 25);
-          doc.line(10, 270, 200, 270);
-
-          doc.addImage(tableImage, "PNG", 10, 30, 190, 115);
-        } else {
-          doc.addImage(tableImage, "PNG", 10, 150, 190, 115);
+        } catch (error) {
+          console.error(`Error capturing table page ${page}:`, error);
+          return;
         }
       } else {
         console.error("Table element not found");
@@ -444,9 +463,10 @@ const Visualizer = () => {
       }
     }
 
+    // Disclaimer page
     doc.addPage();
     doc.setFontSize(18);
-    doc.setFont("times", "bold"); // Set font to bold
+    doc.setFont("times", "bold");
     doc.text("Disclaimer", 82, 35);
 
     const disclaimerData = [
@@ -480,8 +500,9 @@ const Visualizer = () => {
       headStyles: { fillColor: [4, 170, 109] },
     });
 
+    // Contact section
     doc.setFontSize(18);
-    doc.setFont("times", "bold"); // Set font to bold
+    doc.setFont("times", "bold");
     doc.text("Contact Us", 82, doc.previousAutoTable.finalY + 20);
 
     const contactData = [
@@ -503,6 +524,7 @@ const Visualizer = () => {
       headStyles: { fillColor: [4, 170, 109] },
     });
 
+    // Final page header/footer
     doc.addImage(logo, "JPEG", 10, 11, 10, 10);
     doc.setFontSize(13);
     doc.setFont("times", "bold");
@@ -510,7 +532,6 @@ const Visualizer = () => {
     doc.text(date, 170, 20);
     doc.setDrawColor(0, 128, 0);
     doc.line(10, 25, 200, 25);
-    doc.setFontSize(10);
     doc.line(10, 270, 200, 270);
     doc.setFontSize(10);
     doc.setFont("times", "bold");
