@@ -395,7 +395,7 @@ const Visualizer = () => {
     for (let page = 1; page <= totalPages; page++) {
       await new Promise((resolve) => {
         setCurrentPage1(page);
-        setTimeout(resolve, 5000); // Wait for table render
+        setTimeout(resolve, 500); // Wait for table render
       });
 
       const tableElement = document.getElementById("table-container");
