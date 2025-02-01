@@ -409,8 +409,8 @@ const Visualizer = () => {
             quality: 1,
             scale: 6, // Increased scale for better resolution (adjust as needed)
             bgcolor: "#ffffff",
-            width: tableElement.scrollWidth + 50, // Increased width to accommodate full table width
-            height: tableElement.scrollHeight + 50, // Increased height to ensure full table height is captured
+            width: tableElement.scrollWidth + 80, // Increased width to accommodate full table width
+            height: tableElement.scrollHeight + 80, // Increased height to ensure full table height is captured
           });
 
           if (page % 2 === 1) {
