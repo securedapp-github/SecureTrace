@@ -407,10 +407,10 @@ const Visualizer = () => {
           // Capture the table with a higher resolution for better visibility
           const tableImage = await domtoimage.toPng(tableElement, {
             quality: 1,
-            scale: 8, // Further increased scale for more resolution
+            scale: 6, // Increased scale for better resolution (adjust as needed)
             bgcolor: "#ffffff",
-            width: tableElement.scrollWidth + 100, // Increased width to accommodate full table width
-            height: tableElement.scrollHeight + 100, // Increased height to ensure full table height is captured
+            width: tableElement.scrollWidth + 50, // Increased width to accommodate full table width
+            height: tableElement.scrollHeight + 50, // Increased height to ensure full table height is captured
           });
 
           if (page % 2 === 1) {
@@ -450,9 +450,9 @@ const Visualizer = () => {
             doc.line(10, 270, 200, 270);
 
             // Adjust table positioning and image size for full capture
-            doc.addImage(tableImage, "PNG", -15, 35, 250, 160); // Increased size for better fit
+            doc.addImage(tableImage, "PNG", -15, 35, 220, 140); // Adjusted size to fit the full width and height
           } else {
-            doc.addImage(tableImage, "PNG", -15, 150, 250, 160); // Same adjustment for even pages
+            doc.addImage(tableImage, "PNG", -15, 150, 220, 140); // Same adjustment for even pages
           }
         } catch (error) {
           console.error(`Error capturing table page ${page}:`, error);
