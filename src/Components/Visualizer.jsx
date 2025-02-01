@@ -393,20 +393,24 @@ const Visualizer = () => {
     for (let page = 1; page <= totalPages; page++) {
       await new Promise((resolve) => {
         setCurrentPage1(page);
-        setTimeout(resolve, 500); // Wait for table render
+        setTimeout(resolve, 1000); // Wait for table render
       });
 
       const tableElement = document.getElementById("table-container");
       if (tableElement) {
+        // Ensure full table width and no overflow issues
+        tableElement.style.width = "auto";
+        tableElement.style.maxWidth = "none";
+
         console.log(`Table element found for page ${page}`);
         try {
-          // Increase table width and capture entire content
+          // Capture the table with a higher resolution for better visibility
           const tableImage = await domtoimage.toPng(tableElement, {
             quality: 1,
-            scale: 3, // Increase capture resolution
+            scale: 8, // Further increased scale for more resolution
             bgcolor: "#ffffff",
-            width: tableElement.scrollWidth, // Use scroll width to capture full table
-            height: tableElement.scrollHeight,
+            width: tableElement.scrollWidth + 100, // Increased width to accommodate full table width
+            height: tableElement.scrollHeight + 100, // Increased height to ensure full table height is captured
           });
 
           if (page % 2 === 1) {
@@ -445,10 +449,10 @@ const Visualizer = () => {
             doc.line(10, 25, 200, 25);
             doc.line(10, 270, 200, 270);
 
-            // Ensure full table width is captured and aligned to the left
-            doc.addImage(tableImage, "PNG", 0, 30, 200, 115);
+            // Adjust table positioning and image size for full capture
+            doc.addImage(tableImage, "PNG", -15, 35, 250, 160); // Increased size for better fit
           } else {
-            doc.addImage(tableImage, "PNG", 0, 150, 200, 115);
+            doc.addImage(tableImage, "PNG", -15, 150, 250, 160); // Same adjustment for even pages
           }
         } catch (error) {
           console.error(`Error capturing table page ${page}:`, error);
@@ -459,7 +463,6 @@ const Visualizer = () => {
         return;
       }
     }
-
 
     // Disclaimer page
     doc.addPage();
