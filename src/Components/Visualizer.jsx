@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 // import * as d3 from 'd3';
 import jsPDF from "jspdf";
 import { isAddress } from "ethers";
@@ -8,6 +8,8 @@ import { DevUrl } from "../Constants";
 import btc from "../Assests/Bitcoin.png";
 import { useParams } from "react-router-dom";
 import Footer from "./Footer";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 // import Navbar from './Navbar';
 import cytoscape from "cytoscape";
 import "jspdf-autotable";
@@ -19,6 +21,7 @@ const Visualizer = () => {
     location.state?.inputValue || ""
   );
   const [validationMessage, setValidationMessage] = useState(null);
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const svgRef = useRef(null);
   const [isInputEntered, setIsInputEntered] = useState(false);
@@ -392,7 +395,7 @@ const Visualizer = () => {
     for (let page = 1; page <= totalPages; page++) {
       await new Promise((resolve) => {
         setCurrentPage1(page);
-        setTimeout(resolve, 1000); // Wait for table render
+        setTimeout(resolve, 5000); // Wait for table render
       });
 
       const tableElement = document.getElementById("table-container");
@@ -1718,6 +1721,16 @@ const Visualizer = () => {
       <div className="">
         <Footer />
       </div>
+      <ToastContainer
+              position="top-center"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              theme="colored"
+            />
     </div>
   );
 };
