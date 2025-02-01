@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 // import * as d3 from 'd3';
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import { isAddress } from "ethers";
 import axios from "axios";
 import { DevUrl } from "../Constants";
@@ -409,8 +408,8 @@ const Visualizer = () => {
             quality: 1,
             scale: 6, // Increased scale for better resolution (adjust as needed)
             bgcolor: "#ffffff",
-            width: tableElement.scrollWidth + 80, // Increased width to accommodate full table width
-            height: tableElement.scrollHeight + 80, // Increased height to ensure full table height is captured
+            width: tableElement.scrollWidth + 140, // Increased width to accommodate full table width
+            height: tableElement.scrollHeight + 100, // Increased height to ensure full table height is captured
           });
 
           if (page % 2 === 1) {
@@ -450,9 +449,9 @@ const Visualizer = () => {
             doc.line(10, 270, 200, 270);
 
             // Adjust table positioning and image size for full capture
-            doc.addImage(tableImage, "PNG", -15, 35, 220, 140); // Adjusted size to fit the full width and height
+            doc.addImage(tableImage, "PNG", -5, 30, 200, 120); // Adjusted size to fit the full width and height
           } else {
-            doc.addImage(tableImage, "PNG", -15, 150, 220, 140); // Same adjustment for even pages
+            doc.addImage(tableImage, "PNG", -5, 150, 200, 120); // Same adjustment for even pages
           }
         } catch (error) {
           console.error(`Error capturing table page ${page}:`, error);
