@@ -12,7 +12,6 @@ import Footer from "./Footer";
 // import Navbar from './Navbar';
 import cytoscape from "cytoscape";
 import "jspdf-autotable";
-import domtoimage from "dom-to-image";
 
 const Visualizer = () => {
   const location = useLocation();
@@ -336,8 +335,55 @@ const Visualizer = () => {
     doc.text("SecureDApp", 105, 120);
     doc.line(50, 0, 50, 300);
 
+    // Previous code remains the same until the graph page section...
+
     // Second page - Graph
     doc.addPage();
+    doc.setFontSize(18);
+    doc.setFont("times", "bold");
+    doc.text("SecureTrace Visualizer", 75, 20);
+    doc.setDrawColor(4, 170, 109);
+    doc.line(10, 25, 200, 25);
+
+    // Add input value display with gray background
+    // First draw the gray background rectangle
+    doc.setFillColor(240, 240, 240); // Light gray color
+    doc.rect(10, 30, 190, 12, "F"); // x, y, width, height, 'F' for filled
+
+    // Add input value text
+    doc.setFontSize(16);
+    doc.setFont("times", "bold");
+    doc.setTextColor(0, 0, 0); // Black color for text
+
+    // Calculate text width to center it
+    const text = `Input Value: ${inputValue}`;
+    const textWidth =
+      (doc.getStringUnitWidth(text) * 16) / doc.internal.scaleFactor;
+    const textX = (210 - textWidth) / 2; // Center text
+
+    doc.text(text, textX, 39);
+
+    // Reset text color for rest of the document
+    doc.setTextColor(100, 100, 100);
+
+    // Graph capture
+    const graphElement = document.getElementById("cy");
+    if (graphElement) {
+      try {
+        const graphCanvas = await html2canvas(graphElement, {
+          scale: 2,
+          backgroundColor: "#ffffff",
+          logging: false,
+          useCORS: true,
+        });
+        const graphImage = graphCanvas.toDataURL("image/png");
+        doc.addImage(graphImage, "PNG", 0, 100, 210, 100);
+      } catch (error) {
+        console.error("Error capturing graph:", error);
+      }
+    }
+
+    // Add footer
     doc.setFontSize(10);
     doc.setFont("times", "bold");
     doc.setTextColor(100, 100, 100);
@@ -361,30 +407,7 @@ const Visualizer = () => {
       "left"
     );
     doc.text("hello@securedapp.in", 10, 290, null, null, "left");
-
-    doc.setFontSize(18);
-    doc.setFont("times", "bold");
-    doc.text("SecureTrace Visualizer", 75, 20);
-    doc.setDrawColor(4, 170, 109);
-    doc.line(10, 25, 200, 25);
     doc.line(10, 270, 200, 270);
-
-    // Graph capture
-    const graphElement = document.getElementById("cy");
-    if (graphElement) {
-      try {
-        const graphCanvas = await html2canvas(graphElement, {
-          scale: 2,
-          backgroundColor: "#ffffff",
-          logging: false,
-          useCORS: true,
-        });
-        const graphImage = graphCanvas.toDataURL("image/png");
-        doc.addImage(graphImage, "PNG", 0, 100, 210, 100);
-      } catch (error) {
-        console.error("Error capturing graph:", error);
-      }
-    }
 
     // Validate transfers data
     if (!transfers || !Array.isArray(transfers)) {
@@ -445,7 +468,6 @@ const Visualizer = () => {
       if (currentPageData.length === 0) continue;
 
       // Create table element
-      // Create table element
       const table = document.createElement("table");
       table.style.width = "100%";
       table.style.borderCollapse = "collapse";
@@ -480,8 +502,10 @@ const Visualizer = () => {
 
       // Add data rows with reduced padding
       const tbody = document.createElement("tbody");
-      currentPageData.forEach((transfer) => {
+      currentPageData.forEach((transfer, index) => {
         const row = document.createElement("tr");
+        // Set alternating background colors
+        row.style.backgroundColor = index % 2 === 0 ? "#ffffff" : "#f4f4f4";
         const rowData = [
           transfer.sno,
           transfer.timestamp,
@@ -492,12 +516,13 @@ const Visualizer = () => {
           transfer.tokenPrice,
         ];
 
-        rowData.forEach((cellData, index) => {
+        rowData.forEach((cellData, cellIndex) => {
           const td = document.createElement("td");
-          td.style.padding = "6px"; // Reduced from 8px
+          td.style.padding = "6px";
           td.style.border = "1px solid #ddd";
-          td.style.fontSize = "10px"; // Reduced from 11px
-          td.style.textAlign = index === 0 ? "center" : "left";
+          td.style.fontSize = "10px";
+          td.style.textAlign = cellIndex === 0 ? "center" : "left";
+          td.style.backgroundColor = index % 2 === 0 ? "#ffffff" : "#f4f4f4"; // Ensure consistent background within cells
           td.textContent = cellData;
           row.appendChild(td);
         });
