@@ -59,7 +59,6 @@ const Visualizer = () => {
   const validateWalletAddress = (address) => isAddress(address);
   const validateAlgoAddress = (address) => /^[A-Z2-7]{58}$/.test(address);
   const validateAlgoTransactionId = (id) => /^[A-Z2-7]{52}$/.test(id);
-
   const validateTransactionHash = (hash) => /^0x([A-Fa-f0-9]{64})$/.test(hash);
 
   useEffect(() => {
@@ -287,6 +286,7 @@ const Visualizer = () => {
   };
 
   const generatePDF = async () => {
+  try {
     const doc = new jsPDF("p", "mm", "a4");
 
     const logo = "../Assests/securedapp-logo-light.svg";
@@ -296,6 +296,7 @@ const Visualizer = () => {
       day: "numeric",
     });
 
+    // First page
     doc.setFillColor(4, 170, 109);
     doc.rect(0, 0, 50, doc.internal.pageSize.getHeight(), "F");
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -307,7 +308,7 @@ const Visualizer = () => {
     doc.setFont("times", "bold");
     doc.setTextColor(100, 100, 100);
 
-    // First page header and footer setup
+    // First page header and footer
     doc.text("SecureDapp", 185, 275);
     doc.setFont("times", "normal");
     doc.text(
@@ -335,7 +336,7 @@ const Visualizer = () => {
     doc.text("SecureDApp", 105, 120);
     doc.line(50, 0, 50, 300);
 
-    // Second page setup
+    // Second page - Graph
     doc.addPage();
     doc.setFontSize(10);
     doc.setFont("times", "bold");
@@ -368,100 +369,214 @@ const Visualizer = () => {
     doc.line(10, 25, 200, 25);
     doc.line(10, 270, 200, 270);
 
-    // Graph capture using dom2image
+    // Graph capture
     const graphElement = document.getElementById("cy");
     if (graphElement) {
-      console.log("Graph element found");
       try {
-        const graphImage = await domtoimage.toPng(graphElement, {
-          quality: 1,
+        const graphCanvas = await html2canvas(graphElement, {
           scale: 2,
-          bgcolor: "#ffffff",
+          backgroundColor: "#ffffff",
+          logging: false,
+          useCORS: true,
         });
+        const graphImage = graphCanvas.toDataURL("image/png");
         doc.addImage(graphImage, "PNG", 0, 100, 210, 100);
-        doc.addPage();
       } catch (error) {
         console.error("Error capturing graph:", error);
-        return;
       }
-    } else {
-      console.error("Graph element not found");
-      return;
     }
 
+    // Validate transfers data
+    if (!transfers || !Array.isArray(transfers)) {
+      console.error("Invalid transfers data:", transfers);
+      throw new Error("Invalid or missing transfers data");
+    }
+
+    // Function to safely truncate text
+    const truncateText = (text, maxLength) => {
+      if (!text) return "N/A";
+      return text.length > maxLength
+        ? text.substring(0, maxLength) + "..."
+        : text;
+    };
+
+    // Function to format transfer data
+    const formatTransferData = (transfer, globalIndex) => {
+      if (!transfer) return null;
+
+      return {
+        sno: (globalIndex + 1).toString(),
+        timestamp: transfer.timestamp
+          ? new Date(transfer.timestamp).toLocaleString()
+          : "N/A",
+        from: truncateText(transfer.from || "", 15),
+        to: truncateText(transfer.to || "", 15),
+        value: transfer.value?.toString() || "N/A",
+        tokenName: transfer.tokenName || "N/A",
+        tokenPrice: transfer.tokenPrice
+          ? parseFloat(transfer.tokenPrice).toFixed(2)
+          : "N/A",
+      };
+    };
+
+    // Transaction History Pages
+    const rowsPerPage1 = 10;
     const totalPages = Math.ceil(transfers.length / rowsPerPage1);
+
     for (let page = 1; page <= totalPages; page++) {
-      await new Promise((resolve) => {
-        setCurrentPage1(page);
-        setTimeout(resolve, 1000); // Wait for table render
-      });
-
-      const tableElement = document.getElementById("table-container");
-      if (tableElement) {
-        console.log(`Table element found for page ${page}`);
-        try {
-          // Capture the table with a higher resolution for better visibility
-          const tableImage = await domtoimage.toPng(tableElement, {
-            quality: 1,
-            scale: 6, // Increased scale for better resolution (adjust as needed)
-            bgcolor: "#ffffff",
-            width: tableElement.scrollWidth + 140, // Increased width to accommodate full table width
-            height: tableElement.scrollHeight + 100, // Increased height to ensure full table height is captured
-          });
-
-          if (page % 2 === 1) {
-            if (page > 1) {
-              doc.addPage();
-            }
-            // Add header for odd pages
-            doc.setFontSize(10);
-            doc.setFont("times", "bold");
-            doc.setTextColor(100, 100, 100);
-            doc.text(date, 175, 275);
-            doc.text("SecureDapp", 10, 275);
-            doc.setFont("times", "normal");
-            doc.text(
-              "235, 2nd & 3rd Floor, 13th Cross Rd, Indira Nagar II Stage,",
-              10,
-              280,
-              null,
-              null,
-              "left"
-            );
-            doc.text(
-              "Hoysala Nagar, Indiranagar, Bengaluru, Karnataka 560038",
-              10,
-              285,
-              null,
-              null,
-              "left"
-            );
-            doc.text("hello@securedapp.in", 10, 290, null, null, "left");
-
-            doc.setFontSize(18);
-            doc.setFont("times", "bold");
-            doc.text("SecureTrace Transaction History", 65, 20);
-            doc.setDrawColor(4, 170, 109);
-            doc.line(10, 25, 200, 25);
-            doc.line(10, 270, 200, 270);
-
-            // Adjust table positioning and image size for full capture
-            doc.addImage(tableImage, "PNG", -5, 30, 200, 120); // Adjusted size to fit the full width and height
-          } else {
-            doc.addImage(tableImage, "PNG", -5, 150, 200, 120); // Same adjustment for even pages
-          }
-        } catch (error) {
-          console.error(`Error capturing table page ${page}:`, error);
-          return;
-        }
-      } else {
-        console.error("Table element not found");
-        return;
+      if (page % 2 === 1) {
+        doc.addPage();
+        doc.setFontSize(18);
+        doc.setFont("times", "bold");
+        doc.text("SecureTrace Transaction History", 65, 20);
+        doc.setDrawColor(4, 170, 109);
+        doc.line(10, 25, 200, 25);
       }
+
+      const startIdx = (page - 1) * rowsPerPage1;
+      const endIdx = Math.min(page * rowsPerPage1, transfers.length);
+      const currentPageData = transfers
+        .slice(startIdx, endIdx)
+        .map((transfer, index) =>
+          formatTransferData(transfer, startIdx + index)
+        )
+        .filter(Boolean);
+
+      if (currentPageData.length === 0) continue;
+
+      // Create table element
+      // Create table element
+      const table = document.createElement("table");
+      table.style.width = "100%";
+      table.style.borderCollapse = "collapse";
+      table.style.marginBottom = "20px";
+      table.style.tableLayout = "fixed";
+
+      // Add headers with reduced padding
+      const headers = [
+        "S.No",
+        "Timestamp",
+        "From",
+        "To",
+        "Price",
+        "Token",
+        "Quantity",
+      ];
+      const thead = document.createElement("thead");
+      const headerRow = document.createElement("tr");
+      headers.forEach((header) => {
+        const th = document.createElement("th");
+        th.style.padding = "6px"; // Reduced from 8px
+        th.style.backgroundColor = "#f4f4f4";
+        th.style.border = "1px solid #ddd";
+        th.style.fontSize = "11px"; // Reduced from 12px
+        th.style.fontWeight = "bold";
+        th.style.textAlign = "left";
+        th.textContent = header;
+        headerRow.appendChild(th);
+      });
+      thead.appendChild(headerRow);
+      table.appendChild(thead);
+
+      // Add data rows with reduced padding
+      const tbody = document.createElement("tbody");
+      currentPageData.forEach((transfer) => {
+        const row = document.createElement("tr");
+        const rowData = [
+          transfer.sno,
+          transfer.timestamp,
+          transfer.from,
+          transfer.to,
+          transfer.value,
+          transfer.tokenName,
+          transfer.tokenPrice,
+        ];
+
+        rowData.forEach((cellData, index) => {
+          const td = document.createElement("td");
+          td.style.padding = "6px"; // Reduced from 8px
+          td.style.border = "1px solid #ddd";
+          td.style.fontSize = "10px"; // Reduced from 11px
+          td.style.textAlign = index === 0 ? "center" : "left";
+          td.textContent = cellData;
+          row.appendChild(td);
+        });
+        tbody.appendChild(row);
+      });
+      table.appendChild(tbody);
+
+      // Create temporary container
+      const container = document.createElement("div");
+      container.style.position = "absolute";
+      container.style.left = "-9999px";
+      container.style.width = "800px";
+      container.style.backgroundColor = "#ffffff";
+      container.appendChild(table);
+      document.body.appendChild(container);
+
+      try {
+        // Capture table with adjusted height
+        const canvas = await html2canvas(container, {
+          scale: 2,
+          backgroundColor: "#ffffff",
+          logging: false,
+          width: 800,
+          height: Math.min(550, currentPageData.length * 35 + 35), // Reduced per-row height
+          useCORS: true,
+        });
+
+        // Add table to PDF with same overall height but adjusted internal proportions
+        const yPosition = page % 2 === 1 ? 35 : 150;
+        const tableImage = canvas.toDataURL("image/png");
+        doc.addImage(tableImage, "PNG", 10, yPosition, 190, 100); // Keeping same height
+
+        // Cleanup
+        document.body.removeChild(container);
+      } catch (error) {
+        console.error(`Error capturing table page ${page}:`, error);
+        document.body.removeChild(container);
+      }
+
+      // Add footer
+      doc.line(10, 270, 200, 270);
+      doc.setFontSize(10);
+      doc.setFont("times", "bold");
+      doc.setTextColor(100, 100, 100);
+      doc.text(date, 175, 275);
+      doc.text("SecureDapp", 10, 275);
+      doc.setFont("times", "normal");
+      doc.text(
+        "235, 2nd & 3rd Floor, 13th Cross Rd, Indira Nagar II Stage,",
+        10,
+        280,
+        null,
+        null,
+        "left"
+      );
+      doc.text(
+        "Hoysala Nagar, Indiranagar, Bengaluru, Karnataka 560038",
+        10,
+        285,
+        null,
+        null,
+        "left"
+      );
+      doc.text("hello@securedapp.in", 10, 290, null, null, "left");
     }
 
     // Disclaimer page
     doc.addPage();
+
+    // Add header to disclaimer page
+    doc.setFontSize(10);
+    doc.setFont("times", "bold");
+    doc.setTextColor(100, 100, 100);
+    doc.text("SecureDapp", 10, 15);
+    doc.text(date, 175, 15);
+    doc.setDrawColor(4, 170, 109);
+    doc.line(10, 20, 200, 20);
+
+    // Continue with disclaimer content
     doc.setFontSize(18);
     doc.setFont("times", "bold");
     doc.text("Disclaimer", 82, 35);
@@ -521,14 +636,7 @@ const Visualizer = () => {
       headStyles: { fillColor: [4, 170, 109] },
     });
 
-    // Final page header/footer
-    doc.addImage(logo, "JPEG", 10, 11, 10, 10);
-    doc.setFontSize(13);
-    doc.setFont("times", "bold");
-    doc.text("SecureDApp", 21, 19);
-    doc.text(date, 170, 20);
-    doc.setDrawColor(0, 128, 0);
-    doc.line(10, 25, 200, 25);
+    // Add footer to disclaimer page
     doc.line(10, 270, 200, 270);
     doc.setFontSize(10);
     doc.setFont("times", "bold");
@@ -554,11 +662,12 @@ const Visualizer = () => {
     );
     doc.text("hello@securedapp.in", 10, 290, null, null, "left");
 
-    // Save the PDF
-    doc.save(
-      "SecureTrace: Advanced AI for Blockchain Investigation & Forensic Analysis.pdf"
-    );
-  };
+    // Save PDF
+    doc.save("SecureTrace-Report.pdf");
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+  }
+};
 
   const handleGeneratePDFClick = () => {
     setLoading(true);
