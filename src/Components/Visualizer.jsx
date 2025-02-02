@@ -688,7 +688,9 @@ const Visualizer = () => {
     doc.text("hello@securedapp.in", 10, 290, null, null, "left");
 
     // Save PDF
-    doc.save("SecureTrace-Report.pdf");
+    doc.save(
+      "SecureTrace_ Advanced AI for Blockchain Investigation & Forensic Analysis.pdf"
+    );
   } catch (error) {
     console.error("Error generating PDF:", error);
   }
