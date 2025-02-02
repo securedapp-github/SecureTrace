@@ -356,7 +356,13 @@ const Visualizer = () => {
     doc.setTextColor(0, 0, 0); // Black color for text
 
     // Calculate text width to center it
-    const text = `Input Value: ${inputValue}`;
+    const displayValue =
+      option === "address"
+        ? formData.address
+        : option === "txhash"
+        ? formData.txhash
+        : inputValue;
+    const text = `Input Value: ${displayValue}`;
     const textWidth =
       (doc.getStringUnitWidth(text) * 16) / doc.internal.scaleFactor;
     const textX = (210 - textWidth) / 2; // Center text
