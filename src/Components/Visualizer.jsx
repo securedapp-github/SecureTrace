@@ -356,7 +356,13 @@ const Visualizer = () => {
     doc.setTextColor(0, 0, 0); // Black color for text
 
     // Calculate text width to center it
-    const text = `Input Value: ${inputValue}`;
+    const displayValue =
+      option === "address"
+        ? formData.address
+        : option === "txhash"
+        ? formData.txhash
+        : inputValue;
+    const text = `Input Value: ${displayValue}`;
     const textWidth =
       (doc.getStringUnitWidth(text) * 16) / doc.internal.scaleFactor;
     const textX = (210 - textWidth) / 2; // Center text
@@ -432,9 +438,15 @@ const Visualizer = () => {
         timestamp: transfer.timestamp
           ? new Date(transfer.timestamp).toLocaleString()
           : "N/A",
-        from: truncateText(transfer.from || "", 15),
-        to: truncateText(transfer.to || "", 15),
-        value: transfer.value?.toString() || "N/A",
+        from: transfer.from
+          ? transfer.from.slice(0, 5) + "..." + transfer.from.slice(-4)
+          : "N/A",
+        to: transfer.to
+          ? transfer.to.slice(0, 5) + "..." + transfer.to.slice(-4)
+          : "N/A",
+        value: transfer.tokenPrice
+          ? parseFloat(transfer.tokenPrice).toFixed(2)
+          : "N/A",
         tokenName: transfer.tokenName || "N/A",
         tokenPrice: transfer.tokenPrice
           ? parseFloat(transfer.tokenPrice).toFixed(2)
@@ -688,7 +700,9 @@ const Visualizer = () => {
     doc.text("hello@securedapp.in", 10, 290, null, null, "left");
 
     // Save PDF
-    doc.save("SecureTrace-Report.pdf");
+    doc.save(
+      "SecureTrace_ Advanced AI for Blockchain Investigation & Forensic Analysis.pdf"
+    );
   } catch (error) {
     console.error("Error generating PDF:", error);
   }
