@@ -404,7 +404,24 @@ if (tableElement) {
   console.log(`Table element found for page ${page}`);
 
   try {
-    // Capture the table with a higher resolution for better visibility
+    // Step 1: Ensure all images are loaded before proceeding
+    const images = tableElement.querySelectorAll("img");
+    const imagePromises = Array.from(images).map(img => {
+      return new Promise((resolve, reject) => {
+        // Check if image is already loaded
+        if (img.complete) {
+          resolve(img.src); // Resolve immediately if already loaded
+        } else {
+          img.onload = () => resolve(img.src); // Resolve when image finishes loading
+          img.onerror = (error) => reject(`Error loading image: ${img.src}, ${error}`);
+        }
+      });
+    });
+
+    // Wait for all images to load
+    const imageUrls = await Promise.all(imagePromises);
+
+    // Step 2: Convert the table to an image (higher resolution)
     const tableImage = await domtoimage.toPng(tableElement, {
       quality: 1,
       scale: 6, // Increased scale for better resolution (adjust as needed)
@@ -413,26 +430,24 @@ if (tableElement) {
       height: tableElement.scrollHeight + 100, // Increased height to ensure full table height is captured
     });
 
-    // Loop through all the images in the table and convert to Base64
-    const images = tableElement.querySelectorAll("img"); // Assuming the images are <img> elements
-    const base64Images = [];
-
-    for (let i = 0; i < images.length; i++) {
-      const imgSrc = images[i].src;
+    // Step 3: Convert each image to Base64 after ensuring they are loaded
+    const base64Images = await Promise.all(imageUrls.map(async (imgSrc) => {
       try {
-        const base64 = await imageToBase64(imgSrc);
-        base64Images.push(base64);
+        // Ensure CORS is not an issue for the image
+        const base64 = await imageToBase64(imgSrc); // Convert to Base64
+        return base64; // Return the Base64 image data
       } catch (error) {
         console.error(`Error converting image to Base64 for ${imgSrc}:`, error);
-        base64Images.push(null); // If conversion fails, push `null` (you can handle this differently)
+        return null; // If conversion fails, return null
       }
-    }
+    }));
 
-    // Add the table image to the PDF
+    // Step 4: Add table image and logos to PDF
     if (page % 2 === 1) {
       if (page > 1) {
         doc.addPage();
       }
+
       // Add header for odd pages
       doc.setFontSize(10);
       doc.setFont("times", "bold");
@@ -451,10 +466,10 @@ if (tableElement) {
       doc.line(10, 25, 200, 25);
       doc.line(10, 270, 200, 270);
 
-      // Adjust table positioning and image size for full capture
+      // Add the table image to the PDF
       doc.addImage(tableImage, "PNG", -5, 30, 200, 120); // Adjusted size to fit the full width and height
 
-      // Loop through the images and add them to the PDF (if Base64 conversion was successful)
+      // Add images (logos) to the PDF, if Base64 conversion was successful
       base64Images.forEach((base64Img, index) => {
         if (base64Img) {
           const yOffset = 150 + index * 30; // Adjust vertical offset for each image
