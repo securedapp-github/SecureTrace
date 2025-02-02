@@ -432,9 +432,15 @@ const Visualizer = () => {
         timestamp: transfer.timestamp
           ? new Date(transfer.timestamp).toLocaleString()
           : "N/A",
-        from: truncateText(transfer.from || "", 15),
-        to: truncateText(transfer.to || "", 15),
-        value: transfer.value?.toString() || "N/A",
+        from: transfer.from
+          ? transfer.from.slice(0, 5) + "..." + transfer.from.slice(-4)
+          : "N/A",
+        to: transfer.to
+          ? transfer.to.slice(0, 5) + "..." + transfer.to.slice(-4)
+          : "N/A",
+        value: transfer.tokenPrice
+          ? parseFloat(transfer.tokenPrice).toFixed(2)
+          : "N/A",
         tokenName: transfer.tokenName || "N/A",
         tokenPrice: transfer.tokenPrice
           ? parseFloat(transfer.tokenPrice).toFixed(2)
