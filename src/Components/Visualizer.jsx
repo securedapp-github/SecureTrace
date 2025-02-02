@@ -399,71 +399,79 @@ const Visualizer = () => {
       });
 
       const tableElement = document.getElementById("table-container");
-      if (tableElement) {
-        // Ensure full table width and no overflow issues
-        tableElement.style.width = "auto";
-        tableElement.style.maxWidth = "none";
 
-        console.log(`Table element found for page ${page}`);
-        try {
-          // Capture the table with a higher resolution for better visibility
-          const tableImage = await domtoimage.toPng(tableElement, {
-            quality: 1,
-            scale: 6, // Increased scale for better resolution (adjust as needed)
-            bgcolor: "#ffffff",
-            width: tableElement.scrollWidth + 140, // Increased width to accommodate full table width
-            height: tableElement.scrollHeight + 100, // Increased height to ensure full table height is captured
-          });
+if (tableElement) {
+  console.log(`Table element found for page ${page}`);
 
-          if (page % 2 === 1) {
-            if (page > 1) {
-              doc.addPage();
-            }
-            // Add header for odd pages
-            doc.setFontSize(10);
-            doc.setFont("times", "bold");
-            doc.setTextColor(100, 100, 100);
-            doc.text(date, 175, 275);
-            doc.text("SecureDapp", 10, 275);
-            doc.setFont("times", "normal");
-            doc.text(
-              "235, 2nd & 3rd Floor, 13th Cross Rd, Indira Nagar II Stage,",
-              10,
-              280,
-              null,
-              null,
-              "left"
-            );
-            doc.text(
-              "Hoysala Nagar, Indiranagar, Bengaluru, Karnataka 560038",
-              10,
-              285,
-              null,
-              null,
-              "left"
-            );
-            doc.text("hello@securedapp.in", 10, 290, null, null, "left");
+  try {
+    // Capture the table with a higher resolution for better visibility
+    const tableImage = await domtoimage.toPng(tableElement, {
+      quality: 1,
+      scale: 6, // Increased scale for better resolution (adjust as needed)
+      bgcolor: "#ffffff",
+      width: tableElement.scrollWidth + 140, // Increased width to accommodate full table width
+      height: tableElement.scrollHeight + 100, // Increased height to ensure full table height is captured
+    });
 
-            doc.setFontSize(18);
-            doc.setFont("times", "bold");
-            doc.text("SecureTrace Transaction History", 65, 20);
-            doc.setDrawColor(4, 170, 109);
-            doc.line(10, 25, 200, 25);
-            doc.line(10, 270, 200, 270);
+    // Loop through all the images in the table and convert to Base64
+    const images = tableElement.querySelectorAll("img"); // Assuming the images are <img> elements
+    const base64Images = [];
 
-            // Adjust table positioning and image size for full capture
-            doc.addImage(tableImage, "PNG", -5, 30, 200, 120); // Adjusted size to fit the full width and height
-          } else {
-            doc.addImage(tableImage, "PNG", -5, 150, 200, 120); // Same adjustment for even pages
-          }
-        } catch (error) {
-          console.error(`Error capturing table page ${page}:`, error);
-          return;
-        }
-      } else {
-        console.error("Table element not found");
-        return;
+    for (let i = 0; i < images.length; i++) {
+      const imgSrc = images[i].src;
+      try {
+        const base64 = await imageToBase64(imgSrc);
+        base64Images.push(base64);
+      } catch (error) {
+        console.error(`Error converting image to Base64 for ${imgSrc}:`, error);
+        base64Images.push(null); // If conversion fails, push `null` (you can handle this differently)
       }
+    }
+
+    // Add the table image to the PDF
+    if (page % 2 === 1) {
+      if (page > 1) {
+        doc.addPage();
+      }
+      // Add header for odd pages
+      doc.setFontSize(10);
+      doc.setFont("times", "bold");
+      doc.setTextColor(100, 100, 100);
+      doc.text(date, 175, 275);
+      doc.text("SecureDapp", 10, 275);
+      doc.setFont("times", "normal");
+      doc.text("235, 2nd & 3rd Floor, 13th Cross Rd, Indira Nagar II Stage,", 10, 280, null, null, "left");
+      doc.text("Hoysala Nagar, Indiranagar, Bengaluru, Karnataka 560038", 10, 285, null, null, "left");
+      doc.text("hello@securedapp.in", 10, 290, null, null, "left");
+
+      doc.setFontSize(18);
+      doc.setFont("times", "bold");
+      doc.text("SecureTrace Transaction History", 65, 20);
+      doc.setDrawColor(4, 170, 109);
+      doc.line(10, 25, 200, 25);
+      doc.line(10, 270, 200, 270);
+
+      // Adjust table positioning and image size for full capture
+      doc.addImage(tableImage, "PNG", -5, 30, 200, 120); // Adjusted size to fit the full width and height
+
+      // Loop through the images and add them to the PDF (if Base64 conversion was successful)
+      base64Images.forEach((base64Img, index) => {
+        if (base64Img) {
+          const yOffset = 150 + index * 30; // Adjust vertical offset for each image
+          doc.addImage(base64Img, "PNG", 10, yOffset, 50, 50); // Adjust size and position as needed
+        }
+      });
+    } else {
+      // For even pages
+      doc.addImage(tableImage, "PNG", -5, 150, 200, 120); // Same adjustment for even pages
+    }
+  } catch (error) {
+    console.error(`Error capturing table page ${page}:`, error);
+  }
+} else {
+  console.error("Table element not found");
+}
+
     }
 
     // Disclaimer page
