@@ -9,6 +9,7 @@ import { DevUrl } from "../Constants";
 import btc from "../Assests/Bitcoin.png";
 import { useParams } from "react-router-dom";
 import Footer from "./Footer";
+import algo from "../Assests/algologo1.png";
 // import Navbar from './Navbar';
 import cytoscape from "cytoscape";
 import "jspdf-autotable";
@@ -1753,7 +1754,7 @@ const Visualizer = () => {
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="text-center ">
+                    <tbody className="text-center">
                       {currentRows1 && currentRows1.length > 0 ? (
                         currentRows1.map((transfer, index) => {
                           const {
@@ -1768,13 +1769,25 @@ const Visualizer = () => {
                             chain,
                           } = transfer;
                           console.log(transfer);
+
+                          // Determine the logo to display
+                          const displayLogo =
+                            transfer.logo === "https://algorand.org/logo.png"
+                              ? algo
+                              : transfer.logo;
                           return (
                             <tr
                               key={index}
                               className="border-t h-12 text-center bg-red-600 odd:bg-[#F4F4F4] even:bg-white px-2 py-2"
                             >
                               <td className="flex items-center justify-center px-4 mt-2">
-                                <img src={logo} alt={tokenName} className="h-9"/>
+                                {displayLogo && ( // Only render the image if displayLogo is not null
+                                  <img
+                                    src={displayLogo}
+                                    alt={tokenName}
+                                    className="h-9"
+                                  />
+                                )}
                               </td>
                               <td className="px-4 text-green-500 me-3">
                                 {!isAlgorand
@@ -1856,9 +1869,6 @@ const Visualizer = () => {
                           <td className="text-center">0000....000</td>
                           <td className="text-center">0000....000</td>
                           <td className="text-green-500">0.00</td>
-                          {/* <td className="text-green-500">
-                                            0.00
-                                        </td> */}
                           <td>BTC</td>
                           <td>$0.00</td>
                         </tr>
