@@ -501,7 +501,7 @@ const Visualizer = () => {
 
         if (currentPageData.length === 0) continue;
 
-        // Create table element
+ // Create table element
 const table = document.createElement("table");
 table.style.width = "100%";
 table.style.borderCollapse = "collapse";
@@ -528,7 +528,7 @@ headers.forEach((header, index) => {
   th.style.fontSize = "11px"; // Reduced from 12px
   th.style.fontWeight = "bold";
   th.style.textAlign = "left";
-  
+
   // Adjust column widths
   if (index === 0) {
     th.style.width = "5%"; // Slightly reduce S.No width
@@ -567,10 +567,17 @@ for (let i = 0; i < totalRows; i++) {
   rowData.forEach((cellData, cellIndex) => {
     const td = document.createElement("td");
     td.style.padding = "6px";
-    td.style.border = "1px solid #ddd";
     td.style.fontSize = "10px";
     td.style.textAlign = cellIndex === 0 ? "center" : "left";
-    td.style.backgroundColor = i % 2 === 0 ? "#ffffff" : "#f4f4f4"; // Ensure consistent background within cells
+
+    // Apply white background if cell data is empty
+    if (cellData === "") {
+      td.style.backgroundColor = "#ffffff";
+      td.style.border = "none"; // Remove border for empty cells
+    } else {
+      td.style.backgroundColor = i % 2 === 0 ? "#ffffff" : "#f4f4f4"; // Ensure consistent background within cells
+      td.style.border = "1px solid #ddd"; // Add border for non-empty cells
+    }
 
     // Apply green color to timestamp and tokenPrice
     if (cellIndex === 1 || cellIndex === 4) {
