@@ -421,158 +421,154 @@ const Visualizer = () => {
       throw new Error("Invalid or missing transfers data");
     }
 
-    // Function to safely truncate text
-    const truncateText = (text, maxLength) => {
-      if (!text) return "N/A";
-      return text.length > maxLength
-        ? text.substring(0, maxLength) + "..."
-        : text;
-    };
-
     // Function to format transfer data
-    const formatTransferData = (transfer, globalIndex) => {
-      if (!transfer) return null;
+const formatTransferData = (transfer, globalIndex) => {
+  if (!transfer) return null;
 
-      return {
-        sno: (globalIndex + 1).toString(),
-        timestamp: transfer.timestamp
-          ? new Date(transfer.timestamp).toLocaleString()
-          : "N/A",
-        from: transfer.from
-          ? transfer.from.slice(0, 5) + "..." + transfer.from.slice(-4)
-          : "N/A",
-        to: transfer.to
-          ? transfer.to.slice(0, 5) + "..." + transfer.to.slice(-4)
-          : "N/A",
-        value: transfer.tokenPrice
-          ? parseFloat(transfer.tokenPrice).toFixed(2)
-          : "N/A",
-        tokenName: transfer.tokenName || "N/A",
-        tokenPrice: transfer.tokenPrice
-          ? parseFloat(transfer.tokenPrice).toFixed(2)
-          : "N/A",
-      };
-    };
+  return {
+    sno: (globalIndex + 1).toString(),
+    timestamp: transfer.timestamp
+      ? new Date(transfer.timestamp).toLocaleString()
+      : "N/A",
+    from: transfer.from
+      ? transfer.from.slice(0, 5) + "..." + transfer.from.slice(-4)
+      : "N/A",
+    to: transfer.to
+      ? transfer.to.slice(0, 5) + "..." + transfer.to.slice(-4)
+      : "N/A",
+    tokenPrice: transfer.tokenPrice
+      ? parseFloat(transfer.tokenPrice).toFixed(2)
+      : "N/A",
+    tokenName: transfer.tokenName || "N/A",
+    value: transfer.value
+      ? parseFloat(transfer.value).toFixed(2)
+      : "N/A",
+  };
+};
 
-    // Transaction History Pages
-    const rowsPerPage1 = 10;
-    const totalPages = Math.ceil(transfers.length / rowsPerPage1);
+// Transaction History Pages
+const rowsPerPage1 = 10;
+const totalPages = Math.ceil(transfers.length / rowsPerPage1);
 
-    for (let page = 1; page <= totalPages; page++) {
-      if (page % 2 === 1) {
-        doc.addPage();
-        doc.setFontSize(18);
-        doc.setFont("times", "bold");
-        doc.text("SecureTrace Transaction History", 65, 20);
-        doc.setDrawColor(4, 170, 109);
-        doc.line(10, 25, 200, 25);
+for (let page = 1; page <= totalPages; page++) {
+  if (page % 2 === 1) {
+    doc.addPage();
+    doc.setFontSize(18);
+    doc.setFont("times", "bold");
+    doc.text("SecureTrace Transaction History", 65, 20);
+    doc.setDrawColor(4, 170, 109);
+    doc.line(10, 25, 200, 25);
+  }
+
+  const startIdx = (page - 1) * rowsPerPage1;
+  const endIdx = Math.min(page * rowsPerPage1, transfers.length);
+  const currentPageData = transfers
+    .slice(startIdx, endIdx)
+    .map((transfer, index) =>
+      formatTransferData(transfer, startIdx + index)
+    )
+    .filter(Boolean);
+
+  if (currentPageData.length === 0) continue;
+
+  // Create table element
+  const table = document.createElement("table");
+  table.style.width = "100%";
+  table.style.borderCollapse = "collapse";
+  table.style.marginBottom = "20px";
+  table.style.tableLayout = "fixed";
+
+  // Add headers with reduced padding
+  const headers = [
+    "S.No",
+    "Timestamp",
+    "From",
+    "To",
+    "Price",
+    "Token",
+    "Quantity",
+  ];
+  const thead = document.createElement("thead");
+  const headerRow = document.createElement("tr");
+  headers.forEach((header) => {
+    const th = document.createElement("th");
+    th.style.padding = "6px"; // Reduced from 8px
+    th.style.backgroundColor = "#f4f4f4";
+    th.style.border = "1px solid #ddd";
+    th.style.fontSize = "11px"; // Reduced from 12px
+    th.style.fontWeight = "bold";
+    th.style.textAlign = "left";
+    th.textContent = header;
+    headerRow.appendChild(th);
+  });
+  thead.appendChild(headerRow);
+  table.appendChild(thead);
+
+  // Add data rows with reduced padding
+  const tbody = document.createElement("tbody");
+  currentPageData.forEach((transfer, index) => {
+    const row = document.createElement("tr");
+    // Set alternating background colors
+    row.style.backgroundColor = index % 2 === 0 ? "#ffffff" : "#f4f4f4";
+    const rowData = [
+      transfer.sno,
+      transfer.timestamp,
+      transfer.from,
+      transfer.to,
+      transfer.tokenPrice, // Price column
+      transfer.tokenName,
+      transfer.value, // Quantity column
+    ];
+
+    rowData.forEach((cellData, cellIndex) => {
+      const td = document.createElement("td");
+      td.style.padding = "6px";
+      td.style.border = "1px solid #ddd";
+      td.style.fontSize = "10px";
+      td.style.textAlign = cellIndex === 0 ? "center" : "left";
+      td.style.backgroundColor = index % 2 === 0 ? "#ffffff" : "#f4f4f4"; // Ensure consistent background within cells
+
+      // Apply green color to timestamp and tokenPrice
+      if (cellIndex === 1 || cellIndex === 4) {
+        td.style.color = "#22C55E"; // Green-500 color
       }
 
-      const startIdx = (page - 1) * rowsPerPage1;
-      const endIdx = Math.min(page * rowsPerPage1, transfers.length);
-      const currentPageData = transfers
-        .slice(startIdx, endIdx)
-        .map((transfer, index) =>
-          formatTransferData(transfer, startIdx + index)
-        )
-        .filter(Boolean);
+      td.textContent = cellData;
+      row.appendChild(td);
+    });
+    tbody.appendChild(row);
+  });
+  table.appendChild(tbody);
 
-      if (currentPageData.length === 0) continue;
+  // Create temporary container
+  const container = document.createElement("div");
+  container.style.position = "absolute";
+  container.style.left = "-9999px";
+  container.style.width = "800px";
+  container.style.backgroundColor = "#ffffff";
+  container.appendChild(table);
+  document.body.appendChild(container);
 
-      // Create table element
-      const table = document.createElement("table");
-      table.style.width = "100%";
-      table.style.borderCollapse = "collapse";
-      table.style.marginBottom = "20px";
-      table.style.tableLayout = "fixed";
+  try {
+    // Capture table with adjusted height
+    const canvas = await html2canvas(container, {
+      scale: 2,
+      backgroundColor: "#ffffff",
+      logging: false,
+      width: 800,
+      height: Math.min(550, currentPageData.length * 35 + 35), // Reduced per-row height
+      useCORS: true,
+    });
 
-      // Add headers with reduced padding
-      const headers = [
-        "S.No",
-        "Timestamp",
-        "From",
-        "To",
-        "Price",
-        "Token",
-        "Quantity",
-      ];
-      const thead = document.createElement("thead");
-      const headerRow = document.createElement("tr");
-      headers.forEach((header) => {
-        const th = document.createElement("th");
-        th.style.padding = "6px"; // Reduced from 8px
-        th.style.backgroundColor = "#f4f4f4";
-        th.style.border = "1px solid #ddd";
-        th.style.fontSize = "11px"; // Reduced from 12px
-        th.style.fontWeight = "bold";
-        th.style.textAlign = "left";
-        th.textContent = header;
-        headerRow.appendChild(th);
-      });
-      thead.appendChild(headerRow);
-      table.appendChild(thead);
-
-      // Add data rows with reduced padding
-      const tbody = document.createElement("tbody");
-      currentPageData.forEach((transfer, index) => {
-        const row = document.createElement("tr");
-        // Set alternating background colors
-        row.style.backgroundColor = index % 2 === 0 ? "#ffffff" : "#f4f4f4";
-        const rowData = [
-          transfer.sno,
-          transfer.timestamp,
-          transfer.from,
-          transfer.to,
-          transfer.value,
-          transfer.tokenName,
-          transfer.tokenPrice,
-        ];
-
-        rowData.forEach((cellData, cellIndex) => {
-          const td = document.createElement("td");
-          td.style.padding = "6px";
-          td.style.border = "1px solid #ddd";
-          td.style.fontSize = "10px";
-          td.style.textAlign = cellIndex === 0 ? "center" : "left";
-          td.style.backgroundColor = index % 2 === 0 ? "#ffffff" : "#f4f4f4"; // Ensure consistent background within cells
-          td.textContent = cellData;
-          row.appendChild(td);
-        });
-        tbody.appendChild(row);
-      });
-      table.appendChild(tbody);
-
-      // Create temporary container
-      const container = document.createElement("div");
-      container.style.position = "absolute";
-      container.style.left = "-9999px";
-      container.style.width = "800px";
-      container.style.backgroundColor = "#ffffff";
-      container.appendChild(table);
-      document.body.appendChild(container);
-
-      try {
-        // Capture table with adjusted height
-        const canvas = await html2canvas(container, {
-          scale: 2,
-          backgroundColor: "#ffffff",
-          logging: false,
-          width: 800,
-          height: Math.min(550, currentPageData.length * 35 + 35), // Reduced per-row height
-          useCORS: true,
-        });
-
-        // Add table to PDF with same overall height but adjusted internal proportions
-        const yPosition = page % 2 === 1 ? 35 : 150;
-        const tableImage = canvas.toDataURL("image/png");
-        doc.addImage(tableImage, "PNG", 10, yPosition, 190, 100); // Keeping same height
-
-        // Cleanup
-        document.body.removeChild(container);
-      } catch (error) {
-        console.error(`Error capturing table page ${page}:`, error);
-        document.body.removeChild(container);
-      }
+    // Add table to PDF with same overall height but adjusted internal proportions
+    const yPosition = page % 2 === 1 ? 35 : 150;
+    const tableImage = canvas.toDataURL("image/png");
+    doc.addImage(tableImage, "PNG", 10, yPosition, 190, 100); // Keeping same height
+    document.body.removeChild(container);
+  } catch (error) {
+    console.error(`Error capturing table page ${page}:`, error);
+    document.body.removeChild(container);
+  }
 
       // Add footer
       doc.line(10, 270, 200, 270);
