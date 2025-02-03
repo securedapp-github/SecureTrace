@@ -503,103 +503,107 @@ const Visualizer = () => {
       if (currentPageData.length === 0) continue;
 
       // Create table element
-      const table = document.createElement("table");
-      table.style.width = "100%";
-      table.style.borderCollapse = "collapse";
-      table.style.marginBottom = "20px";
-      table.style.tableLayout = "fixed";
+const table = document.createElement("table");
+table.style.width = "100%";
+table.style.borderCollapse = "collapse";
+table.style.marginBottom = "20px";
+table.style.tableLayout = "fixed";
 
-      // Add headers with reduced padding
-      const headers = [
-        "S.No",
-        "Timestamp",
-        "From",
-        "To",
-        "Price",
-        "Token",
-        "Quantity",
-      ];
-      const thead = document.createElement("thead");
-      const headerRow = document.createElement("tr");
-      headers.forEach((header) => {
-        const th = document.createElement("th");
-        th.style.padding = "6px"; // Reduced from 8px
-        th.style.backgroundColor = "#f4f4f4";
-        th.style.border = "1px solid #ddd";
-        th.style.fontSize = "11px"; // Reduced from 12px
-        th.style.fontWeight = "bold";
-        th.style.textAlign = "left";
-        th.textContent = header;
-        headerRow.appendChild(th);
-      });
-      thead.appendChild(headerRow);
-      table.appendChild(thead);
+// Add headers with reduced padding
+const headers = [
+  "S.No",
+  "Timestamp",
+  "From",
+  "To",
+  "Price",
+  "Token",
+  "Quantity",
+];
+const thead = document.createElement("thead");
+const headerRow = document.createElement("tr");
+headers.forEach((header) => {
+  const th = document.createElement("th");
+  th.style.padding = "6px"; // Reduced from 8px
+  th.style.backgroundColor = "#f4f4f4";
+  th.style.border = "1px solid #ddd";
+  th.style.fontSize = "11px"; // Reduced from 12px
+  th.style.fontWeight = "bold";
+  th.style.textAlign = "left";
+  th.textContent = header;
+  headerRow.appendChild(th);
+});
+thead.appendChild(headerRow);
+table.appendChild(thead);
 
-      // Add data rows with reduced padding
-      const tbody = document.createElement("tbody");
-      currentPageData.forEach((transfer, index) => {
-        const row = document.createElement("tr");
-        // Set alternating background colors
-        row.style.backgroundColor = index % 2 === 0 ? "#ffffff" : "#f4f4f4";
-        const rowData = [
-          transfer.sno,
-          transfer.timestamp,
-          transfer.from,
-          transfer.to,
-          transfer.tokenPrice, // Price column
-          transfer.tokenName,
-          transfer.value, // Quantity column
-        ];
+// Add data rows with reduced padding
+const tbody = document.createElement("tbody");
+const totalRows = 10; // Fixed number of rows
+for (let i = 0; i < totalRows; i++) {
+  const row = document.createElement("tr");
+  // Set alternating background colors
+  row.style.backgroundColor = i % 2 === 0 ? "#ffffff" : "#f4f4f4";
 
-        rowData.forEach((cellData, cellIndex) => {
-          const td = document.createElement("td");
-          td.style.padding = "6px";
-          td.style.border = "1px solid #ddd";
-          td.style.fontSize = "10px";
-          td.style.textAlign = cellIndex === 0 ? "center" : "left";
-          td.style.backgroundColor = index % 2 === 0 ? "#ffffff" : "#f4f4f4"; // Ensure consistent background within cells
+  // Use actual data if available, otherwise create an empty row
+  const transfer = currentPageData[i] || {};
+  const rowData = [
+    transfer.sno || "", // S.No
+    transfer.timestamp || "", // Timestamp
+    transfer.from || "", // From
+    transfer.to || "", // To
+    transfer.tokenPrice || "", // Price
+    transfer.tokenName || "", // Token
+    transfer.value || "", // Quantity
+  ];
 
-          // Apply green color to timestamp and tokenPrice
-          if (cellIndex === 1 || cellIndex === 4) {
-            td.style.color = "#22C55E"; // Green-500 color
-          }
+  rowData.forEach((cellData, cellIndex) => {
+    const td = document.createElement("td");
+    td.style.padding = "6px";
+    td.style.border = "1px solid #ddd";
+    td.style.fontSize = "10px";
+    td.style.textAlign = cellIndex === 0 ? "center" : "left";
+    td.style.backgroundColor = i % 2 === 0 ? "#ffffff" : "#f4f4f4"; // Ensure consistent background within cells
 
-          td.textContent = cellData;
-          row.appendChild(td);
-        });
-        tbody.appendChild(row);
-      });
-      table.appendChild(tbody);
+    // Apply green color to timestamp and tokenPrice
+    if (cellIndex === 1 || cellIndex === 4) {
+      td.style.color = "#22C55E"; // Green-500 color
+    }
 
-      // Create temporary container
-      const container = document.createElement("div");
-      container.style.position = "absolute";
-      container.style.left = "-9999px";
-      container.style.width = "800px";
-      container.style.backgroundColor = "#ffffff";
-      container.appendChild(table);
-      document.body.appendChild(container);
+    td.textContent = cellData;
+    row.appendChild(td);
+  });
+  tbody.appendChild(row);
+}
+table.appendChild(tbody);
 
-      try {
-        // Capture table with adjusted height
-        const canvas = await html2canvas(container, {
-          scale: 2,
-          backgroundColor: "#ffffff",
-          logging: false,
-          width: 800,
-          height: Math.min(550, currentPageData.length * 35 + 35), // Reduced per-row height
-          useCORS: true,
-        });
+// Create temporary container
+const container = document.createElement("div");
+container.style.position = "absolute";
+container.style.left = "-9999px";
+container.style.width = "800px";
+container.style.backgroundColor = "#ffffff";
+container.appendChild(table);
+document.body.appendChild(container);
 
-        // Add table to PDF with same overall height but adjusted internal proportions
-        const yPosition = page % 2 === 1 ? 35 : 150;
-        const tableImage = canvas.toDataURL("image/png");
-        doc.addImage(tableImage, "PNG", 10, yPosition, 190, 100); // Keeping same height
-        document.body.removeChild(container);
-      } catch (error) {
-        console.error(`Error capturing table page ${page}:`, error);
-        document.body.removeChild(container);
-      }
+try {
+  // Capture table with adjusted height
+  const canvas = await html2canvas(container, {
+    scale: 2,
+    backgroundColor: "#ffffff",
+    logging: false,
+    width: 800,
+    height: Math.min(550, totalRows * 35 + 35), // Fixed height based on totalRows
+    useCORS: true,
+  });
+
+  // Add table to PDF with same overall height but adjusted internal proportions
+  const yPosition = page % 2 === 1 ? 35 : 150;
+  const tableImage = canvas.toDataURL("image/png");
+  doc.addImage(tableImage, "PNG", 10, yPosition, 190, 100); // Keeping same height
+  document.body.removeChild(container);
+} catch (error) {
+  console.error(`Error capturing table page ${page}:`, error);
+  document.body.removeChild(container);
+}
 
       // Add footer
       doc.line(10, 270, 200, 270);
