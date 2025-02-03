@@ -88,18 +88,17 @@ const Visualizer = () => {
   }, [inputValue, isFromSecureTransaction]);
 
   const handleScanClick = async () => {
-
     const jwtToken = localStorage.getItem("jwt_token");
-    
-        if (!jwtToken) {
-                  toast.error("You need to log in to access this feature.");
-                  setTimeout(() => {
-                    navigate("/"); 
-                  }, 4000);
-          return;
-        }
-        console.log("Search submitted!");
-    
+
+    if (!jwtToken) {
+      toast.error("You need to log in to access this feature.");
+      setTimeout(() => {
+        navigate("/");
+      }, 4000);
+      return;
+    }
+    console.log("Search submitted!");
+
     const value = formData?.txhash || formData?.address || inputValue;
 
     if (!value) {
@@ -286,223 +285,223 @@ const Visualizer = () => {
   };
 
   const generatePDF = async () => {
-  try {
-    const doc = new jsPDF("p", "mm", "a4");
+    try {
+      const doc = new jsPDF("p", "mm", "a4");
 
-    const logo = "../Assests/securedapp-logo-light.svg";
-    const date = new Date().toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
+      const logo = "../Assests/securedapp-logo-light.svg";
+      const date = new Date().toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
 
-    // First page
-    doc.setFillColor(4, 170, 109);
-    doc.rect(0, 0, 50, doc.internal.pageSize.getHeight(), "F");
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const rightRectWidth = pageWidth - 50;
+      // First page
+      doc.setFillColor(4, 170, 109);
+      doc.rect(0, 0, 50, doc.internal.pageSize.getHeight(), "F");
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const rightRectWidth = pageWidth - 50;
 
-    doc.setFillColor(255, 255, 255);
-    doc.rect(50, 0, rightRectWidth, doc.internal.pageSize.getHeight(), "F");
-    doc.setFontSize(10);
-    doc.setFont("times", "bold");
-    doc.setTextColor(100, 100, 100);
+      doc.setFillColor(255, 255, 255);
+      doc.rect(50, 0, rightRectWidth, doc.internal.pageSize.getHeight(), "F");
+      doc.setFontSize(10);
+      doc.setFont("times", "bold");
+      doc.setTextColor(100, 100, 100);
 
-    // First page header and footer
-    doc.text("SecureDapp", 185, 275);
-    doc.setFont("times", "normal");
-    doc.text(
-      "235, 2nd & 3rd Floor, 13th Cross Rd, Indira Nagar II Stage,",
-      120,
-      280,
-      null,
-      null,
-      "left"
-    );
-    doc.text(
-      "Hoysala Nagar, Indiranagar, Bengaluru, Karnataka 560038",
-      120,
-      285,
-      null,
-      null,
-      "left"
-    );
-    doc.text("hello@securedapp.in", 120, 290, null, null, "left");
+      // First page header and footer
+      doc.text("SecureDapp", 185, 275);
+      doc.setFont("times", "normal");
+      doc.text(
+        "235, 2nd & 3rd Floor, 13th Cross Rd, Indira Nagar II Stage,",
+        120,
+        280,
+        null,
+        null,
+        "left"
+      );
+      doc.text(
+        "Hoysala Nagar, Indiranagar, Bengaluru, Karnataka 560038",
+        120,
+        285,
+        null,
+        null,
+        "left"
+      );
+      doc.text("hello@securedapp.in", 120, 290, null, null, "left");
 
-    doc.setFontSize(12);
-    doc.text(date, 170, 140);
-    doc.setFontSize(50);
-    doc.addImage(logo, "JPEG", 89, 108, 15, 15);
-    doc.text("SecureDApp", 105, 120);
-    doc.line(50, 0, 50, 300);
+      doc.setFontSize(12);
+      doc.text(date, 170, 140);
+      doc.setFontSize(50);
+      doc.addImage(logo, "JPEG", 89, 108, 15, 15);
+      doc.text("SecureDApp", 105, 120);
+      doc.line(50, 0, 50, 300);
 
-    // Previous code remains the same until the graph page section...
+      // Previous code remains the same until the graph page section...
 
-    // Second page - Graph
-    doc.addPage();
-    doc.setFontSize(18);
-    doc.setFont("times", "bold");
-    doc.text("SecureTrace Visualizer", 75, 20);
-    doc.setDrawColor(4, 170, 109);
-    doc.line(10, 25, 200, 25);
+      // Second page - Graph
+      doc.addPage();
+      doc.setFontSize(18);
+      doc.setFont("times", "bold");
+      doc.text("SecureTrace Visualizer", 75, 20);
+      doc.setDrawColor(4, 170, 109);
+      doc.line(10, 25, 200, 25);
 
-    // Add input value display with gray background
-    // First draw the gray background rectangle
-    doc.setFillColor(240, 240, 240); // Light gray color
-    doc.rect(10, 33, 190, 8, "F"); // x, y, width, height, 'F' for filled
+      // Add input value display with gray background
+      // First draw the gray background rectangle
+      doc.setFillColor(240, 240, 240); // Light gray color
+      doc.rect(10, 33, 190, 8, "F"); // x, y, width, height, 'F' for filled
 
-    // Add input value text
-    doc.setFontSize(16);
-    doc.setFont("times", "bold");
+      // Add input value text
+      doc.setFontSize(16);
+      doc.setFont("times", "bold");
 
-    // Calculate text width to center it
-    const displayValue =
-      option === "address"
-        ? formData.address
-        : option === "txhash"
-        ? formData.txhash
-        : inputValue;
+      // Calculate text width to center it
+      const displayValue =
+        option === "address"
+          ? formData.address
+          : option === "txhash"
+          ? formData.txhash
+          : inputValue;
 
-    // Static part of the text
-    const staticText = "Input Value: ";
-    const staticTextWidth =
-      (doc.getStringUnitWidth(staticText) * 16) / doc.internal.scaleFactor;
+      // Static part of the text
+      const staticText = "Input Value: ";
+      const staticTextWidth =
+        (doc.getStringUnitWidth(staticText) * 16) / doc.internal.scaleFactor;
 
-    // Dynamic part of the text (value)
-    let dynamicText = displayValue;
-    let dynamicTextWidth =
-      (doc.getStringUnitWidth(dynamicText) * 16) / doc.internal.scaleFactor;
-
-    // Maximum allowed width for dynamic text (gray background width - static text width - padding)
-    const maxDynamicTextWidth = 190 - staticTextWidth - 20; // 20px padding
-
-    // Truncate dynamic text if it exceeds the maximum allowed width
-    if (dynamicTextWidth > maxDynamicTextWidth) {
-      // Calculate the maximum number of characters that can fit
-      const avgCharWidth = dynamicTextWidth / dynamicText.length;
-      const maxChars = Math.floor(maxDynamicTextWidth / avgCharWidth);
-
-      // Truncate the dynamic text and add ellipsis
-      dynamicText = dynamicText.substring(0, maxChars - 3) + "...";
-      dynamicTextWidth =
+      // Dynamic part of the text (value)
+      let dynamicText = displayValue;
+      let dynamicTextWidth =
         (doc.getStringUnitWidth(dynamicText) * 16) / doc.internal.scaleFactor;
-    }
 
-    // Total text width
-    const totalTextWidth = staticTextWidth + dynamicTextWidth;
+      // Maximum allowed width for dynamic text (gray background width - static text width - padding)
+      const maxDynamicTextWidth = 190 - staticTextWidth - 20; // 20px padding
 
-    // Calculate starting X position to center the text
-    const textX = (210 - totalTextWidth) / 2;
+      // Truncate dynamic text if it exceeds the maximum allowed width
+      if (dynamicTextWidth > maxDynamicTextWidth) {
+        // Calculate the maximum number of characters that can fit
+        const avgCharWidth = dynamicTextWidth / dynamicText.length;
+        const maxChars = Math.floor(maxDynamicTextWidth / avgCharWidth);
 
-    // Render static text in gray
-    doc.setTextColor(100, 100, 100); // Gray color for static text
-    doc.text(staticText, textX, 39);
-
-    // Render dynamic text in green-500
-    doc.setTextColor(34, 197, 94); // Green-500 color (#22C55E) for dynamic text
-    doc.text(dynamicText, textX + staticTextWidth, 39);
-
-    // Reset text color for rest of the document
-    doc.setTextColor(100, 100, 100);
-
-    // Graph capture
-    const graphElement = document.getElementById("cy");
-    if (graphElement) {
-      try {
-        const graphCanvas = await html2canvas(graphElement, {
-          scale: 2,
-          backgroundColor: "#ffffff",
-          logging: false,
-          useCORS: true,
-        });
-        const graphImage = graphCanvas.toDataURL("image/png");
-        doc.addImage(graphImage, "PNG", 0, 100, 210, 100);
-      } catch (error) {
-        console.error("Error capturing graph:", error);
+        // Truncate the dynamic text and add ellipsis
+        dynamicText = dynamicText.substring(0, maxChars - 3) + "...";
+        dynamicTextWidth =
+          (doc.getStringUnitWidth(dynamicText) * 16) / doc.internal.scaleFactor;
       }
-    }
 
-    // Add footer
-    doc.setFontSize(10);
-    doc.setFont("times", "bold");
-    doc.setTextColor(100, 100, 100);
-    doc.text(date, 175, 275);
-    doc.text("SecureDapp", 10, 275);
-    doc.setFont("times", "normal");
-    doc.text(
-      "235, 2nd & 3rd Floor, 13th Cross Rd, Indira Nagar II Stage,",
-      10,
-      280,
-      null,
-      null,
-      "left"
-    );
-    doc.text(
-      "Hoysala Nagar, Indiranagar, Bengaluru, Karnataka 560038",
-      10,
-      285,
-      null,
-      null,
-      "left"
-    );
-    doc.text("hello@securedapp.in", 10, 290, null, null, "left");
-    doc.line(10, 270, 200, 270);
+      // Total text width
+      const totalTextWidth = staticTextWidth + dynamicTextWidth;
 
-    // Validate transfers data
-    if (!transfers || !Array.isArray(transfers)) {
-      console.error("Invalid transfers data:", transfers);
-      throw new Error("Invalid or missing transfers data");
-    }
+      // Calculate starting X position to center the text
+      const textX = (210 - totalTextWidth) / 2;
 
-    // Function to format transfer data
-    const formatTransferData = (transfer, globalIndex) => {
-      if (!transfer) return null;
+      // Render static text in gray
+      doc.setTextColor(100, 100, 100); // Gray color for static text
+      doc.text(staticText, textX, 39);
 
-      return {
-        sno: (globalIndex + 1).toString(),
-        timestamp: transfer.timestamp
-          ? new Date(transfer.timestamp).toLocaleString()
-          : "N/A",
-        from: transfer.from
-          ? transfer.from.slice(0, 5) + "..." + transfer.from.slice(-4)
-          : "N/A",
-        to: transfer.to
-          ? transfer.to.slice(0, 5) + "..." + transfer.to.slice(-4)
-          : "N/A",
-        tokenPrice: transfer.tokenPrice
-          ? parseFloat(transfer.tokenPrice).toFixed(2)
-          : "N/A",
-        tokenName: transfer.tokenName || "N/A",
-        value: transfer.value ? parseFloat(transfer.value).toFixed(2) : "N/A",
+      // Render dynamic text in green-500
+      doc.setTextColor(34, 197, 94); // Green-500 color (#22C55E) for dynamic text
+      doc.text(dynamicText, textX + staticTextWidth, 39);
+
+      // Reset text color for rest of the document
+      doc.setTextColor(100, 100, 100);
+
+      // Graph capture
+      const graphElement = document.getElementById("cy");
+      if (graphElement) {
+        try {
+          const graphCanvas = await html2canvas(graphElement, {
+            scale: 2,
+            backgroundColor: "#ffffff",
+            logging: false,
+            useCORS: true,
+          });
+          const graphImage = graphCanvas.toDataURL("image/png");
+          doc.addImage(graphImage, "PNG", 0, 100, 210, 100);
+        } catch (error) {
+          console.error("Error capturing graph:", error);
+        }
+      }
+
+      // Add footer
+      doc.setFontSize(10);
+      doc.setFont("times", "bold");
+      doc.setTextColor(100, 100, 100);
+      doc.text(date, 175, 275);
+      doc.text("SecureDapp", 10, 275);
+      doc.setFont("times", "normal");
+      doc.text(
+        "235, 2nd & 3rd Floor, 13th Cross Rd, Indira Nagar II Stage,",
+        10,
+        280,
+        null,
+        null,
+        "left"
+      );
+      doc.text(
+        "Hoysala Nagar, Indiranagar, Bengaluru, Karnataka 560038",
+        10,
+        285,
+        null,
+        null,
+        "left"
+      );
+      doc.text("hello@securedapp.in", 10, 290, null, null, "left");
+      doc.line(10, 270, 200, 270);
+
+      // Validate transfers data
+      if (!transfers || !Array.isArray(transfers)) {
+        console.error("Invalid transfers data:", transfers);
+        throw new Error("Invalid or missing transfers data");
+      }
+
+      // Function to format transfer data
+      const formatTransferData = (transfer, globalIndex) => {
+        if (!transfer) return null;
+
+        return {
+          sno: (globalIndex + 1).toString(),
+          timestamp: transfer.timestamp
+            ? new Date(transfer.timestamp).toLocaleString()
+            : "N/A",
+          from: transfer.from
+            ? transfer.from.slice(0, 5) + "..." + transfer.from.slice(-4)
+            : "N/A",
+          to: transfer.to
+            ? transfer.to.slice(0, 5) + "..." + transfer.to.slice(-4)
+            : "N/A",
+          tokenPrice: transfer.tokenPrice
+            ? parseFloat(transfer.tokenPrice).toFixed(2)
+            : "N/A",
+          tokenName: transfer.tokenName || "N/A",
+          value: transfer.value ? parseFloat(transfer.value).toFixed(2) : "N/A",
+        };
       };
-    };
 
-    // Transaction History Pages
-    const rowsPerPage1 = 10;
-    const totalPages = Math.ceil(transfers.length / rowsPerPage1);
+      // Transaction History Pages
+      const rowsPerPage1 = 10;
+      const totalPages = Math.ceil(transfers.length / rowsPerPage1);
 
-    for (let page = 1; page <= totalPages; page++) {
-      if (page % 2 === 1) {
-        doc.addPage();
-        doc.setFontSize(18);
-        doc.setFont("times", "bold");
-        doc.text("SecureTrace Transaction History", 65, 20);
-        doc.setDrawColor(4, 170, 109);
-        doc.line(10, 25, 200, 25);
-      }
+      for (let page = 1; page <= totalPages; page++) {
+        if (page % 2 === 1) {
+          doc.addPage();
+          doc.setFontSize(18);
+          doc.setFont("times", "bold");
+          doc.text("SecureTrace Transaction History", 65, 20);
+          doc.setDrawColor(4, 170, 109);
+          doc.line(10, 25, 200, 25);
+        }
 
-      const startIdx = (page - 1) * rowsPerPage1;
-      const endIdx = Math.min(page * rowsPerPage1, transfers.length);
-      const currentPageData = transfers
-        .slice(startIdx, endIdx)
-        .map((transfer, index) =>
-          formatTransferData(transfer, startIdx + index)
-        )
-        .filter(Boolean);
+        const startIdx = (page - 1) * rowsPerPage1;
+        const endIdx = Math.min(page * rowsPerPage1, transfers.length);
+        const currentPageData = transfers
+          .slice(startIdx, endIdx)
+          .map((transfer, index) =>
+            formatTransferData(transfer, startIdx + index)
+          )
+          .filter(Boolean);
 
-      if (currentPageData.length === 0) continue;
+        if (currentPageData.length === 0) continue;
 
-      // Create table element
+ // Create table element
 const table = document.createElement("table");
 table.style.width = "100%";
 table.style.borderCollapse = "collapse";
@@ -521,7 +520,7 @@ const headers = [
 ];
 const thead = document.createElement("thead");
 const headerRow = document.createElement("tr");
-headers.forEach((header) => {
+headers.forEach((header, index) => {
   const th = document.createElement("th");
   th.style.padding = "6px"; // Reduced from 8px
   th.style.backgroundColor = "#f4f4f4";
@@ -529,6 +528,16 @@ headers.forEach((header) => {
   th.style.fontSize = "11px"; // Reduced from 12px
   th.style.fontWeight = "bold";
   th.style.textAlign = "left";
+
+  // Adjust column widths
+  if (index === 0) {
+    th.style.width = "5%"; // Slightly reduce S.No width
+  } else if (index === 1) {
+    th.style.width = "20%"; // Increase Timestamp width
+  } else {
+    th.style.width = "auto"; // Default width for other columns
+  }
+
   th.textContent = header;
   headerRow.appendChild(th);
 });
@@ -558,17 +567,25 @@ for (let i = 0; i < totalRows; i++) {
   rowData.forEach((cellData, cellIndex) => {
     const td = document.createElement("td");
     td.style.padding = "6px";
-    td.style.border = "1px solid #ddd";
     td.style.fontSize = "10px";
     td.style.textAlign = cellIndex === 0 ? "center" : "left";
-    td.style.backgroundColor = i % 2 === 0 ? "#ffffff" : "#f4f4f4"; // Ensure consistent background within cells
+
+    // Apply white background if cell data is empty
+    if (cellData === "") {
+      td.style.backgroundColor = "#ffffff";
+      td.style.border = "none"; // Remove border for empty cells
+    } else {
+      td.style.backgroundColor = i % 2 === 0 ? "#ffffff" : "#f4f4f4"; // Ensure consistent background within cells
+      td.style.border = "1px solid #ddd"; // Add border for non-empty cells
+    }
 
     // Apply green color to timestamp and tokenPrice
     if (cellIndex === 1 || cellIndex === 4) {
       td.style.color = "#22C55E"; // Green-500 color
     }
 
-    td.textContent = cellData;
+    // Leave cell blank if data is empty
+    td.textContent = cellData === "" ? "" : cellData;
     row.appendChild(td);
   });
   tbody.appendChild(row);
@@ -591,21 +608,120 @@ try {
     backgroundColor: "#ffffff",
     logging: false,
     width: 800,
-    height: Math.min(550, totalRows * 35 + 35), // Fixed height based on totalRows
+    height: Math.min(600, totalRows * 40 + 40), // Slightly increase table height
     useCORS: true,
   });
 
   // Add table to PDF with same overall height but adjusted internal proportions
   const yPosition = page % 2 === 1 ? 35 : 150;
   const tableImage = canvas.toDataURL("image/png");
-  doc.addImage(tableImage, "PNG", 10, yPosition, 190, 100); // Keeping same height
+  doc.addImage(tableImage, "PNG", 10, yPosition, 190, 110); // Adjust height to 110
   document.body.removeChild(container);
 } catch (error) {
   console.error(`Error capturing table page ${page}:`, error);
   document.body.removeChild(container);
 }
 
-      // Add footer
+        // Add footer
+        doc.line(10, 270, 200, 270);
+        doc.setFontSize(10);
+        doc.setFont("times", "bold");
+        doc.setTextColor(100, 100, 100);
+        doc.text(date, 175, 275);
+        doc.text("SecureDapp", 10, 275);
+        doc.setFont("times", "normal");
+        doc.text(
+          "235, 2nd & 3rd Floor, 13th Cross Rd, Indira Nagar II Stage,",
+          10,
+          280,
+          null,
+          null,
+          "left"
+        );
+        doc.text(
+          "Hoysala Nagar, Indiranagar, Bengaluru, Karnataka 560038",
+          10,
+          285,
+          null,
+          null,
+          "left"
+        );
+        doc.text("hello@securedapp.in", 10, 290, null, null, "left");
+      }
+
+      // Disclaimer page
+      doc.addPage();
+
+      // Add header to disclaimer page
+      doc.setFontSize(10);
+      doc.setFont("times", "bold");
+      doc.setTextColor(100, 100, 100);
+      doc.text("SecureDapp", 10, 15);
+      doc.text(date, 175, 15);
+      doc.setDrawColor(4, 170, 109);
+      doc.line(10, 20, 200, 20);
+
+      // Continue with disclaimer content
+      doc.setFontSize(18);
+      doc.setFont("times", "bold");
+      doc.text("Disclaimer", 82, 35);
+
+      const disclaimerData = [
+        [
+          "Intellectual Property",
+          "SecureTrace is the exclusive intellectual property of SecureDapp. Unauthorized use, reproduction, or distribution is strictly prohibited.",
+        ],
+        [
+          "Intended Use",
+          "SecureTrace is designed for fraud detection and security analysis. Any other use is not authorized and may result in legal action.",
+        ],
+        [
+          "Accuracy and Liability",
+          "Information provided by SecureTrace is for reference only. SecureDapp does not guarantee accuracy and is not liable for any decisions made based on this information.",
+        ],
+        [
+          "Ethical and Legal Compliance",
+          "Users must ensure their use of SecureTrace complies with all applicable laws and ethical standards. SecureDapp is not responsible for misuse.",
+        ],
+        [
+          "No Guaranteed Outcomes",
+          "SecureTrace aids in security efforts but does not guarantee specific results. Users are responsible for applying findings appropriately.",
+        ],
+      ];
+
+      doc.autoTable({
+        head: [["Topic", "Description"]],
+        body: disclaimerData,
+        startY: 40,
+        styles: { fillColor: [211, 211, 211] },
+        headStyles: { fillColor: [4, 170, 109] },
+      });
+
+      // Contact section
+      doc.setFontSize(18);
+      doc.setFont("times", "bold");
+      doc.text("Contact Us", 82, doc.previousAutoTable.finalY + 20);
+
+      const contactData = [
+        ["Email", "hello@securedapp.in"],
+        ["Phone", "9606015868"],
+        [
+          "Address",
+          "SecureDApp Solutions Pvt. Ltd. 235, 2nd & 3rd Floor,13th Cross Rd, Indira Nagar II Stage,Hoysala Nagar, Indiranagar, Bengaluru, Karnataka 560038",
+        ],
+        ["Website", "securedapp.io"],
+        ["Business Hours", "Monday to Friday, 9 AM - 6 PM IST"],
+      ];
+
+      doc.autoTable({
+        head: [["", ""]],
+        body: contactData,
+        startY: doc.previousAutoTable.finalY + 25,
+        styles: { fillColor: [211, 211, 211] },
+        headStyles: { fillColor: [4, 170, 109] },
+      });
+
+      // Add footer to disclaimer page
       doc.line(10, 270, 200, 270);
       doc.setFontSize(10);
       doc.setFont("times", "bold");
@@ -630,114 +746,15 @@ try {
         "left"
       );
       doc.text("hello@securedapp.in", 10, 290, null, null, "left");
+
+      // Save PDF
+      doc.save(
+        "SecureTrace_ Advanced AI for Blockchain Investigation & Forensic Analysis.pdf"
+      );
+    } catch (error) {
+      console.error("Error generating PDF:", error);
     }
-
-    // Disclaimer page
-    doc.addPage();
-
-    // Add header to disclaimer page
-    doc.setFontSize(10);
-    doc.setFont("times", "bold");
-    doc.setTextColor(100, 100, 100);
-    doc.text("SecureDapp", 10, 15);
-    doc.text(date, 175, 15);
-    doc.setDrawColor(4, 170, 109);
-    doc.line(10, 20, 200, 20);
-
-    // Continue with disclaimer content
-    doc.setFontSize(18);
-    doc.setFont("times", "bold");
-    doc.text("Disclaimer", 82, 35);
-
-    const disclaimerData = [
-      [
-        "Intellectual Property",
-        "SecureTrace is the exclusive intellectual property of SecureDapp. Unauthorized use, reproduction, or distribution is strictly prohibited.",
-      ],
-      [
-        "Intended Use",
-        "SecureTrace is designed for fraud detection and security analysis. Any other use is not authorized and may result in legal action.",
-      ],
-      [
-        "Accuracy and Liability",
-        "Information provided by SecureTrace is for reference only. SecureDapp does not guarantee accuracy and is not liable for any decisions made based on this information.",
-      ],
-      [
-        "Ethical and Legal Compliance",
-        "Users must ensure their use of SecureTrace complies with all applicable laws and ethical standards. SecureDapp is not responsible for misuse.",
-      ],
-      [
-        "No Guaranteed Outcomes",
-        "SecureTrace aids in security efforts but does not guarantee specific results. Users are responsible for applying findings appropriately.",
-      ],
-    ];
-
-    doc.autoTable({
-      head: [["Topic", "Description"]],
-      body: disclaimerData,
-      startY: 40,
-      styles: { fillColor: [211, 211, 211] },
-      headStyles: { fillColor: [4, 170, 109] },
-    });
-
-    // Contact section
-    doc.setFontSize(18);
-    doc.setFont("times", "bold");
-    doc.text("Contact Us", 82, doc.previousAutoTable.finalY + 20);
-
-    const contactData = [
-      ["Email", "hello@securedapp.in"],
-      ["Phone", "9606015868"],
-      [
-        "Address",
-        "SecureDApp Solutions Pvt. Ltd. 235, 2nd & 3rd Floor,13th Cross Rd, Indira Nagar II Stage,Hoysala Nagar, Indiranagar, Bengaluru, Karnataka 560038",
-      ],
-      ["Website", "securedapp.io"],
-      ["Business Hours", "Monday to Friday, 9 AM - 6 PM IST"],
-    ];
-
-    doc.autoTable({
-      head: [["", ""]],
-      body: contactData,
-      startY: doc.previousAutoTable.finalY + 25,
-      styles: { fillColor: [211, 211, 211] },
-      headStyles: { fillColor: [4, 170, 109] },
-    });
-
-    // Add footer to disclaimer page
-    doc.line(10, 270, 200, 270);
-    doc.setFontSize(10);
-    doc.setFont("times", "bold");
-    doc.setTextColor(100, 100, 100);
-    doc.text(date, 175, 275);
-    doc.text("SecureDapp", 10, 275);
-    doc.setFont("times", "normal");
-    doc.text(
-      "235, 2nd & 3rd Floor, 13th Cross Rd, Indira Nagar II Stage,",
-      10,
-      280,
-      null,
-      null,
-      "left"
-    );
-    doc.text(
-      "Hoysala Nagar, Indiranagar, Bengaluru, Karnataka 560038",
-      10,
-      285,
-      null,
-      null,
-      "left"
-    );
-    doc.text("hello@securedapp.in", 10, 290, null, null, "left");
-
-    // Save PDF
-    doc.save(
-      "SecureTrace_ Advanced AI for Blockchain Investigation & Forensic Analysis.pdf"
-    );
-  } catch (error) {
-    console.error("Error generating PDF:", error);
-  }
-};
+  };
 
   const handleGeneratePDFClick = () => {
     setLoading(true);
