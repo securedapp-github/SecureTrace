@@ -348,12 +348,11 @@ const Visualizer = () => {
     // Add input value display with gray background
     // First draw the gray background rectangle
     doc.setFillColor(240, 240, 240); // Light gray color
-    doc.rect(10, 30, 190, 12, "F"); // x, y, width, height, 'F' for filled
+    doc.rect(10, 33, 190, 8, "F"); // x, y, width, height, 'F' for filled
 
     // Add input value text
     doc.setFontSize(16);
     doc.setFont("times", "bold");
-    doc.setTextColor(0, 0, 0); // Black color for text
 
     // Calculate text width to center it
     const displayValue =
@@ -362,12 +361,30 @@ const Visualizer = () => {
         : option === "txhash"
         ? formData.txhash
         : inputValue;
-    const text = `Input Value: ${displayValue}`;
-    const textWidth =
-      (doc.getStringUnitWidth(text) * 16) / doc.internal.scaleFactor;
-    const textX = (210 - textWidth) / 2; // Center text
 
-    doc.text(text, textX, 39);
+    // Static part of the text
+    const staticText = "Input Value: ";
+    const staticTextWidth =
+      (doc.getStringUnitWidth(staticText) * 16) / doc.internal.scaleFactor;
+
+    // Dynamic part of the text (value)
+    const dynamicText = displayValue;
+    const dynamicTextWidth =
+      (doc.getStringUnitWidth(dynamicText) * 16) / doc.internal.scaleFactor;
+
+    // Total text width
+    const totalTextWidth = staticTextWidth + dynamicTextWidth;
+
+    // Calculate starting X position to center the text
+    const textX = (210 - totalTextWidth) / 2;
+
+    // Render static text in black
+    doc.setTextColor(0, 0, 0); // Black color for static text
+    doc.text(staticText, textX, 39);
+
+    // Render dynamic text in green-500
+    doc.setTextColor(34, 197, 94); // Green-500 color (#22C55E) for dynamic text
+    doc.text(dynamicText, textX + staticTextWidth, 39);
 
     // Reset text color for rest of the document
     doc.setTextColor(100, 100, 100);
@@ -421,14 +438,6 @@ const Visualizer = () => {
       throw new Error("Invalid or missing transfers data");
     }
 
-    // Function to safely truncate text
-    const truncateText = (text, maxLength) => {
-      if (!text) return "N/A";
-      return text.length > maxLength
-        ? text.substring(0, maxLength) + "..."
-        : text;
-    };
-
     // Function to format transfer data
     const formatTransferData = (transfer, globalIndex) => {
       if (!transfer) return null;
@@ -444,13 +453,11 @@ const Visualizer = () => {
         to: transfer.to
           ? transfer.to.slice(0, 5) + "..." + transfer.to.slice(-4)
           : "N/A",
-        value: transfer.tokenPrice
-          ? parseFloat(transfer.tokenPrice).toFixed(2)
-          : "N/A",
-        tokenName: transfer.tokenName || "N/A",
         tokenPrice: transfer.tokenPrice
           ? parseFloat(transfer.tokenPrice).toFixed(2)
           : "N/A",
+        tokenName: transfer.tokenName || "N/A",
+        value: transfer.value ? parseFloat(transfer.value).toFixed(2) : "N/A",
       };
     };
 
@@ -523,9 +530,9 @@ const Visualizer = () => {
           transfer.timestamp,
           transfer.from,
           transfer.to,
-          transfer.value,
+          transfer.tokenPrice, // Price column
           transfer.tokenName,
-          transfer.tokenPrice,
+          transfer.value, // Quantity column
         ];
 
         rowData.forEach((cellData, cellIndex) => {
@@ -535,6 +542,12 @@ const Visualizer = () => {
           td.style.fontSize = "10px";
           td.style.textAlign = cellIndex === 0 ? "center" : "left";
           td.style.backgroundColor = index % 2 === 0 ? "#ffffff" : "#f4f4f4"; // Ensure consistent background within cells
+
+          // Apply green color to timestamp and tokenPrice
+          if (cellIndex === 1 || cellIndex === 4) {
+            td.style.color = "#22C55E"; // Green-500 color
+          }
+
           td.textContent = cellData;
           row.appendChild(td);
         });
@@ -566,8 +579,6 @@ const Visualizer = () => {
         const yPosition = page % 2 === 1 ? 35 : 150;
         const tableImage = canvas.toDataURL("image/png");
         doc.addImage(tableImage, "PNG", 10, yPosition, 190, 100); // Keeping same height
-
-        // Cleanup
         document.body.removeChild(container);
       } catch (error) {
         console.error(`Error capturing table page ${page}:`, error);
