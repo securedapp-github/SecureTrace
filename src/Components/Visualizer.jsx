@@ -348,7 +348,7 @@ const Visualizer = () => {
     // Add input value display with gray background
     // First draw the gray background rectangle
     doc.setFillColor(240, 240, 240); // Light gray color
-    doc.rect(10, 30, 190, 12, "F"); // x, y, width, height, 'F' for filled
+    doc.rect(10, 33, 190, 8, "F"); // x, y, width, height, 'F' for filled
 
     // Add input value text
     doc.setFontSize(16);
