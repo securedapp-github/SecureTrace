@@ -369,9 +369,24 @@ const Visualizer = () => {
       (doc.getStringUnitWidth(staticText) * 16) / doc.internal.scaleFactor;
 
     // Dynamic part of the text (value)
-    const dynamicText = displayValue;
-    const dynamicTextWidth =
+    let dynamicText = displayValue;
+    let dynamicTextWidth =
       (doc.getStringUnitWidth(dynamicText) * 16) / doc.internal.scaleFactor;
+
+    // Maximum allowed width for dynamic text (gray background width - static text width - padding)
+    const maxDynamicTextWidth = 190 - staticTextWidth - 20; // 20px padding
+
+    // Truncate dynamic text if it exceeds the maximum allowed width
+    if (dynamicTextWidth > maxDynamicTextWidth) {
+      // Calculate the maximum number of characters that can fit
+      const avgCharWidth = dynamicTextWidth / dynamicText.length;
+      const maxChars = Math.floor(maxDynamicTextWidth / avgCharWidth);
+
+      // Truncate the dynamic text and add ellipsis
+      dynamicText = dynamicText.substring(0, maxChars - 3) + "...";
+      dynamicTextWidth =
+        (doc.getStringUnitWidth(dynamicText) * 16) / doc.internal.scaleFactor;
+    }
 
     // Total text width
     const totalTextWidth = staticTextWidth + dynamicTextWidth;
@@ -379,8 +394,8 @@ const Visualizer = () => {
     // Calculate starting X position to center the text
     const textX = (210 - totalTextWidth) / 2;
 
-    // Render static text in black
-    doc.setTextColor(0, 0, 0); // Black color for static text
+    // Render static text in gray
+    doc.setTextColor(100, 100, 100); // Gray color for static text
     doc.text(staticText, textX, 39);
 
     // Render dynamic text in green-500
