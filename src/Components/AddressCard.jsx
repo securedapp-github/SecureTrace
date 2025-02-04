@@ -50,6 +50,8 @@ const AddressCard = () => {
     },
   ];
 
+  
+
   const [currentPage1, setCurrentPage1] = useState(1);
   const rowsPerPage1 = 10;
   const [transfers, setTransfers] = useState([]);
@@ -90,6 +92,9 @@ const AddressCard = () => {
     );
   };
 
+const isInputValid =
+  algoAddressRegex.test(inputValue) || algoTxHashRegex.test(inputValue);
+  
   const copyToClipboard = () => {
     navigator.clipboard.writeText(localStorage.getItem("inputValue"));
     toast.success("You Have Copied the Address");
@@ -437,13 +442,15 @@ const AddressCard = () => {
                     >
                       <span className="font-semibold">View In Visualizer</span>
                     </button>
-                    <button
-                      onClick={() => setIsOpen(!isOpen)}
-                      className="flex gap-2 md:gap-6 items-center px-3 py-2 bg-gradient-to-t from-[#d3d3d3] to-white text-black rounded-lg border border-black shadow-md hover:bg-gray-300 transition"
-                    >
-                      <span className="font-semibold">Filter by Chain</span>
-                      <TiArrowSortedDown />
-                    </button>
+                    {!isInputValid && (
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex gap-2 md:gap-6 items-center px-3 py-2 bg-gradient-to-t from-[#d3d3d3] to-white text-black rounded-lg border border-black shadow-md hover:bg-gray-300 transition"
+        >
+          <span className="font-semibold">Filter by Chain</span>
+          <TiArrowSortedDown />
+        </button>
+      )}
                   </div>
                   {/* {isOpen && (
                       <div className="absolute mt-12 bg-white border border-gray-300 rounded-lg shadow-lg" ref={dropdownRef} >
