@@ -12,6 +12,9 @@ import { DevUrl } from "../Constants";
 import { useLocation, useNavigate } from "react-router-dom";
 import Footer from "./Footer";
 import algo from "../Assests/algologo1.png";
+import opulouslogo from "../Assests/opulouslogo.png";
+import goralogo from "../Assests/goralogo.png";
+import realiologo from "../Assests/realiologo.png";
 
 const AddressCard = () => {
   // const defaultCardData = {
@@ -91,7 +94,6 @@ const AddressCard = () => {
     navigator.clipboard.writeText(localStorage.getItem("inputValue"));
     toast.success("You Have Copied the Address");
   };
-  
 
   const handleScanNow = async () => {
     setLoading(true);
@@ -99,10 +101,10 @@ const AddressCard = () => {
     const jwtToken = localStorage.getItem("jwt_token");
 
     if (!jwtToken) {
-              toast.error("You need to log in to access this feature.");
-              setTimeout(() => {
-                navigate("/"); 
-              }, 4000);
+      toast.error("You need to log in to access this feature.");
+      setTimeout(() => {
+        navigate("/");
+      }, 4000);
       return;
     }
     console.log("Search submitted!");
@@ -185,7 +187,6 @@ const AddressCard = () => {
     } catch (error) {
       console.error("Error fetching transfers:", error);
     }
-    
   };
 
   useEffect(() => {
@@ -294,9 +295,9 @@ const AddressCard = () => {
     };
   }, []);
 
-   const handleNavigateToVisualizer = () => {
-     navigate("/visualizer", { state: { inputValue } }); // Pass inputValue to the Visualizer page
-   };
+  const handleNavigateToVisualizer = () => {
+    navigate("/visualizer", { state: { inputValue } }); // Pass inputValue to the Visualizer page
+  };
 
   return (
     <div className="bg-white dark:bg-[#001938]">
@@ -554,7 +555,17 @@ const AddressCard = () => {
                   <tbody>
                     {currentRows && currentRows.length > 0
                       ? currentRows.map((item, index) => {
-                          const logo = item.logo;
+                          // Mapping of tokenName to logo
+                          const logoMapping = {
+                            algorand: algo,
+                            opulous: opulouslogo,
+                            realiotoken: realiologo,
+                            gora: goralogo,
+                          };
+                          const logo =
+                            logoMapping[
+                              item.tokenName.toLowerCase().replace(/\s+/g, "")
+                            ] || item.logo;
                           const asset = item.tokenName;
                           const price = parseFloat(item.tokenPrice).toFixed(2);
                           const holdings = parseFloat(
@@ -567,14 +578,14 @@ const AddressCard = () => {
                               key={index}
                               className="border-t h-12 odd:bg-[#F4F4F4] even:bg-white"
                             >
-                              <td className="flex items-center justify-center ">
+                              <td className="flex items-center justify-center">
                                 <div className="flex items-center w-48 gap-5">
                                   <img
-                                    src={logo}
+                                    src={logo} // Use the resolved logo here
                                     alt={asset}
-                                    className="mt-2 h-7 w-7 "
+                                    className="w-8 h-8 mt-2 rounded-full"
                                   />
-                                  <p className="text-nowrap"> {asset}</p>
+                                  <p className="text-nowrap">{asset}</p>
                                 </div>
                               </td>
                               <td className="px-4">${price}</td>
