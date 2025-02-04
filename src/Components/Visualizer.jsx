@@ -1824,7 +1824,7 @@ try {
                                   <img
                                     src={displayLogo}
                                     alt={tokenName}
-                                    className="h-9"
+                                    className="rounded-full h-9"
                                   />
                                 )}
                               </td>
