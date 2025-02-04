@@ -37,60 +37,62 @@ function Login() {
   };
 
   const handleVerifyOtp = async () => {
-    if (!email || !otp) {
-      toast.error("Please enter your email and OTP.");
-      return;
-    }
+  if (!email || !otp) {
+    toast.error("Please enter your email and OTP.");
+    return;
+  }
 
-    setLoading(true);
+  setLoading(true);
 
-    try {
-      const response = await axios.post(
-        "https://139-59-5-56.nip.io:3443/traceVerifyOtp",
-        {
-          email: email,
-          otp: parseInt(otp),
+  try {
+    const response = await axios.post(
+      "https://139-59-5-56.nip.io:3443/traceVerifyOtp",
+      {
+        email: email,
+        otp: parseInt(otp),
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
         },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.data) {
-        console.log("JWT Token:", response.data.token);
-        localStorage.setItem("jwt_token", response.data.token);
-
-        // Store email in localStorage
-        localStorage.setItem("userEmail", email);
-
-        // Dispatch a custom event to notify the Navbar
-        window.dispatchEvent(new Event("userLogin"));
-
-        toast.success("OTP verified successfully!");
-
-        setTimeout(() => {
-          navigate("/dashboard");
-        }, 1000);
-      } else {
-        toast.error("Invalid OTP. Please try again.");
       }
-    } catch (error) {
-      console.error("Error verifying OTP:", error);
-      if (error.response) {
-        toast.error(
-          error.response.data.message || "Invalid OTP. Please try again."
-        );
-      } else if (error.request) {
-        toast.error("No response from server. Please try again.");
-      } else {
-        toast.error("Failed to verify OTP. Please try again.");
-      }
-    } finally {
-      setLoading(false);
+    );
+
+    // Check if the response contains the expected data
+    if (response.data && response.data.token) {
+      console.log("JWT Token:", response.data.token);
+      localStorage.setItem("jwt_token", response.data.token);
+
+      // Store email in localStorage
+      localStorage.setItem("userEmail", email);
+
+      // Dispatch a custom event to notify the Navbar
+      window.dispatchEvent(new Event("userLogin"));
+
+      toast.success("OTP verified successfully!");
+
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000);
+    } else {
+      toast.error("Invalid OTP. Please try again.");
     }
-  };
+  } catch (error) {
+    console.error("Error verifying OTP:", error);
+    if (error.response) {
+      // Check if the server returned a specific error message
+      toast.error(
+        error.response.data.message || "Invalid OTP. Please try again."
+      );
+    } else if (error.request) {
+      toast.error("No response from server. Please try again.");
+    } else {
+      toast.error("Failed to verify OTP. Please try again.");
+    }
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="font-poppin bg-[#FAFAFA] dark:bg-[#001938] min-h-screen pb-10 dark:shadow-lg">
