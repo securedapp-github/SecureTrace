@@ -1360,188 +1360,191 @@ try {
             </button>
 
             {isPopupOpen && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+              <div className="fixed inset-0 z-50 flex items-start p-2 bg-black bg-opacity-50 sm:items-center sm:justify-center sm:p-0">
                 <div
-                  className="bg-white w-[90%] md:w-[40%] rounded-lg shadow-lg p-8 relative overflow-y-scroll"
+                  className="bg-white w-[45%] sm:w-[85%] md:w-[75%] lg:w-[65%] xl:w-[55%] rounded-lg shadow-lg relative overflow-y-scroll ml-2 sm:mx-auto lg:mt-0 sm:mt-10 md:mt-0 mt-28"
                   style={{ maxHeight: "90vh" }}
                   id="hide-scrollbar"
                 >
-                  <button
-                    className="absolute text-gray-600 top-4 right-4 hover:text-gray-800"
-                    onClick={togglePopup}
-                  >
-                    ✖
-                  </button>
-                  <h2 className="mb-4 text-xl font-semibold">
-                    Advanced Scan Option
-                  </h2>
+                  <div className="p-3 md:p-6">
+                    <button
+                      className="absolute text-gray-600 top-2 right-2 md:top-4 md:right-4 hover:text-gray-800"
+                      onClick={togglePopup}
+                    >
+                      ✖
+                    </button>
+                    <h2 className="mb-4 text-lg font-semibold md:text-xl">
+                      Advanced Scan Option
+                    </h2>
 
-                  <form onSubmit={handleSubmit}>
-                    <div className="mb-4">
-                      <label className="font-medium text-gray-700">
-                        Choose Option:
-                      </label>
-                      <div className="flex gap-4 mt-2">
-                        <label className="flex items-center">
-                          <input
-                            type="radio"
-                            name="filterOption"
-                            value="txhash"
-                            checked={option === "txhash"}
-                            onChange={handleOptionChange}
-                            className="mr-2"
-                          />
-                          Tx Hash
-                        </label>
-                        <label className="flex items-center">
-                          <input
-                            type="radio"
-                            name="filterOption"
-                            value="address"
-                            checked={option === "address"}
-                            onChange={handleOptionChange}
-                            className="mr-2"
-                          />
-                          Address
-                        </label>
-                      </div>
-                    </div>
-
-                    {option === "txhash" && (
+                    <form onSubmit={handleSubmit} className="w-full">
+                      {/* Rest of the form content remains the same */}
+                      {/* ... */}
                       <div className="mb-4">
                         <label className="font-medium text-gray-700">
-                          Tx Hash:
+                          Choose Option:
                         </label>
-                        <input
-                          type="text"
-                          name="txhash"
-                          value={formData.txhash}
-                          onChange={handleChange}
-                          placeholder="Enter Tx Hash"
-                          className="w-full p-3 mt-2 border rounded-lg"
-                        />
+                        <div className="flex gap-2 mt-2 md:gap-4">
+                          <label className="flex items-center">
+                            <input
+                              type="radio"
+                              name="filterOption"
+                              value="txhash"
+                              checked={option === "txhash"}
+                              onChange={handleOptionChange}
+                              className="mr-2"
+                            />
+                            Tx Hash
+                          </label>
+                          <label className="flex items-center">
+                            <input
+                              type="radio"
+                              name="filterOption"
+                              value="address"
+                              checked={option === "address"}
+                              onChange={handleOptionChange}
+                              className="mr-2"
+                            />
+                            Address
+                          </label>
+                        </div>
                       </div>
-                    )}
 
-                    {option === "address" && (
-                      <>
+                      {option === "txhash" && (
                         <div className="mb-4">
                           <label className="font-medium text-gray-700">
-                            Address:
+                            Tx Hash:
                           </label>
                           <input
                             type="text"
-                            name="address"
-                            value={formData.address}
+                            name="txhash"
+                            value={formData.txhash}
                             onChange={handleChange}
-                            placeholder="Enter Address"
-                            className="w-full p-3 mt-2 border rounded-lg"
+                            placeholder="Enter Tx Hash"
+                            className="w-full p-2 mt-2 border rounded-lg md:p-3"
                           />
                         </div>
-                        <div className="mb-4">
-                          <label className="font-medium text-gray-700">
-                            From Date:
-                          </label>
-                          <input
-                            type="date"
-                            name="fromDate"
-                            value={formData.fromDate}
-                            onChange={handleChange}
-                            className="w-full p-3 mt-2 border rounded-lg"
-                          />
-                        </div>
-                        <div className="mb-4">
-                          <label className="font-medium text-gray-700">
-                            To Date:
-                          </label>
-                          <input
-                            type="date"
-                            name="toDate"
-                            value={formData.toDate}
-                            onChange={handleChange}
-                            className="w-full p-3 mt-2 border rounded-lg"
-                          />
-                        </div>
-                        <div className="relative mb-4">
-                          <label className="font-medium text-gray-700">
-                            Tokens:
-                          </label>
-                          <div className="mt-2">
-                            {/* Display Selected Tokens */}
-                            {formData.tokens.length > 0 && (
-                              <div className="flex flex-wrap gap-2 mb-2">
-                                {formData.tokens.map((tokenAddress, index) => {
-                                  // Find the corresponding token object using the address
-                                  const token = tokensList.find(
-                                    (t) => t.address === tokenAddress
-                                  );
+                      )}
 
-                                  return token ? (
-                                    <span
-                                      key={index}
-                                      className="flex items-center gap-2 px-2 py-1 text-blue-800 bg-blue-100 rounded-lg"
-                                    >
-                                      {token.name} - {token.chain}
-                                      <button
-                                        onClick={() =>
-                                          handleTokenSelection(token)
-                                        }
-                                        className="text-red-500 hover:text-red-700"
-                                      >
-                                        ✖
-                                      </button>
-                                    </span>
-                                  ) : null; // Skip if the token is not found
-                                })}
-                              </div>
-                            )}
-
-                            {/* Search Bar */}
+                      {option === "address" && (
+                        <>
+                          <div className="mb-4">
+                            <label className="font-medium text-gray-700">
+                              Address:
+                            </label>
                             <input
                               type="text"
-                              placeholder="Search tokens..."
-                              value={searchTerm}
-                              onChange={(e) => setSearchTerm(e.target.value)}
-                              className="w-full p-3 mb-2 bg-white border rounded-lg"
+                              name="address"
+                              value={formData.address}
+                              onChange={handleChange}
+                              placeholder="Enter Address"
+                              className="w-full p-2 mt-2 border rounded-lg md:p-3"
                             />
+                          </div>
+                          <div className="mb-4">
+                            <label className="font-medium text-gray-700">
+                              From Date:
+                            </label>
+                            <input
+                              type="date"
+                              name="fromDate"
+                              value={formData.fromDate}
+                              onChange={handleChange}
+                              className="w-full p-2 mt-2 border rounded-lg md:p-3"
+                            />
+                          </div>
+                          <div className="mb-4">
+                            <label className="font-medium text-gray-700">
+                              To Date:
+                            </label>
+                            <input
+                              type="date"
+                              name="toDate"
+                              value={formData.toDate}
+                              onChange={handleChange}
+                              className="w-full p-2 mt-2 border rounded-lg md:p-3"
+                            />
+                          </div>
+                          <div className="relative mb-4">
+                            <label className="font-medium text-gray-700">
+                              Tokens:
+                            </label>
+                            <div className="mt-2">
+                              {formData.tokens.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mb-2">
+                                  {formData.tokens.map(
+                                    (tokenAddress, index) => {
+                                      const token = tokensList.find(
+                                        (t) => t.address === tokenAddress
+                                      );
 
-                            {/* Dropdown */}
-                            <div className="overflow-y-auto bg-white border rounded-lg shadow-lg max-h-48">
-                              {filteredTokens.length > 0 ? (
-                                filteredTokens.map((token, index) => (
-                                  <div
-                                    key={index}
-                                    onClick={() => handleTokenSelection(token)}
-                                    className={`p-3 cursor-pointer hover:bg-gray-100 ${
-                                      formData.tokens.includes(token.address)
-                                        ? "bg-gray-200 font-bold"
-                                        : ""
-                                    }`}
-                                  >
-                                    {token.name} - {token.chain}{" "}
-                                    {/* Display token name and chain */}
-                                  </div>
-                                ))
-                              ) : (
-                                <div className="p-3 text-gray-500">
-                                  No tokens found
+                                      return token ? (
+                                        <span
+                                          key={index}
+                                          className="flex items-center gap-1 px-2 py-1 text-sm text-blue-800 bg-blue-100 rounded-lg md:gap-2 md:text-base"
+                                        >
+                                          {token.name} - {token.chain}
+                                          <button
+                                            onClick={() =>
+                                              handleTokenSelection(token)
+                                            }
+                                            className="text-red-500 hover:text-red-700"
+                                          >
+                                            ✖
+                                          </button>
+                                        </span>
+                                      ) : null;
+                                    }
+                                  )}
                                 </div>
                               )}
+
+                              <input
+                                type="text"
+                                placeholder="Search tokens..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full p-2 mb-2 bg-white border rounded-lg md:p-3"
+                              />
+
+                              <div className="overflow-y-auto bg-white border rounded-lg shadow-lg max-h-48">
+                                {filteredTokens.length > 0 ? (
+                                  filteredTokens.map((token, index) => (
+                                    <div
+                                      key={index}
+                                      onClick={() =>
+                                        handleTokenSelection(token)
+                                      }
+                                      className={`p-2 md:p-3 text-sm md:text-base cursor-pointer hover:bg-gray-100 ${
+                                        formData.tokens.includes(token.address)
+                                          ? "bg-gray-200 font-bold"
+                                          : ""
+                                      }`}
+                                    >
+                                      {token.name} - {token.chain}
+                                    </div>
+                                  ))
+                                ) : (
+                                  <div className="p-2 text-sm text-gray-500 md:p-3 md:text-base">
+                                    No tokens found
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </>
-                    )}
+                        </>
+                      )}
 
-                    <div className="flex justify-end">
-                      <button
-                        type="submit"
-                        className="px-6 py-2 font-semibold text-white transition-all duration-300 bg-green-500 rounded-lg hover:bg-green-600"
-                      >
-                        {option === "txHash" ? "Scan Now" : "Submit"}
-                      </button>
-                    </div>
-                  </form>
+                      <div className="flex justify-end">
+                        <button
+                          type="submit"
+                          className="px-4 py-2 text-sm font-semibold text-white transition-all duration-300 bg-green-500 rounded-lg md:px-6 md:text-base hover:bg-green-600"
+                        >
+                          {option === "txHash" ? "Scan Now" : "Submit"}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
                 </div>
               </div>
             )}
@@ -1821,7 +1824,7 @@ try {
                                   <img
                                     src={displayLogo}
                                     alt={tokenName}
-                                    className="h-9"
+                                    className="rounded-full h-9"
                                   />
                                 )}
                               </td>
