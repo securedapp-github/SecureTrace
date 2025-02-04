@@ -244,7 +244,7 @@ const CreditScore = () => {
           <div className="my-10">
             <div
               className={`flex justify-center mb-4 text-4xl ${
-                validatedData.type === "wallet" ? "lg:mr-20 ml-12" : "lg:mr-0"
+                validatedData.type === "wallet" ? "lg:mr-20 ml-12" : "lg:mr-0 ml-9"
               } sm:mr-0 md:mr-0 sm:ml-0 md:ml-0 lg:ml-0`}
             >
               <p className="gap-4 font-semibold text-gray-700 dark:text-gray-200">
@@ -322,8 +322,8 @@ const CreditScore = () => {
               ) : (
                 creditScore && (
                   <div className="">
-                    <div className="flex items-center justify-center gap-5 lg:mr-60 sm:mr-0 md:mr-0">
-                      <h1 className="text-5xl text-black dark:text-white">
+                    <div className="flex items-center justify-center gap-5 lg:mr-72 sm:mr-0 md:mr-0">
+                      <h1 className="text-5xl text-gray-700 dark:text-white">
                         Credit Score
                       </h1>
                       <p className="text-6xl font-bold text-green-500">
