@@ -11,6 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { DevUrl } from "../Constants";
 import { useLocation, useNavigate } from "react-router-dom";
 import Footer from "./Footer";
+import algo from "../Assests/algologo1.png";
 
 const AddressCard = () => {
   // const defaultCardData = {
