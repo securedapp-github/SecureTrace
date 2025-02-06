@@ -41,15 +41,31 @@ const Visualizer = () => {
   const [isFromSecureTransaction, setIsFromSecureTransaction] = useState(false);
   const [tokensList, setTokensList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedToken, setSelectedToken] = useState(null);
 
-  const totalPages1 = Math.ceil(transfers.length / rowsPerPage1);
-  const sortedTransfers = transfers.sort(
-    (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+  const getFilteredTransactions = (transfers, selectedTokenAddress) => {
+    if (!selectedTokenAddress) return transfers;
+    return transfers.filter(
+      (transfer) => transfer.tokenAddress === selectedTokenAddress
+    );
+  };
+
+  const totalPages1 = Math.ceil(
+    getFilteredTransactions(transfers, selectedToken?.address).length /
+      rowsPerPage1
   );
+
+  const sortedTransfers = getFilteredTransactions(
+    transfers,
+    selectedToken?.address
+  ).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
   const currentRows1 = sortedTransfers.slice(
     (currentPage1 - 1) * rowsPerPage1,
     currentPage1 * rowsPerPage1
   );
+
   const handlePageChange1 = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages1) {
       setCurrentPage1(pageNumber);
@@ -501,126 +517,126 @@ const Visualizer = () => {
 
         if (currentPageData.length === 0) continue;
 
- // Create table element
-const table = document.createElement("table");
-table.style.width = "100%";
-table.style.borderCollapse = "collapse";
-table.style.marginBottom = "20px";
-table.style.tableLayout = "fixed";
+        // Create table element
+        const table = document.createElement("table");
+        table.style.width = "100%";
+        table.style.borderCollapse = "collapse";
+        table.style.marginBottom = "20px";
+        table.style.tableLayout = "fixed";
 
-// Add headers with reduced padding
-const headers = [
-  "S.No",
-  "Timestamp",
-  "From",
-  "To",
-  "Price",
-  "Token",
-  "Quantity",
-];
-const thead = document.createElement("thead");
-const headerRow = document.createElement("tr");
-headers.forEach((header, index) => {
-  const th = document.createElement("th");
-  th.style.padding = "6px"; // Reduced from 8px
-  th.style.backgroundColor = "#f4f4f4";
-  th.style.border = "1px solid #ddd";
-  th.style.fontSize = "11px"; // Reduced from 12px
-  th.style.fontWeight = "bold";
-  th.style.textAlign = "left";
+        // Add headers with reduced padding
+        const headers = [
+          "S.No",
+          "Timestamp",
+          "From",
+          "To",
+          "Price",
+          "Token",
+          "Quantity",
+        ];
+        const thead = document.createElement("thead");
+        const headerRow = document.createElement("tr");
+        headers.forEach((header, index) => {
+          const th = document.createElement("th");
+          th.style.padding = "6px"; // Reduced from 8px
+          th.style.backgroundColor = "#f4f4f4";
+          th.style.border = "1px solid #ddd";
+          th.style.fontSize = "11px"; // Reduced from 12px
+          th.style.fontWeight = "bold";
+          th.style.textAlign = "left";
 
-  // Adjust column widths
-  if (index === 0) {
-    th.style.width = "5%"; // Slightly reduce S.No width
-  } else if (index === 1) {
-    th.style.width = "20%"; // Increase Timestamp width
-  } else {
-    th.style.width = "auto"; // Default width for other columns
-  }
+          // Adjust column widths
+          if (index === 0) {
+            th.style.width = "5%"; // Slightly reduce S.No width
+          } else if (index === 1) {
+            th.style.width = "20%"; // Increase Timestamp width
+          } else {
+            th.style.width = "auto"; // Default width for other columns
+          }
 
-  th.textContent = header;
-  headerRow.appendChild(th);
-});
-thead.appendChild(headerRow);
-table.appendChild(thead);
+          th.textContent = header;
+          headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
 
-// Add data rows with reduced padding
-const tbody = document.createElement("tbody");
-const totalRows = 10; // Fixed number of rows
-for (let i = 0; i < totalRows; i++) {
-  const row = document.createElement("tr");
-  // Set alternating background colors
-  row.style.backgroundColor = i % 2 === 0 ? "#ffffff" : "#f4f4f4";
+        // Add data rows with reduced padding
+        const tbody = document.createElement("tbody");
+        const totalRows = 10; // Fixed number of rows
+        for (let i = 0; i < totalRows; i++) {
+          const row = document.createElement("tr");
+          // Set alternating background colors
+          row.style.backgroundColor = i % 2 === 0 ? "#ffffff" : "#f4f4f4";
 
-  // Use actual data if available, otherwise create an empty row
-  const transfer = currentPageData[i] || {};
-  const rowData = [
-    transfer.sno || "", // S.No
-    transfer.timestamp || "", // Timestamp
-    transfer.from || "", // From
-    transfer.to || "", // To
-    transfer.tokenPrice || "", // Price
-    transfer.tokenName || "", // Token
-    transfer.value || "", // Quantity
-  ];
+          // Use actual data if available, otherwise create an empty row
+          const transfer = currentPageData[i] || {};
+          const rowData = [
+            transfer.sno || "", // S.No
+            transfer.timestamp || "", // Timestamp
+            transfer.from || "", // From
+            transfer.to || "", // To
+            transfer.tokenPrice || "", // Price
+            transfer.tokenName || "", // Token
+            transfer.value || "", // Quantity
+          ];
 
-  rowData.forEach((cellData, cellIndex) => {
-    const td = document.createElement("td");
-    td.style.padding = "6px";
-    td.style.fontSize = "10px";
-    td.style.textAlign = cellIndex === 0 ? "center" : "left";
+          rowData.forEach((cellData, cellIndex) => {
+            const td = document.createElement("td");
+            td.style.padding = "6px";
+            td.style.fontSize = "10px";
+            td.style.textAlign = cellIndex === 0 ? "center" : "left";
 
-    // Apply white background if cell data is empty
-    if (cellData === "") {
-      td.style.backgroundColor = "#ffffff";
-      td.style.border = "none"; // Remove border for empty cells
-    } else {
-      td.style.backgroundColor = i % 2 === 0 ? "#ffffff" : "#f4f4f4"; // Ensure consistent background within cells
-      td.style.border = "1px solid #ddd"; // Add border for non-empty cells
-    }
+            // Apply white background if cell data is empty
+            if (cellData === "") {
+              td.style.backgroundColor = "#ffffff";
+              td.style.border = "none"; // Remove border for empty cells
+            } else {
+              td.style.backgroundColor = i % 2 === 0 ? "#ffffff" : "#f4f4f4"; // Ensure consistent background within cells
+              td.style.border = "1px solid #ddd"; // Add border for non-empty cells
+            }
 
-    // Apply green color to timestamp and tokenPrice
-    if (cellIndex === 1 || cellIndex === 4) {
-      td.style.color = "#22C55E"; // Green-500 color
-    }
+            // Apply green color to timestamp and tokenPrice
+            if (cellIndex === 1 || cellIndex === 4) {
+              td.style.color = "#22C55E"; // Green-500 color
+            }
 
-    // Leave cell blank if data is empty
-    td.textContent = cellData === "" ? "" : cellData;
-    row.appendChild(td);
-  });
-  tbody.appendChild(row);
-}
-table.appendChild(tbody);
+            // Leave cell blank if data is empty
+            td.textContent = cellData === "" ? "" : cellData;
+            row.appendChild(td);
+          });
+          tbody.appendChild(row);
+        }
+        table.appendChild(tbody);
 
-// Create temporary container
-const container = document.createElement("div");
-container.style.position = "absolute";
-container.style.left = "-9999px";
-container.style.width = "800px";
-container.style.backgroundColor = "#ffffff";
-container.appendChild(table);
-document.body.appendChild(container);
+        // Create temporary container
+        const container = document.createElement("div");
+        container.style.position = "absolute";
+        container.style.left = "-9999px";
+        container.style.width = "800px";
+        container.style.backgroundColor = "#ffffff";
+        container.appendChild(table);
+        document.body.appendChild(container);
 
-try {
-  // Capture table with adjusted height
-  const canvas = await html2canvas(container, {
-    scale: 2,
-    backgroundColor: "#ffffff",
-    logging: false,
-    width: 800,
-    height: Math.min(600, totalRows * 40 + 40), // Slightly increase table height
-    useCORS: true,
-  });
+        try {
+          // Capture table with adjusted height
+          const canvas = await html2canvas(container, {
+            scale: 2,
+            backgroundColor: "#ffffff",
+            logging: false,
+            width: 800,
+            height: Math.min(600, totalRows * 40 + 40), // Slightly increase table height
+            useCORS: true,
+          });
 
-  // Add table to PDF with same overall height but adjusted internal proportions
-  const yPosition = page % 2 === 1 ? 35 : 150;
-  const tableImage = canvas.toDataURL("image/png");
-  doc.addImage(tableImage, "PNG", 10, yPosition, 190, 110); // Adjust height to 110
-  document.body.removeChild(container);
-} catch (error) {
-  console.error(`Error capturing table page ${page}:`, error);
-  document.body.removeChild(container);
-}
+          // Add table to PDF with same overall height but adjusted internal proportions
+          const yPosition = page % 2 === 1 ? 35 : 150;
+          const tableImage = canvas.toDataURL("image/png");
+          doc.addImage(tableImage, "PNG", 10, yPosition, 190, 110); // Adjust height to 110
+          document.body.removeChild(container);
+        } catch (error) {
+          console.error(`Error capturing table page ${page}:`, error);
+          document.body.removeChild(container);
+        }
 
         // Add footer
         doc.line(10, 270, 200, 270);
@@ -876,6 +892,7 @@ try {
           name: token.name,
           address: token.address,
           chain: token.chain,
+          symbol: token.symbol,
         }));
 
         setTokensList(fetchedTokens);
@@ -893,33 +910,26 @@ try {
     token.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // const handleTokenSelection = (token) => {
-  //   setFormData((prevFormData) => {
-  //     const isSelected = prevFormData.tokens.includes(token);
-  //     return {
-  //       ...prevFormData,
-  //       tokens: isSelected
-  //         ? prevFormData.tokens.filter((t) => t !== token) // Remove if already selected
-  //         : [...prevFormData.tokens, token], // Add if not selected
-  //     };
-  //   });
-  // };
+  const handleTokenSelection = async (token) => {
+    setSelectedToken(token);
+    setIsLoading(true);
+    try {
+      setFormData((prev) => ({
+        ...prev,
+        tokens: token ? [token.address] : [],
+      }));
 
-  const handleTokenSelection = (token) => {
-    setFormData((prevFormData) => {
-      const isSelected = prevFormData.tokens.includes(token.address);
-      if (isSelected) {
-        console.log(`Deselected token address: ${token.address}`);
-      } else {
-        console.log(`Selected token address: ${token.address}`);
-      }
-      return {
-        ...prevFormData,
-        tokens: isSelected
-          ? prevFormData.tokens.filter((t) => t !== token.address) // Remove if already selected
-          : [...prevFormData.tokens, token.address], // Add if not selected
-      };
-    });
+      // Update transfers display based on selected token
+      const filteredTransfers = getFilteredTransactions(
+        transfers,
+        token?.address
+      );
+      renderGraph(token?.address, filteredTransfers);
+    } catch (error) {
+      console.error("Error in token selection:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const renderGraph = (centerAddress, transactions) => {
@@ -1887,29 +1897,21 @@ try {
                                   {to.slice(0, 5) + "..." + to.slice(-4)}
                                 </button>
                               </td>
-                              <td className="px-4 text-green-500">
-                                ${parseFloat(tokenPrice).toFixed(2)}
+                              <td className="px-4 me-3">
+                                {parseFloat(tokenPrice).toFixed(2)}
                               </td>
-                              <td className="px-4">{tokenName}</td>
-                              <td className="px-4">
+                              <td className="px-4 me-3">{tokenName}</td>
+                              <td className="px-4 me-3">
                                 {parseFloat(value).toFixed(2)}
                               </td>
                             </tr>
                           );
                         })
                       ) : (
-                        <tr className="border-t h-12 odd:bg-[#F4F4F4] even:bg-white ">
-                          <td className="flex items-center justify-center mt-2">
-                            <img src={btc} alt="Token Name" />
+                        <tr>
+                          <td colSpan="7" className="py-4 text-center">
+                            No transfers found.
                           </td>
-                          <td className="text-center text-green-500">
-                            0 days ago
-                          </td>
-                          <td className="text-center">0000....000</td>
-                          <td className="text-center">0000....000</td>
-                          <td className="text-green-500">0.00</td>
-                          <td>BTC</td>
-                          <td>$0.00</td>
                         </tr>
                       )}
                     </tbody>
@@ -1920,9 +1922,7 @@ try {
           </div>
         )}
       </div>
-      <div className="">
-        <Footer />
-      </div>
+      <Footer />
     </div>
   );
 };
