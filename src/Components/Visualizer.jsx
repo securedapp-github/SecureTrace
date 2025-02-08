@@ -866,6 +866,17 @@ const Visualizer = () => {
     }
 
     console.log("Form Submitted:", formData);
+    // Update transfers display based on selected token
+    const filteredTransfers = getFilteredTransactions(
+      transfers,
+      formData.tokens[0]
+    );
+    if (option === "address") {
+      renderGraph(formData.address, filteredTransfers);
+    } else if (option === "txhash") {
+      renderGraphTxHash(formData.txhash, filteredTransfers);
+    }
+
     handleScanClick();
     setError("");
     setIsPopupOpen(false);
@@ -909,28 +920,6 @@ const Visualizer = () => {
   const filteredTokens = tokensList.filter((token) =>
     token.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const handleTokenSelection = async (token) => {
-    setSelectedToken(token);
-    setIsLoading(true);
-    try {
-      setFormData((prev) => ({
-        ...prev,
-        tokens: token ? [token.address] : [],
-      }));
-
-      // Update transfers display based on selected token
-      const filteredTransfers = getFilteredTransactions(
-        transfers,
-        token?.address
-      );
-      renderGraph(token?.address, filteredTransfers);
-    } catch (error) {
-      console.error("Error in token selection:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const renderGraph = (centerAddress, transactions) => {
     const elements = [];
@@ -992,7 +981,7 @@ const Visualizer = () => {
 
     const cy = cytoscape({
       container: document.getElementById("cy"),
-      elements: elements,
+      elements: elements || [],
 
       style: [
         {
@@ -1319,6 +1308,51 @@ const Visualizer = () => {
       edgeElasticity: 100,
     }).run();
   };
+
+  const handleTokenSelection = async (token) => {
+    setSelectedToken(token);
+    setIsLoading(true);
+    try {
+      setFormData((prev) => ({
+        ...prev,
+        tokens: token ? [token.address] : [],
+      }));
+    } catch (error) {
+      console.error("Error in token selection:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isInputEntered) {
+      if (selectedToken) {
+        const filteredTransfers = getFilteredTransactions(
+          transfers,
+          selectedToken.address
+        );
+        if (filteredTransfers.length > 0) {
+          if (option === "address") {
+            renderGraph(formData.address || inputValue, filteredTransfers);
+          } else if (option === "txhash") {
+            renderGraphTxHash(formData.txhash || inputValue, filteredTransfers);
+          }
+        } else {
+          if (option === "address") {
+            renderGraph(formData.address || inputValue, transfers);
+          } else if (option === "txhash") {
+            renderGraphTxHash(formData.txhash || inputValue, transfers);
+          }
+        }
+      } else {
+        if (option === "address") {
+          renderGraph(formData.address || inputValue, transfers);
+        } else if (option === "txhash") {
+          renderGraphTxHash(formData.txhash || inputValue, transfers);
+        }
+      }
+    }
+  }, [isInputEntered, selectedToken, transfers, option, formData, inputValue]);
 
   useEffect(() => {
     if (currentPage1 > totalPages1 || totalPages1 === 0) {
