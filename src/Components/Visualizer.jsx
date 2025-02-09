@@ -1615,7 +1615,35 @@ const Visualizer = () => {
             Generate PDF
           </button>
         )}
-        <div className="mt-10">
+        {isInputEntered && (
+          <div className="flex gap-10 lg:-ml-96 lg:mr-96 mt-14 text-2xl border rounded-md p-5 mb-5 sm:-ml-0 sm:mr-0 -ml-0 mr-0">
+            <p className="bg-green-500 rounded-full text-green-500 relative group cursor-pointer p-1">
+              hiii
+              <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-lg text-white bg-gray-700 rounded opacity-0 group-hover:opacity-100">
+                Inward transactions
+              </span>
+            </p>
+            <p className="p-1 bg-red-500 rounded-full text-red-500 relative group cursor-pointer">
+              hiii
+              <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-lg text-white bg-gray-700 rounded opacity-0 group-hover:opacity-100">
+                Outward transactions
+              </span>
+            </p>
+            <p className="p-1 bg-purple-400 rounded-full text-purple-400 relative group cursor-pointer">
+              hiii
+              <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-lg text-white bg-gray-700 rounded opacity-0 group-hover:opacity-100">
+                From address
+              </span>
+            </p>
+            <p className="p-1 bg-blue-500 rounded-full text-blue-500 relative group cursor-pointer">
+              hiii
+              <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-lg text-white bg-gray-700 rounded opacity-0 group-hover:opacity-100">
+                To address
+              </span>
+            </p>
+          </div>
+        )}
+        <div className="mt-5">
           <div
             id="cy"
             className="border-gray-800 rounded-md shadow-2xl h-[600px] w-[1200px]"
