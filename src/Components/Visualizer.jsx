@@ -1651,26 +1651,26 @@ const Visualizer = () => {
         )}
         {isInputEntered && (
           <div className="flex gap-10 lg:-ml-96 lg:mr-96 mt-14 text-2xl border rounded-md p-5 mb-5 sm:-ml-0 sm:mr-0 -ml-0 mr-0">
-            <p className="bg-green-500 rounded-full text-green-500 relative group cursor-pointer p-1">
-              hiii
+            <p className="bg-green-500 rounded-full relative group cursor-pointer p-2 w-6 h-6 flex items-center justify-center">
+              <span className="absolute inset-0 bg-green-500 rounded-full"></span>
               <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-lg text-white bg-gray-700 rounded opacity-0 group-hover:opacity-100">
                 Inward transactions
               </span>
             </p>
-            <p className="p-1 bg-red-500 rounded-full text-red-500 relative group cursor-pointer">
-              hiii
+            <p className="bg-red-500 rounded-full relative group cursor-pointer p-2 w-6 h-6 flex items-center justify-center">
+              <span className="absolute inset-0 bg-red-500 rounded-full"></span>
               <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-lg text-white bg-gray-700 rounded opacity-0 group-hover:opacity-100">
                 Outward transactions
               </span>
             </p>
-            <p className="p-1 bg-purple-400 rounded-full text-purple-400 relative group cursor-pointer">
-              hiii
+            <p className="bg-purple-400 rounded-full relative group cursor-pointer p-2 w-6 h-6 flex items-center justify-center">
+              <span className="absolute inset-0 bg-purple-400 rounded-full"></span>
               <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-lg text-white bg-gray-700 rounded opacity-0 group-hover:opacity-100">
                 From address
               </span>
             </p>
-            <p className="p-1 bg-blue-500 rounded-full text-blue-500 relative group cursor-pointer">
-              hiii
+            <p className="bg-blue-500 rounded-full relative group cursor-pointer p-2 w-6 h-6 flex items-center justify-center">
+              <span className="absolute inset-0 bg-blue-500 rounded-full"></span>
               <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-lg text-white bg-gray-700 rounded opacity-0 group-hover:opacity-100">
                 To address
               </span>
