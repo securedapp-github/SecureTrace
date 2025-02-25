@@ -420,6 +420,38 @@ const Visualizer = () => {
       // Reset text color for rest of the document
       doc.setTextColor(100, 100, 100);
 
+      // Transaction Details Section
+      doc.setFontSize(14);
+      doc.setTextColor(0, 0, 0);
+      doc.text("Transaction Details:", 10, 55);
+
+      doc.setFillColor(220, 220, 220); // Darker gray background
+      doc.rect(10, 60, 190, 45, "F"); // Increased height for better spacing
+
+      // Inward Transactions
+      doc.setFillColor(34, 197, 94); // Green
+      doc.circle(20, 70, 4, "F"); // Draw circle
+      doc.setTextColor(0, 0, 0);
+      doc.text("Inward Transactions", 80, 70);
+
+      // Outward Transactions
+      doc.setFillColor(239, 68, 68); // Red
+      doc.circle(20, 80, 4, "F"); // Added extra space
+      doc.setTextColor(0, 0, 0);
+      doc.text("Outward Transactions", 80, 80);
+
+      // From Address
+      doc.setFillColor(168, 85, 247); // Purple
+      doc.circle(20, 90, 4, "F"); // Added extra space
+      doc.setTextColor(0, 0, 0);
+      doc.text("From Address", 80, 90);
+
+      // To Address
+      doc.setFillColor(59, 130, 246); // Blue
+      doc.circle(20, 100, 4, "F"); // Added extra space
+      doc.setTextColor(0, 0, 0);
+      doc.text("To Address", 80, 100);
+
       // Graph capture
       const graphElement = document.getElementById("cy");
       if (graphElement) {
@@ -431,7 +463,7 @@ const Visualizer = () => {
             useCORS: true,
           });
           const graphImage = graphCanvas.toDataURL("image/png");
-          doc.addImage(graphImage, "PNG", 0, 100, 210, 100);
+          doc.addImage(graphImage, "PNG", 0, 120, 210, 100); // Moved image down
         } catch (error) {
           console.error("Error capturing graph:", error);
         }
@@ -464,7 +496,9 @@ const Visualizer = () => {
       doc.line(10, 270, 200, 270);
 
       // Validate transfers data
-      const displayTransfers = selectedToken ? getFilteredTransactions(transfers, selectedToken.address) : transfers;
+      const displayTransfers = selectedToken
+        ? getFilteredTransactions(transfers, selectedToken.address)
+        : transfers;
 
       if (!displayTransfers || !Array.isArray(displayTransfers)) {
         console.error("Invalid transfers data:", displayTransfers);
@@ -478,17 +512,17 @@ const Visualizer = () => {
         return {
           sno: (globalIndex + 1).toString(),
           timestamp: transfer.timestamp
-        ? new Date(transfer.timestamp).toLocaleString()
-        : "N/A",
+            ? new Date(transfer.timestamp).toLocaleString()
+            : "N/A",
           from: transfer.from
-        ? transfer.from.slice(0, 5) + "..." + transfer.from.slice(-4)
-        : "N/A",
+            ? transfer.from.slice(0, 5) + "..." + transfer.from.slice(-4)
+            : "N/A",
           to: transfer.to
-        ? transfer.to.slice(0, 5) + "..." + transfer.to.slice(-4)
-        : "N/A",
+            ? transfer.to.slice(0, 5) + "..." + transfer.to.slice(-4)
+            : "N/A",
           tokenPrice: transfer.tokenPrice
-        ? parseFloat(transfer.tokenPrice).toFixed(2)
-        : "N/A",
+            ? parseFloat(transfer.tokenPrice).toFixed(2)
+            : "N/A",
           tokenName: transfer.tokenName || "N/A",
           value: transfer.value ? parseFloat(transfer.value).toFixed(2) : "N/A",
         };
@@ -513,7 +547,7 @@ const Visualizer = () => {
         const currentPageData = displayTransfers
           .slice(startIdx, endIdx)
           .map((transfer, index) =>
-        formatTransferData(transfer, startIdx + index)
+            formatTransferData(transfer, startIdx + index)
           )
           .filter(Boolean);
 
@@ -549,11 +583,11 @@ const Visualizer = () => {
 
           // Adjust column widths
           if (index === 0) {
-        th.style.width = "5%"; // Slightly reduce S.No width
+            th.style.width = "5%"; // Slightly reduce S.No width
           } else if (index === 1) {
-        th.style.width = "20%"; // Increase Timestamp width
+            th.style.width = "20%"; // Increase Timestamp width
           } else {
-        th.style.width = "auto"; // Default width for other columns
+            th.style.width = "auto"; // Default width for other columns
           }
 
           th.textContent = header;
@@ -573,38 +607,38 @@ const Visualizer = () => {
           // Use actual data if available, otherwise create an empty row
           const transfer = currentPageData[i] || {};
           const rowData = [
-        transfer.sno || "", // S.No
-        transfer.timestamp || "", // Timestamp
-        transfer.from || "", // From
-        transfer.to || "", // To
-        transfer.tokenPrice || "", // Price
-        transfer.tokenName || "", // Token
-        transfer.value || "", // Quantity
+            transfer.sno || "", // S.No
+            transfer.timestamp || "", // Timestamp
+            transfer.from || "", // From
+            transfer.to || "", // To
+            transfer.tokenPrice || "", // Price
+            transfer.tokenName || "", // Token
+            transfer.value || "", // Quantity
           ];
 
           rowData.forEach((cellData, cellIndex) => {
-        const td = document.createElement("td");
-        td.style.padding = "6px";
-        td.style.fontSize = "10px";
-        td.style.textAlign = cellIndex === 0 ? "center" : "left";
+            const td = document.createElement("td");
+            td.style.padding = "6px";
+            td.style.fontSize = "10px";
+            td.style.textAlign = cellIndex === 0 ? "center" : "left";
 
-        // Apply white background if cell data is empty
-        if (cellData === "") {
-          td.style.backgroundColor = "#ffffff";
-          td.style.border = "none"; // Remove border for empty cells
-        } else {
-          td.style.backgroundColor = i % 2 === 0 ? "#ffffff" : "#f4f4f4"; // Ensure consistent background within cells
-          td.style.border = "1px solid #ddd"; // Add border for non-empty cells
-        }
+            // Apply white background if cell data is empty
+            if (cellData === "") {
+              td.style.backgroundColor = "#ffffff";
+              td.style.border = "none"; // Remove border for empty cells
+            } else {
+              td.style.backgroundColor = i % 2 === 0 ? "#ffffff" : "#f4f4f4"; // Ensure consistent background within cells
+              td.style.border = "1px solid #ddd"; // Add border for non-empty cells
+            }
 
-        // Apply green color to timestamp and tokenPrice
-        if (cellIndex === 1 || cellIndex === 4) {
-          td.style.color = "#22C55E"; // Green-500 color
-        }
+            // Apply green color to timestamp and tokenPrice
+            if (cellIndex === 1 || cellIndex === 4) {
+              td.style.color = "#22C55E"; // Green-500 color
+            }
 
-        // Leave cell blank if data is empty
-        td.textContent = cellData === "" ? "" : cellData;
-        row.appendChild(td);
+            // Leave cell blank if data is empty
+            td.textContent = cellData === "" ? "" : cellData;
+            row.appendChild(td);
           });
           tbody.appendChild(row);
         }
@@ -622,12 +656,12 @@ const Visualizer = () => {
         try {
           // Capture table with adjusted height
           const canvas = await html2canvas(container, {
-        scale: 2,
-        backgroundColor: "#ffffff",
-        logging: false,
-        width: 800,
-        height: Math.min(600, totalRows * 40 + 40), // Slightly increase table height
-        useCORS: true,
+            scale: 2,
+            backgroundColor: "#ffffff",
+            logging: false,
+            width: 800,
+            height: Math.min(600, totalRows * 40 + 40), // Slightly increase table height
+            useCORS: true,
           });
 
           // Add table to PDF with same overall height but adjusted internal proportions
@@ -641,31 +675,31 @@ const Visualizer = () => {
         }
       }
 
-        // Add footer
-        doc.line(10, 270, 200, 270);
-        doc.setFontSize(10);
-        doc.setFont("times", "bold");
-        doc.setTextColor(100, 100, 100);
-        doc.text(date, 175, 275);
-        doc.text("SecureDapp", 10, 275);
-        doc.setFont("times", "normal");
-        doc.text(
-          "235, 2nd & 3rd Floor, 13th Cross Rd, Indira Nagar II Stage,",
-          10,
-          280,
-          null,
-          null,
-          "left"
-        );
-        doc.text(
-          "Hoysala Nagar, Indiranagar, Bengaluru, Karnataka 560038",
-          10,
-          285,
-          null,
-          null,
-          "left"
-        );
-        doc.text("hello@securedapp.in", 10, 290, null, null, "left");
+      // Add footer
+      doc.line(10, 270, 200, 270);
+      doc.setFontSize(10);
+      doc.setFont("times", "bold");
+      doc.setTextColor(100, 100, 100);
+      doc.text(date, 175, 275);
+      doc.text("SecureDapp", 10, 275);
+      doc.setFont("times", "normal");
+      doc.text(
+        "235, 2nd & 3rd Floor, 13th Cross Rd, Indira Nagar II Stage,",
+        10,
+        280,
+        null,
+        null,
+        "left"
+      );
+      doc.text(
+        "Hoysala Nagar, Indiranagar, Bengaluru, Karnataka 560038",
+        10,
+        285,
+        null,
+        null,
+        "left"
+      );
+      doc.text("hello@securedapp.in", 10, 290, null, null, "left");
 
       // Disclaimer page
       doc.addPage();
