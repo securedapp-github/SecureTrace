@@ -423,7 +423,7 @@ const Visualizer = () => {
       // Transaction Details Section
       doc.setFontSize(14);
       doc.setTextColor(0, 0, 0);
-      doc.text("Transaction Details:", 10, 55);
+      doc.text("Note:", 10, 55);
 
       doc.setFillColor(220, 220, 220); // Darker gray background
       doc.rect(10, 60, 190, 45, "F"); // Increased height for better spacing
